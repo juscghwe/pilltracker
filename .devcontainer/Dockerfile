@@ -2,11 +2,11 @@ FROM node:20-bookworm
 
 # Install basic development tools
 RUN apt update && apt install -y \
-sqlite3 \
-less \
-man-db \
-sudo \
-&& rm -rf /var/lib/apt/lists/*
+    sqlite3 \
+    less \
+    man-db \
+    sudo \
+    && rm -rf /var/lib/apt/lists/*
 
 # Ensure default `node` user has access to `sudo`
 ARG USERNAME=node
