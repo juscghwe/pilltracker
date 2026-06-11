@@ -1,0 +1,18 @@
+// See https://containers.dev/implementors/json_reference/ for configuration reference
+{
+    "name": "pilltracker",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "remoteUser": "node",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "qwtel.sqlite-viewer",
+                "ms-azuretools.vscode-containers"
+            ]
+        }
+    }
+}
