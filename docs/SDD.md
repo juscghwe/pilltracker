@@ -91,11 +91,36 @@ Data validation and integrity rules
 How data will be stored and retrieved
 -->
 
+Condensed:
+
 ```mermaid
----
-config:
-  layout: elk
----
+erDiagram
+    USERS ||--o{ MEDICATIONS : owns
+    USERS ||--|| MEAL_PROFILES : configures
+    USERS ||--o{ AUTH_CREDENTIALS : authenticates_with
+    USERS ||--o{ INTAKE_LOGS : records
+
+    MEDICATIONS ||--o{ SCHEDULE_RULES : has
+    MEDICATIONS ||--o| INVENTORY : tracks
+    MEDICATIONS ||--o{ INTAKE_LOGS : appears_in
+
+    SCHEDULE_RULES ||--o{ INTAKE_LOGS : generates
+
+    INTAKE_LOGS ||--o{ NOTIFICATIONS : may_trigger
+
+    USERS {}
+    MEDICATIONS {}
+    SCHEDULE_RULES {}
+    INVENTORY {}
+    MEAL_PROFILES {}    
+    INTAKE_LOGS {}
+    NOTIFICATIONS {}
+    AUTH_CREDENTIALS {}
+```
+
+Extensive:
+
+```mermaid
 erDiagram
     USERS ||--o{ MEDICATIONS : owns
     USERS ||--|| MEAL_PROFILES : configures
