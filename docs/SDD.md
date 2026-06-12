@@ -34,6 +34,7 @@ flowchart TB
 - Provide daily intake overview
 - Allow users to acknowledge or skip reminders
 - Display privacy-aware browser / UI notifications
+- Validate user input for usability purposes
 
 The frontend must not be treated as trusted. All relevant authorization and business rules are enforced by the backend.
 
@@ -75,6 +76,8 @@ Backup encryption keys must not be stored inside the backup directory.
 
 MVP authentication uses single-user login with server-managed sessions.
 
+Sessions are stored server-side and transmitted via secure cookies when HTTPS is available.
+
 Future authentication extensions may include TOTP and Android biometric unlock. Biometric unlock is treated as a client-side convenience and does not replace backend session authentication.
 
 ---
@@ -88,11 +91,19 @@ Data validation and integrity rules
 How data will be stored and retrieved
 -->
 
-<!--
-TODO: Add relations
--->
 ```mermaid
 erDiagram
+    USERS ||--o{ MEDICATIONS : owns
+    USERS ||--|| MEAL_PROFILES : configures
+    USERS ||--o{ AUTH_CREDENTIALS : authenticates_with
+    USERS ||--o{ INTAKE_LOGS : records
+
+    MEDICATIONS ||--o{ SCHEDULE_RULES : has
+    MEDICATIONS ||--o| INVENTORY : tracks
+    MEDICATIONS ||--o{ INTAKE_LOGS : appears_in
+
+    SCHEDULE_RULES ||--o{ INTAKE_LOGS : generates
+
     USER {
         int user_id PK
         string user_name
@@ -103,7 +114,7 @@ erDiagram
         bool biometric_enabled
     }
 
-    SCHEDULE {
+    SCHEDULE_RULES {
         int schedule_id PK
         int medication_id
         string type "(opt) meal_relative / timed / free"
@@ -116,12 +127,12 @@ erDiagram
         bool enabled
     }
 
-    MEDICATION {
+    MEDICATIONS {
         int medication_id PK
         int user_id
         string med_name
         bool privacy_mode "private / open"
-        bool aggressive_mode
+        bool reminder_policy "normal / persistent / critical"
         int dosage_default "(opt)"
         string notes "(opt)"
         date created_at
@@ -132,7 +143,7 @@ erDiagram
         int units_per_package
         int current_units
         bool prescription_required
-        bool warning_threshold
+        int warning_threshold
     }
 
     MEAL_PROFILES {
@@ -141,11 +152,7 @@ erDiagram
         time lunch_time
         time supper_time
     }
-```
-
-others:
-```mermaid
-erDiagram
+    
     INTAKE_LOGS {
         int user_id PK
         int medication_id
@@ -164,14 +171,25 @@ erDiagram
         int escalation_level
     }
 
-    AUTH {
+    AUTH_Credentials {
         int user_id PK
         hash password_hash
         string totp_secret
         list failed_logins
+        date last_failed_login
+        date lock_until
         date last_login
     }
 ```
+
+TL/DR:
+
+- User owns medications.
+- Medication has schedule rules.
+- Schedule rules generate intake logs.
+- Medication may have inventory.
+- User has meal profile.
+- Auth is separate from user profile.
 
 ---
 
