@@ -1,5 +1,18 @@
 # Software Design Document
 
+Table of Contents
+
+- [System architecture](#system-architecture)
+- [Data design](#data-design)
+- [Interface design](#interface-design)
+- [Component design](#component-design)
+- [User interface design](#ui-design)
+- [Assumptions and dependencies](#assumptions-dependencies)
+
+---
+
+<a name="system-architecture"></a>
+
 ## System architecture
 
 <!--
@@ -81,6 +94,8 @@ Sessions are stored server-side and transmitted via secure cookies when HTTPS is
 Future authentication extensions may include TOTP and Android biometric unlock. Biometric unlock is treated as a client-side convenience and does not replace backend session authentication.
 
 ---
+
+<a name="data-design"></a>
 
 ## Data design
 
@@ -270,6 +285,8 @@ After:
 
 ---
 
+<a name="interface-design"></a>
+
 ## Interface design
 
 <!--
@@ -384,6 +401,8 @@ The web interface uses server-managed sessions. The frontend must not store sens
 - HTTPS is strongly recommended for all non-local deployments.
 
 ---
+
+<a name="component-design"></a>
 
 ## Component design
 
@@ -577,6 +596,8 @@ Dependencies:
 
 ---
 
+<a name="ui-design"></a>
+
 ## User interface design
 
 <!--
@@ -586,6 +607,8 @@ Accessibility considerations
 -->
 
 ---
+
+<a name="assumptions-dependencies"></a>
 
 ## Assumptions and dependencies
 
