@@ -92,6 +92,10 @@ How data will be stored and retrieved
 -->
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 erDiagram
     USERS ||--o{ MEDICATIONS : owns
     USERS ||--|| MEAL_PROFILES : configures
@@ -114,19 +118,6 @@ erDiagram
         bool biometric_enabled
     }
 
-    SCHEDULE_RULES {
-        int schedule_id PK
-        int medication_id
-        string type "(opt) meal_relative / timed / free"
-        string frequency_type "daily / weekly / monthly"
-        int frequency_interval
-        string meal "(opt) breakfast / lunch / supper"
-        int offset_minutes "(opt)"
-        string time_of_day "(opt) for timed schedules"
-        bool critical "maybe replaces aggressive"
-        bool enabled
-    }
-
     MEDICATIONS {
         int medication_id PK
         int user_id
@@ -138,8 +129,20 @@ erDiagram
         date created_at
     }
 
+    SCHEDULE_RULES {
+        int medication_id PK
+        string type "(opt) meal_relative / timed / free"
+        string frequency_type "daily / weekly / monthly"
+        int frequency_interval
+        string meal "(opt) breakfast / lunch / supper"
+        int offset_minutes "(opt)"
+        string time_of_day "(opt) for timed schedules"
+        bool critical "maybe replaces aggressive"
+        bool enabled
+    }
+
     INVENTORY {
-        int medication_id
+        int medication_id PK
         int units_per_package
         int current_units
         bool prescription_required
