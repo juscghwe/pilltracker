@@ -257,15 +257,15 @@ flowchart TD
 
 Before:
 
-- INVENTORY.current_units = 42
-- INTAKE_LOGS.status = scheduled
+- `INVENTORY.current_units = 42`
+- `INTAKE_LOGS.status = scheduled`
 
 After:
 
-- INVENTORY.current_units = 41
-- INTAKE_LOGS.status = taken
-- NOTIFICATIONS.acknowledged_at != null
-- INTAKE_LOGS.taken_time != null
+- `INVENTORY.current_units = 41`
+- `INTAKE_LOGS.status = taken`
+- `NOTIFICATIONS.acknowledged_at != null`
+- `INTAKE_LOGS.taken_time != null`
 </details>
 
 ---
