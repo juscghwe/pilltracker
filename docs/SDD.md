@@ -124,7 +124,7 @@ Extensive:
 erDiagram
     USERS ||--o{ MEDICATIONS : owns
     USERS ||--|| MEAL_PROFILES : configures
-    USERS ||--o{ AUTH_CREDENTIALS : authenticates_with
+    USERS ||--|| AUTH_CREDENTIALS : authenticates_with
     USERS ||--o{ INTAKE_LOGS : records
 
     MEDICATIONS ||--o{ SCHEDULE_RULES : has
@@ -140,8 +140,7 @@ erDiagram
         string user_name
         string role "admin / member / child"
         bool notification_enabled
-        date created_at
-        bool biometric_enabled
+        datetime created_at
     }
 
     MEDICATIONS {
@@ -149,21 +148,21 @@ erDiagram
         int user_id FK
         string med_name
         string privacy_mode "private / open"
-        bool reminder_policy "normal / persistent / critical"
+        string reminder_policy "normal / persistent / critical"
         int dosage_default "(opt)"
         string notes "(opt)"
-        date created_at
+        datetime created_at
     }
 
     SCHEDULE_RULES {
-        int medication_id PK
+        int schedule_id PK
+        int medication_id FK
         string type "(opt) meal_relative / timed / free"
         string frequency_type "daily / weekly / monthly"
         int frequency_interval
         string meal "(opt) breakfast / lunch / supper"
         int offset_minutes "(opt)"
         string time_of_day "(opt) for timed schedules"
-        bool critical "maybe replaces aggressive"
         bool enabled
     }
 
@@ -177,9 +176,9 @@ erDiagram
 
     MEAL_PROFILES {
         int user_id PK
-        time breakfast_time
-        time lunch_time
-        time supper_time
+        datetime breakfast_time
+        datetime lunch_time
+        datetime supper_time
     }
     
     INTAKE_LOGS {
@@ -187,18 +186,17 @@ erDiagram
         int user_id FK
         int medication_id FK
         int schedule_id FK
-        time scheduled_time
-        time taken_time
+        datetime scheduled_time
+        datetime taken_time
         string status "scheduled / taken / missed / skipped"
         int dosage_taken
     }
 
     NOTIFICATIONS {
         int notification_id PK
-        int user_id FK
-        int medication_id FK
-        date sent_at
-        date acknowledged_at
+        int intake_log_id FK
+        datetime sent_at
+        datetime acknowledged_at
         int escalation_level
     }
 
@@ -206,21 +204,13 @@ erDiagram
         int user_id PK
         hash password_hash
         string totp_secret
-        list failed_logins
-        date last_failed_login
-        date lock_until
-        date last_login
+        bool biometric_enabled
+        int failed_logins_count
+        datetime last_failed_login
+        datetime lock_until
+        datetime last_login
     }
 ```
-
-TL/DR:
-
-- User owns medications.
-- Medication has schedule rules.
-- Schedule rules generate intake logs.
-- Medication may have inventory.
-- User has meal profile.
-- Auth is separate from user profile.
 
 ---
 
