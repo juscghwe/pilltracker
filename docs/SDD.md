@@ -227,8 +227,8 @@ The medication uses the 'normal' reminder policy (`MEDICATIONS:reminder_policy`)
 
 ### Expected Flow
 
-1. The scheduler calculates the next intake event from the meal profile and schedule rule.
-2. An intake log entry is generated for 07:45 (`INTAKE:scheduled_time`).
+1. The scheduler generates the next intake event from the meal profile and schedule rule.
+2. An intake log entry is generated for 07:45 (`INTAKE_LOGS:scheduled_time`).
 3. A browser notification is sent (`NOTIFICATIONS`).
 4. The user marks the medication as taken.
 5. The intake log is updated and the notification is acknowledged (`NOTIFICATIONS:acknowledged_at && INTAKE_LOGS:taken_time`).
@@ -245,13 +245,28 @@ flowchart TD
     U[User]
     INV[INVENTORY]
 
-    MP --> SR
+    MP --> IL
     SR --> IL
     IL --> N
     N --> U
     U --> IL
     IL --> INV
 ```
+
+Database State
+
+Before:
+
+- INVENTORY.current_units = 42
+- INTAKE_LOGS.status = scheduled
+
+After:
+
+- INVENTORY.current_units = 41
+- INTAKE_LOGS.status = taken
+- NOTIFICATIONS.acknowledged_at != null
+- INTAKE_LOGS.taken_time != null
+</details>
 
 ---
 
