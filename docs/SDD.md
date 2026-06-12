@@ -253,7 +253,7 @@ flowchart TD
     IL --> INV
 ```
 
-Database State
+### Database State
 
 Before:
 
