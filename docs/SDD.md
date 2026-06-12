@@ -419,7 +419,47 @@ The backend is split into logical service components. Each component owns one pa
 
 The goal is to avoid placing business logic directly inside API route handlers or frontend code.
 
-### Auth Service
+```mermaid
+flowchart TB
+    API[REST API Routes]
+
+    API --> AUTH[Auth Service]
+    API --> MED[Medication Service]
+    API --> SCHED[Schedule Service]
+    API --> INTAKE[Intake Service]
+    API --> INV[Inventory Service]
+    API --> NOTIF[Notification Service]
+    API --> BACKUP[Backup Service]
+
+    MED --> SCHED
+    MED --> INV
+
+    SCHED --> INTAKE
+    INTAKE --> INV
+    INTAKE --> NOTIF
+    INV --> NOTIF
+
+    AUTH --> DB[(SQLite Database)]
+    MED --> DB
+    SCHED --> DB
+    INTAKE --> DB
+    INV --> DB
+    NOTIF --> DB
+    BACKUP --> DB
+```
+
+| Component | Owns | Main dependencies |
+|---|---|---|
+| Auth Service | Login, sessions, future TOTP | `USERS`, `AUTH_CREDENTIALS` |
+| Medication Service | Medication definitions and privacy rules | `MEDICATIONS`, `USERS` |
+| Schedule Service | Schedule rules and planned intake times | `SCHEDULE_RULES`, `MEAL_PROFILES` |
+| Intake Service | Intake generation and state changes | `INTAKE_LOGS`, `SCHEDULE_RULES` |
+| Inventory Service | Stock changes and low-stock warnings | `INVENTORY`, `MEDICATIONS` |
+| Notification Service | Reminder payloads and acknowledgement | `NOTIFICATIONS`, `INTAKE_LOGS` |
+| Backup Service | Encrypted backup/restore workflows | SQLite file, backup volume |
+
+<details>
+<summary>Auth Service</summary>
 
 Purpose:
 
@@ -444,8 +484,10 @@ Dependencies:
 
 - `AUTH_CREDENTIALS`
 - `USERS`
+</details>
 
-### Medication Service
+<details> 
+<summary>Medication Service</summary>
 
 Purpose:
 
@@ -468,8 +510,10 @@ Dependencies:
 
 - `MEDICATIONS`
 - `USERS`
+</details>
 
-### Schedule Service
+<details>
+<summary>Schedule Service</summary>
 
 Purpose:
 
@@ -493,8 +537,10 @@ Dependencies:
 - `SCHEDULE_RULES`
 - `MEAL_PROFILES`
 - `MEDICATIONS`
+</details>
 
-### Intake Service
+<details>
+<summary>Intake Service</summary>
 
 Purpose:
 
@@ -519,8 +565,10 @@ Dependencies:
 - `INTAKE_LOGS`
 - `SCHEDULE_RULES`
 - `MEDICATIONS`
+</details>
 
-### Inventory Service
+<details>
+<summary>Inventory Service</summary>
 
 Purpose:
 
@@ -544,8 +592,10 @@ Dependencies:
 - `INVENTORY`
 - `INTAKE_LOGS`
 - `MEDICATIONS`
+</details>
 
-### Notification Service
+<details>
+<summary>Notification Service</summary>
 
 Purpose:
 
@@ -569,8 +619,10 @@ Dependencies:
 - `NOTIFICATIONS`
 - `INTAKE_LOGS`
 - `MEDICATIONS`
+</details>
 
-### Backup Service
+<details>
+<summary>Backup Service</summary>
 
 Purpose:
 
@@ -595,6 +647,7 @@ Dependencies:
 - SQLite database file
 - Mounted backup directory
 - External encryption tool/library
+</details>
 
 ---
 
