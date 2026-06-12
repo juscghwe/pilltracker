@@ -279,6 +279,110 @@ How errors and exceptions will be handled
 Security and authentication methods
 -->
 
+PillTracker exposes a REST-style HTTP API used by the React web interface and future clients such as Android and Home Assistant.
+All clients communicate with the backend through the API. Clients do not access the database directly.
+
+### API Style
+
+- REST-style HTTP API
+- JSON request and response bodies
+- Backend-owned validation and business logic
+- Session-based authentication for the web interface
+- Future token-based authentication may be added for external integrations
+
+#### API Areas
+
+Planned API areas:
+
+- Authentication
+- Users
+- Medications
+- Schedule rules
+- Intake logs
+- Inventory
+- Notifications
+- Backups
+- Settings
+
+#### Example Endpoints
+
+```text
+POST /api/auth/login
+POST /api/auth/logout
+GET  /api/session
+
+GET    /api/medications
+POST   /api/medications
+GET    /api/medications/:id
+PATCH  /api/medications/:id
+DELETE /api/medications/:id
+
+GET  /api/today
+POST /api/intakes/:id/taken
+POST /api/intakes/:id/skipped
+
+GET  /api/inventory
+PATCH /api/inventory/:medicationId
+
+POST /api/backups
+GET  /api/backups
+POST /api/backups/:id/restore
+```
+
+### Message Format
+
+Requests and responses use JSON.
+
+Example medication response:
+
+```json
+{
+    "id": 1,
+    "name": "Vitamin D",
+    "privacyMode": "open",
+    "reminderPolicy": "normal",
+    "inventory": {
+        "currentUnits": 42,
+        "warningThreshold": 10
+    }
+}
+```
+
+### Error Handling
+
+Errors use a consistent JSON format.
+
+```json
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Medication name is required"
+  }
+}
+```
+
+Common HTTP status codes:
+
+```text
+400  Bad Request       invalid request data
+401  Unauthorized      user is not authenticated
+403  Forbidden         user is authenticated but not allowed
+404  Not Found         resource does not exist
+409  Conflict          request conflicts with current state
+500  Server Error      unexpected backend error
+```
+
+### Authentication
+
+The web interface uses server-managed sessions. The frontend must not store sensitive authentication secrets directly. Future Android and Home Assistant integrations may use separate token-based authentication.
+
+#### Security Notes
+
+- All validation is enforced by the backend.
+- Clients are not trusted.
+- Medication privacy settings are applied by the backend before responses are sent.
+- HTTPS is strongly recommended for all non-local deployments.
+
 ---
 
 ## Component design
