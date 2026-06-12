@@ -108,6 +108,8 @@ erDiagram
 
     SCHEDULE_RULES ||--o{ INTAKE_LOGS : generates
 
+    INTAKE_LOGS ||--o{ NOTIFICATIONS : may_trigger
+
     USERS {
         int user_id PK
         string user_name
