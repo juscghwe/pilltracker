@@ -133,7 +133,8 @@ erDiagram
     AUTH_CREDENTIALS {}
 ```
 
-Extensive:
+<details>
+<summary>Extensive data models and relationships</summary>
 
 ```mermaid
 erDiagram
@@ -226,6 +227,7 @@ erDiagram
         datetime last_login
     }
 ```
+</details>
 
 This user story demonstrates how the data model interacts during a typical medication intake workflow.
 
