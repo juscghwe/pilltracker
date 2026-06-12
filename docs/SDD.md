@@ -114,7 +114,6 @@ erDiagram
         string role "admin / member / child"
         bool notification_enabled
         date created_at
-        string totp_secret
         bool biometric_enabled
     }
 
