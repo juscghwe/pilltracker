@@ -394,6 +394,187 @@ Algorithms and processing logic
 Dependencies on other components or external systems
 -->
 
+The backend is split into logical service components. Each component owns one part of the business logic and communicates with other components through explicit service calls.
+
+The goal is to avoid placing business logic directly inside API route handlers or frontend code.
+
+### Auth Service
+
+Purpose:
+
+- Manage login and logout
+- Validate active sessions
+- Handle future TOTP support
+- Track failed login attempts and lockout state
+
+Input:
+
+- Login credentials
+- Session tokens/cookies
+- User identifiers
+
+Output:
+
+- Authenticated session
+- Authentication errors
+- User identity for authorized requests
+
+Dependencies:
+
+- `AUTH_CREDENTIALS`
+- `USERS`
+
+### Medication Service
+
+Purpose:
+
+- Create, read, update and delete medication definitions
+- Enforce medication ownership
+- Apply medication privacy settings before data is returned to clients
+
+Input:
+
+- Medication form data
+- User identity
+- Medication identifier
+
+Output:
+
+- Medication records
+- Validation errors
+
+Dependencies:
+
+- `MEDICATIONS`
+- `USERS`
+
+### Schedule Service
+
+Purpose:
+
+- Manage medication schedule rules
+- Calculate planned intake times from fixed times or meal-relative schedules
+- Provide schedule data for the scheduler and daily overview
+
+Input:
+
+- Schedule rule data
+- Meal profile data
+- Medication identifier
+
+Output:
+
+- Schedule rules
+- Calculated planned intake times
+
+Dependencies:
+
+- `SCHEDULE_RULES`
+- `MEAL_PROFILES`
+- `MEDICATIONS`
+
+### Intake Service
+
+Purpose:
+
+- Generate and update intake log entries
+- Mark intakes as taken, skipped or missed
+- Provide daily intake overview and history
+
+Input:
+
+- Schedule rules
+- User actions
+- Current time
+
+Output:
+
+- Intake logs
+- Daily overview
+- Intake history
+
+Dependencies:
+
+- `INTAKE_LOGS`
+- `SCHEDULE_RULES`
+- `MEDICATIONS`
+
+### Inventory Service
+
+Purpose:
+
+- Track current medication stock
+- Decrement inventory after confirmed intake
+- Detect low-stock conditions
+
+Input:
+
+- Medication identifier
+- Dosage amount
+- Inventory update data
+
+Output:
+
+- Updated inventory state
+- Low-stock warnings
+
+Dependencies:
+
+- `INVENTORY`
+- `INTAKE_LOGS`
+- `MEDICATIONS`
+
+### Notification Service
+
+Purpose:
+
+- Create reminder notifications from intake logs
+- Apply privacy settings before notification content is generated
+- Track notification acknowledgement and escalation level
+
+Input:
+
+- Intake log entries
+- Medication privacy settings
+- Reminder policy
+
+Output:
+
+- Notification records
+- Browser/UI notification payloads
+
+Dependencies:
+
+- `NOTIFICATIONS`
+- `INTAKE_LOGS`
+- `MEDICATIONS`
+
+### Backup Service
+
+Purpose:
+
+- Create encrypted backups
+- Restore backups through controlled workflows
+- Keep database backups separate from configuration and keys
+
+Input:
+
+- Backup request
+- Database file
+- Configuration data
+
+Output:
+
+- Encrypted backup file
+- Restore status
+- Backup metadata
+
+Dependencies:
+
+- SQLite database file
+- Mounted backup directory
+- External encryption tool/library
+
 ---
 
 ## User interface design
