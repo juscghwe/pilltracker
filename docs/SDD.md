@@ -212,6 +212,47 @@ erDiagram
     }
 ```
 
+This user story demonstrates how the data model interacts during a typical medication intake workflow.
+
+<details>
+<summary>User Story: Daily Vitamin D intake</summary>
+
+### Scenario
+
+The user has configured Vitamin D (`MEDICATIONS:med_name`) to be taken every day (`SCHEDULE_RULES:frequency_type`) 15 minutes before (`SCHEDULE_RULES:offset_minutes`) breakfast (`SCHEDULE_RULES:meal`).
+
+Breakfast is configured for 08:00 (`MEAL_PROFILES:breakfast_time`), resulting in a scheduled intake time of 07:45.
+
+The medication uses the 'normal' reminder policy (`MEDICATIONS:reminder_policy`).
+
+### Expected Flow
+
+1. The scheduler calculates the next intake event from the meal profile and schedule rule.
+2. An intake log entry is generated for 07:45 (`INTAKE:scheduled_time`).
+3. A browser notification is sent (`NOTIFICATIONS`).
+4. The user marks the medication as taken.
+5. The intake log is updated and the notification is acknowledged (`NOTIFICATIONS:acknowledged_at && INTAKE_LOGS:taken_time`).
+6. Inventory is decremented by one tablet (`INVENTORY:current_units`).
+
+### Data Flow
+
+```mermaid
+flowchart TD
+    MP[MEAL_PROFILES]
+    SR[SCHEDULE_RULES]
+    IL[INTAKE_LOGS]
+    N[NOTIFICATIONS]
+    U[User]
+    INV[INVENTORY]
+
+    MP --> SR
+    SR --> IL
+    IL --> N
+    N --> U
+    U --> IL
+    IL --> INV
+```
+
 ---
 
 ## Interface design
