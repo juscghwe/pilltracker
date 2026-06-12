@@ -119,9 +119,9 @@ erDiagram
 
     MEDICATIONS {
         int medication_id PK
-        int user_id
+        int user_id FK
         string med_name
-        bool privacy_mode "private / open"
+        string privacy_mode "private / open"
         bool reminder_policy "normal / persistent / critical"
         int dosage_default "(opt)"
         string notes "(opt)"
@@ -156,8 +156,10 @@ erDiagram
     }
     
     INTAKE_LOGS {
-        int user_id PK
-        int medication_id
+        int intake_log_id PK
+        int user_id FK
+        int medication_id FK
+        int schedule_id FK
         time scheduled_time
         time taken_time
         string status "scheduled / taken / missed / skipped"
@@ -165,9 +167,9 @@ erDiagram
     }
 
     NOTIFICATIONS {
-        int id PK
-        int user_id
-        int medication_id
+        int notification_id PK
+        int user_id FK
+        int medication_id FK
         date sent_at
         date acknowledged_at
         int escalation_level
