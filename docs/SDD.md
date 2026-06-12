@@ -104,7 +104,7 @@ erDiagram
 
     SCHEDULE_RULES ||--o{ INTAKE_LOGS : generates
 
-    USER {
+    USERS {
         int user_id PK
         string user_name
         string role "admin / member / child"
@@ -171,7 +171,7 @@ erDiagram
         int escalation_level
     }
 
-    AUTH_Credentials {
+    AUTH_CREDENTIALS {
         int user_id PK
         hash password_hash
         string totp_secret
