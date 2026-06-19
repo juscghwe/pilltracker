@@ -743,11 +743,14 @@ Constraints related to hardware, software, or infrastructure
 Any regulatory or compliance requirements
 -->
 
-- Backend: Node.js based
-- API: No framework decided yet
-- Frontend: React based -> browser UI first, Android / HA later
-- Persistency: SQLite
-- Backups: encypted
-- Deployment: Docker -> local-first self-hosting
-- HTTPS recommended, but local HTTP may exist during development / low tier deployment
-- Development based on devcontainer
+- **Frontend:** The frontend is based on React. The browser UI is the primary client for the MVP. Android and Home Assistant integrations are future projects.
+- **API:** The backend exposes a REST-style HTTP API using JSON request and response bodies.
+- **Backend:** The backend is based on Node.js. The exact API framework is not decided yet (most likely express for the MVP).
+- **Persistence:** The primary local database is using SQLite.
+- **Backups:** Backups must be encrypted. Backup encryption keys must not be stored inside the backup directory.
+- **Deployment:** The application is designed for local-first, self-hosted deployment using Docker.
+- **Transport security:** HTTPS is strongly recommended. Local HTTP may exist during development or limited local-only deployments.
+- **Development environment:** Development is based on a VSCode devcontainer to keep tooling reproducible for possible contributors.
+- **Scope limitation:** The SDD describes the MVP architecture and selected future extension points. Future extensions are not required for the first backend / API implementation unless explicitly pulled into a later issue.
+- **Development scaling:** The project will initiate towards a minimum operational foundation without regard for actual implementation. This means backend, transportation layer and frontend will be rushed to be interacting meaningfully so features can be implemented in a meaningfull and testable way. There will be a test framework for the foundation but this will get deprecated later. This method allows for easier framework switches post-MVP state in case other frameworks proofe more feasable. 
+- **Contributing:** Contributors are always welcome! I mainly look for auditing, especially on the security and privacy side of things till post-MVP. If you prefer other frameworks, feel free to open up a discussion thread, but till MVP state I won't regard them.
