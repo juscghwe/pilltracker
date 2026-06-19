@@ -742,3 +742,12 @@ Dependencies on external libraries or services
 Constraints related to hardware, software, or infrastructure
 Any regulatory or compliance requirements
 -->
+
+- Backend: Node.js based
+- API: No framework decided yet
+- Frontend: React based -> browser UI first, Android / HA later
+- Persistency: SQLite
+- Backups: encypted
+- Deployment: Docker -> local-first self-hosting
+- HTTPS recommended, but local HTTP may exist during development / low tier deployment
+- Development based on devcontainer
