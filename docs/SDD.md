@@ -1,6 +1,10 @@
 # Software Design Document
 
-Table of Contents
+The Software Design Document describes the MVP architecture, while also noting some of the future extension. The MVP target is single-user operation.
+
+Multi-user operation, household/parental mode, Android app and Home Assistant integration are future goals unless explicitly pulled into a later milestone.
+
+#### Table of Contents
 
 - [System architecture](#system-architecture)
 - [Data design](#data-design)
@@ -712,18 +716,19 @@ The matrix is intended as a quick pattern-recognition tool, not as the only hist
 
 ### Wireframe approach
 
-Wireframes are low-fidelity and used to define layout intent, not final visual design.
+These wireframes are low-fidelity and used to define layout intent, not final visual design.
 
-<!--
-//: TODO
-- Login screen
-- Daily overview
-- Medication editor
-- Schedule editor
-- Inventory overview
-- History view
-- Settings screen
--->
+> [!NOTE]  
+>
+> TODO: Create Figma wireframes for MVP screens
+>
+> - Login screen
+> - Daily overview
+> - Medication editor
+> - Schedule editor
+> - Inventory overview
+> - History view
+> - Settings screen
 
 ---
 
