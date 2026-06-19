@@ -2,6 +2,9 @@
 
 Self-hosted medication and supplement intake tracker for web, designed with Android and some times in the future Home Assistant integration in mind.
 
+1) [Project scope definition](docs/PSD.md)
+2) [Software design documentation](docs/SDD.md)
+
 ## Project Status
 
 > [!WARNING]
@@ -11,11 +14,11 @@ Self-hosted medication and supplement intake tracker for web, designed with Andr
 
 Current focus:
 
-* Project scope definition
-* Software design documentation
-* Development environment
-* Repository workflow
-* Architecture planning
+* [x] Project scope definition ([#4](https://github.com/juscghwe/pilltracker/pull/4))
+* [x] Software design documentation ([#5](https://github.com/juscghwe/pilltracker/pull/5))
+* [ ] Development environment
+* [ ] Repository workflow
+* [ ] Architecture planning
 
 ## Vision
 
