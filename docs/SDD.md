@@ -661,6 +661,70 @@ Description of user workflows and interactions
 Accessibility considerations
 -->
 
+### UI goals
+
+- Fast daily intake confirmation from both notifications and landing page, simple enough for daily use without requiring detailed navigation
+- Low friction handling for supplements and non-critical medication
+- Strong visibility and escalation for critical medications
+- Privacy-aware display of medication names and reminder content
+- Usable on desktop and mobile (future extension) browsers
+
+### Main screens
+
+- Login screen
+- Daily overview 
+- Intake history view
+- Medication detail / editor
+- Schedule editor
+- Inventory overview
+- Settings
+- Household / parental overview (future extension)
+
+### Key user interactions
+
+- Add medication
+- Edit medication details
+- Configure schedule
+- Confirm intake
+- Skip intake
+- Handle missed critical medication
+- Update inventory manually
+- Review intake history
+- Adjust privacy and notification settings
+
+### History visualization
+
+The history view should provide a compact matrix-style overview inspired by GitHub contribution graphs.
+
+Each cell represents an intake state for a specific day, medication or planned intake slot.
+
+Suggested states:
+
+- Green: all taken
+- Yellow: skipped or delayed a medication
+- Red: missed a non-critical medication
+- Highlighted red / warning state: missed critical medication
+- Grey: no planned intake or no data
+
+(The final color keys are still up to debate.)
+
+The matrix is intended as a quick pattern-recognition tool, not as the only history interface. Detailed intake records should remain available through day or medication selection.
+
+### Wireframe approach
+
+Wireframes are low-fidelity and used to define layout intent, not final visual design.
+
+<!--
+//: TODO
+- Login screen
+- Daily overview
+- Medication editor
+- Schedule editor
+- Inventory overview
+- History view
+- Settings screen
+-->
+
 ---
 
 <a name="assumptions-dependencies"></a>
