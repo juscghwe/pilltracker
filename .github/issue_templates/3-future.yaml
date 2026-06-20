@@ -1,6 +1,5 @@
 name: Future idea
 description: A future improvement or sidequest that should not block current MVP work.
-type: future
 title: "[Future]: "
 assignees: 
   - juscghwe
@@ -28,12 +27,12 @@ body:
   - type: textarea
     id: why-later
     attributes:
-    label: Why this is not part of the current scope
-    description: Why should this wait?
-    placeholder: |
-      - Not required for MVP
-      - Needs more research
-      - Depends on backend foundation
+      label: Why this is not part of the current scope
+      description: Why should this wait?
+      placeholder: |
+        - Not required for MVP
+        - Needs more research
+        - Depends on backend foundation
     validations:
       required: true
   - type: dropdown
