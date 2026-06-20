@@ -1,0 +1,85 @@
+name: Decision
+description: A framework, design, architecture or tooling decision that needs to be made.
+title: "[Decision]: "
+assignees: 
+  - juscghwe
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this when the project needs a clear decision before implementation continues.
+  - type: textarea
+    id: question
+    attributes:
+      label: Decision question
+      description: What needs to be decided?
+      placeholder: |
+        Should the MVP backend use Express or another framework?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Why does this decision matter?
+      placeholder: |
+        - ...
+        - ...
+        - ...
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Options considered
+      description: List the realistic options.
+      placeholder: |
+        1. Option A
+        2. Option B
+        3. Option C
+    validations:
+      required: true
+  - type: textarea
+    id: tradeoffs
+    attributes:
+      label: Trade-offs
+      description: What are the relevant pros, cons, risks and benefits? Consider both implementation complexity and learning value.
+      placeholder: |
+        - ...
+        - ...
+  - type: textarea
+    id: proposed-decision
+    attributes:
+      label: Proposed decision
+      description: What is the current preferred choice?
+      placeholder: |
+        Proposed decision:
+
+        Reason:
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: What parts of the project will this decision affect?
+      placeholder: |
+        - backend
+        - database
+        - API
+        - frontend
+        - internal networking
+        - external networking
+        - security / authentication
+        - testing
+        - deployment
+  - type: textarea
+    id: revisit
+    attributes:
+      label: Revisit conditions
+      description: When should this decision be reconsidered?
+      placeholder: |
+        - Before MVP release
+        - After MVP release
+        - If implementation proves impractical
+        - If security or maintainability concerns appear
