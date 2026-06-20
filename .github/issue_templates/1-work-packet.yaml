@@ -1,0 +1,98 @@
+name: Work packet
+description: A small, focused implementation or documentation task.
+title: "[Work Packet]: "
+assignees: 
+  - juscghwe
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for bite-sized tasks that can be completed in one or a few focused sessions.
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should be true after this issue is completed?
+      placeholder: |
+        After this issue, the project can ...
+    validations:
+      required: true
+  - type: input
+    id: suggested-branch
+    attributes:
+      label: Suggested branch name
+      description: What branch should this work probably happen on?
+      placeholder: |
+        backend/add-health-endpoint
+  - type: dropdown
+    id: task-size
+    attributes:
+      label: Expected task size
+      description: How large should this task be?
+      options:
+        - Small: one focused session
+        - Medium: a few focused sessions
+        - Large: split before starting
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What is included in this work packet?
+      placeholder: |
+        - ...
+        - ...
+    validations:
+      required: true
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Explicit non-goals / boundaries
+      description: List only known things that are tempting but should not be done in this issue.
+      placeholder: |
+        - Do not add authentication yet 
+        - Do not touch frontend styling 
+        - Do not decide the final database schema here
+  - type: textarea
+    id: affected-areas
+    attributes:
+      label: Files / areas likely affected
+      description: Which parts of the project are expected to change?
+      placeholder: |
+        - backend
+        - database
+        - API
+        - networking
+        - frontend
+        - docs
+        - tests
+        - docker setup
+  - type: textarea
+    id: definition-of-done
+    attributes:
+      label: Definition of done
+      description: What must be true before this issue can be closed?
+      placeholder: |
+        - [ ] Code or documentation has been added
+        - [ ] Tests were added or the reason for not adding tests is documented
+        - [ ] Local validation was performed
+        - [ ] Follow-up ideas were captured separately
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation
+      description: How should this work be tested or checked?
+      placeholder: |
+        - ...
+    validations:
+      required: true
+  - type: textarea
+    id: follow-up
+    attributes:
+      label: Follow-up ideas
+      description: Sidequests or future work that should not be done inside this issue.
+      placeholder: |
+        - ...
