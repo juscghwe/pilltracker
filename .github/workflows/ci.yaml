@@ -33,7 +33,7 @@ jobs:
         run: |
           docker compose build
 
-      - name: Validate npm dependencies
+      - name: Validate npm dependency installation
         run: |
           docker compose run --rm app npm list --depth=0
       
