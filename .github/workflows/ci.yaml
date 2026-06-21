@@ -1,4 +1,4 @@
-name: CI docker build
+name: Docker Foundation CI
 
 on:
   pull_request:
