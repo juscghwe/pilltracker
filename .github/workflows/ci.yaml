@@ -35,7 +35,17 @@ jobs:
 
       - name: Validate npm dependency installation
         run: |
-          docker compose run --rm app npm list --depth=0
+          docker compose run --rm app node -e "
+            import express from 'express';
+            import cors from 'cors';
+            import Database from 'better-sqlite3';
+
+            if (!express) throw new Error('express import failed');
+            if (!cors) throw new Error('cors import failed');
+            if (!Database) throw new Error('better-sqlite3 import failed');
+
+            console.log('Required packages import correctly');
+          "
       
       - name: Validate source bind mount
         run: |
