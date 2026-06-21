@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+.env
+.env.*
+# allow example files
+!.env.example
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+data/
+
+# Build output
+dist/
+build/
+
+# IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
