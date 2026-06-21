@@ -1,0 +1,85 @@
+name: Docker Foundation CI
+
+on:
+  pull_request:
+    branches: 
+      - main
+      - milestone/m1
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docker-foundation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      LOCAL_WORKSPACE_FOLDER: ${{ github.workspace }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate Compose configuration
+        run: |
+          docker compose config
+
+      - name: Validate successful build app image
+        run: |
+          docker compose build
+
+      - name: Validate npm dependency installation
+        run: |
+          docker compose run --rm app node -e "
+            import express from 'express';
+            import cors from 'cors';
+            import Database from 'better-sqlite3';
+
+            if (!express) throw new Error('express import failed');
+            if (!cors) throw new Error('cors import failed');
+            if (!Database) throw new Error('better-sqlite3 import failed');
+
+            console.log('Required packages import correctly');
+          "
+      
+      - name: Validate source bind mount
+        run: |
+          docker compose run --rm app sh -c "
+            test -f /app/package.json &&
+            test -d /app/backend &&
+            test -d /app/frontend &&
+            echo 'Source bind mount is correctly set'
+          "
+
+      - name: Validate environment variables
+        run: |
+          docker compose run --rm app node -e "
+            if (process.env.NODE_ENV !== 'development') {
+              throw new Error('NODE_ENV is not set to development');
+            }
+
+            if (process.env.DB_PATH !== '/data/pilltracker.sqlite') {
+              throw new Error('DB_PATH is not set to /data/pilltracker.sqlite');
+            }
+
+            console.log('Environment variables are correctly set');
+          "
+
+      - name: Validate data volume
+        run: |
+          docker compose run --rm app sh -c "
+            echo 'test data' > /data/volume-check.txt
+          "
+          docker compose run --rm app sh -c "
+            grep -qx 'test data' /data/volume-check.txt
+          "
+
+      - name: Cleanup Docker resources
+        if: always()
+        run: |
+          docker compose down --volumes --remove-orphans
