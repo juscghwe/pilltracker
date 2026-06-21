@@ -1,0 +1,53 @@
+name: CI docker build
+
+on:
+  pull_request:
+    branches: 
+      - main
+      - milestone/m1
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docker-foundation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      LOCAL_WORKSPACE_FOLDER: ${{ github.workspace }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate Compose configuration
+        run: |
+          docker compose config
+
+      - name: Build app image
+        run: |
+          docker compose build
+
+      - name: Validate npm dependencies
+        run: |
+          docker compose run --rm app npm list --depth=0
+      
+      - name: Validate source bind mount
+        run: |
+          docker compose run --rm app test -f /app/package.json
+
+      - name: Validate environment variables
+        run: |
+          docker compose run --rm app node -e "console.log(process.env.NODE_ENV); console.log(process.env.DB_PATH)"
+
+      - name: Validate data volume
+        run: |
+          docker compose run --rm app sh -c "echo 'test data' > /data/volume-check.txt"
+          docker compose run --rm app cat /data/volume-check.txt
+
+      - name: Cleanup Docker resources
+        if: always()
+        run: |
+          docker compose down --volumes --remove-orphans
