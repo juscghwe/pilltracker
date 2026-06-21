@@ -49,8 +49,11 @@ jobs:
       
       - name: Validate source bind mount
         run: |
-          docker compose run --rm app test -f /app/package.json "
-            console.log('Source bind mount is correctly set');
+          docker compose run --rm app sh -c "
+            test -f /app/package.json &&
+            test -d /app/backend &&
+            test -d /app/frontend &&
+            echo 'Source bind mount is correctly set'
           "
 
       - name: Validate environment variables
