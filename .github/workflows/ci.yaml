@@ -6,6 +6,9 @@ on:
       - main
       - milestone/m1
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -51,4 +54,3 @@ jobs:
         if: always()
         run: |
           docker compose down --volumes --remove-orphans
-          
