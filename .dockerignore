@@ -1,0 +1,34 @@
+# Git
+.git/
+.gitignore
+
+# Host dependencies
+node_modules/
+
+# Docs and repo metadata
+docs/
+README.md
+LICENSE
+
+# Local environment files
+.env
+.env.*
+!.env.example
+.devcontainer/
+
+# Logs
+logs/
+*.log
+
+# Local runtime data
+data/
+
+# Build output
+dist/
+build/
+
+# IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
