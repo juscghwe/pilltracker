@@ -7,7 +7,7 @@ services:
     volumes:
       - .:/app # make code edits visible immediately
       - app_node_modules:/app/node_modules # keep container-side dependencies separate from host filesystem
-      - app_data:/data # template for SQLite DB
+      - app_data:/data # persistent storage for SQLite DB
     environment:
       NODE_ENV: development
       DB_PATH: /data/pilltracker.sqlite
