@@ -59,14 +59,12 @@ jobs:
       - name: Validate environment variables
         run: |
           docker compose run --rm app node -e "
-            if (!process.env.NODE_ENV !== 'development') {
+            if (process.env.NODE_ENV !== 'development') {
               throw new Error('NODE_ENV is not set to development');
-              process.exit(1);
             }
 
             if (process.env.DB_PATH !== '/data/pilltracker.sqlite') {
               throw new Error('DB_PATH is not set to /data/pilltracker.sqlite');
-              process.exit(1);
             }
 
             console.log('Environment variables are correctly set');
