@@ -39,10 +39,12 @@
 ## Stretch goals
 
 Lvl 1:
+
 - TOTP for login
 - Android app & notification handling
 
 Lvl 2:
+
 - HA OS integration
 - Fingerprint auth for Android app
 - Parental / Family mode (parents can review medication success of their children)

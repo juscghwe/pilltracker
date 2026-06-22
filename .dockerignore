@@ -2,6 +2,7 @@
 .git/
 .gitignore
 .github/
+.githooks/
 
 # Host dependencies
 node_modules/
@@ -33,3 +34,8 @@ build/
 Thumbs.db
 .vscode/
 .idea/
+
+# Linting / Formatting
+eslint.config.js
+.prettierrc.json
+.prettierignore
