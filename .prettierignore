@@ -7,3 +7,5 @@ app_data
 
 package-lock.json
 .devcontainer/devcontainer-lock.json
+
+.github/pull_request_template.md

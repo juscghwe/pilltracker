@@ -3,7 +3,7 @@ description: A framework, design, architecture or tooling decision that needs to
 title: "[Decision]: "
 labels: ["type: decision"]
 projects: ["juscghwe/3"]
-assignees: 
+assignees:
   - juscghwe
 body:
   - type: markdown
