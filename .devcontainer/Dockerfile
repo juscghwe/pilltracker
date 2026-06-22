@@ -1,4 +1,4 @@
-FROM node:20-bookworm
+FROM node:24-bookworm
 
 # Install basic development tools
 RUN apt update && apt install -y \
@@ -7,6 +7,8 @@ RUN apt update && apt install -y \
     man-db \
     sudo \
     && rm -rf /var/lib/apt/lists/*
+# sqlite3 CLI is installed for manual database inspection.
+# The backend uses the npm package `better-sqlite3` for application access.
 
 # Ensure default `node` user has access to `sudo`
 ARG USERNAME=node
