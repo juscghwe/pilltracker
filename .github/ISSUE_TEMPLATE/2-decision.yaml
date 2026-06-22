@@ -76,21 +76,6 @@ body:
         - security / authentication
         - testing
         - deployment
-  - type: checkboxes
-    id: impact_check
-    attributes:
-      label: Impact
-      description: What parts of the project will this decision affect?
-      options:
-        - label: backend
-        - label: database
-        - label: API
-        - label: frontend
-        - label: internal networking
-        - label: external networking
-        - label: security / authentication
-        - label: testing
-        - label: deployment
   - type: textarea
     id: revisit
     attributes:
