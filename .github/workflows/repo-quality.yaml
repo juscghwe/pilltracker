@@ -1,0 +1,38 @@
+name: Repo Quality CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - milestone/m1
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repo-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate formatting
+        run: npm run format:check
+
+      - name: Validate linting
+        run: npm run lint
