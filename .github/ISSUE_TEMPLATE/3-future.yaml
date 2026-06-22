@@ -1,7 +1,9 @@
 name: Future idea
 description: A future improvement or sidequest that should not block current MVP work.
 title: "[Future]: "
-assignees: 
+labels: ["type: future"]
+projects: ["juscghwe/3"]
+assignees:
   - juscghwe
 body:
   - type: markdown

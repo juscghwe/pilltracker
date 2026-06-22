@@ -1,6 +1,8 @@
 name: Decision
 description: A framework, design, architecture or tooling decision that needs to be made.
 title: "[Decision]: "
+labels: ["type: decision"]
+projects: ["juscghwe/3"]
 assignees: 
   - juscghwe
 body:
