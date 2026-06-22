@@ -131,7 +131,7 @@ erDiagram
     MEDICATIONS {}
     SCHEDULE_RULES {}
     INVENTORY {}
-    MEAL_PROFILES {}    
+    MEAL_PROFILES {}
     INTAKE_LOGS {}
     NOTIFICATIONS {}
     AUTH_CREDENTIALS {}
@@ -200,7 +200,7 @@ erDiagram
         datetime lunch_time
         datetime supper_time
     }
-    
+
     INTAKE_LOGS {
         int intake_log_id PK
         int user_id FK
@@ -231,6 +231,7 @@ erDiagram
         datetime last_login
     }
 ```
+
 </details>
 
 This user story demonstrates how the data model interacts during a typical medication intake workflow.
@@ -360,14 +361,14 @@ Example medication response:
 
 ```json
 {
-    "id": 1,
-    "name": "Vitamin D",
-    "privacyMode": "open",
-    "reminderPolicy": "normal",
-    "inventory": {
-        "currentUnits": 42,
-        "warningThreshold": 10
-    }
+  "id": 1,
+  "name": "Vitamin D",
+  "privacyMode": "open",
+  "reminderPolicy": "normal",
+  "inventory": {
+    "currentUnits": 42,
+    "warningThreshold": 10
+  }
 }
 ```
 
@@ -452,15 +453,15 @@ flowchart TB
     BACKUP --> DB
 ```
 
-| Component | Owns | Main dependencies |
-|---|---|---|
-| Auth Service | Login, sessions, future TOTP | `USERS`, `AUTH_CREDENTIALS` |
-| Medication Service | Medication definitions and privacy rules | `MEDICATIONS`, `USERS` |
-| Schedule Service | Schedule rules and planned intake times | `SCHEDULE_RULES`, `MEAL_PROFILES` |
-| Intake Service | Intake generation and state changes | `INTAKE_LOGS`, `SCHEDULE_RULES` |
-| Inventory Service | Stock changes and low-stock warnings | `INVENTORY`, `MEDICATIONS` |
-| Notification Service | Reminder payloads and acknowledgement | `NOTIFICATIONS`, `INTAKE_LOGS` |
-| Backup Service | Encrypted backup/restore workflows | SQLite file, backup volume |
+| Component            | Owns                                     | Main dependencies                 |
+| -------------------- | ---------------------------------------- | --------------------------------- |
+| Auth Service         | Login, sessions, future TOTP             | `USERS`, `AUTH_CREDENTIALS`       |
+| Medication Service   | Medication definitions and privacy rules | `MEDICATIONS`, `USERS`            |
+| Schedule Service     | Schedule rules and planned intake times  | `SCHEDULE_RULES`, `MEAL_PROFILES` |
+| Intake Service       | Intake generation and state changes      | `INTAKE_LOGS`, `SCHEDULE_RULES`   |
+| Inventory Service    | Stock changes and low-stock warnings     | `INVENTORY`, `MEDICATIONS`        |
+| Notification Service | Reminder payloads and acknowledgement    | `NOTIFICATIONS`, `INTAKE_LOGS`    |
+| Backup Service       | Encrypted backup/restore workflows       | SQLite file, backup volume        |
 
 <details>
 <summary>Auth Service</summary>
@@ -676,7 +677,7 @@ Accessibility considerations
 ### Main screens
 
 - Login screen
-- Daily overview 
+- Daily overview
 - Intake history view
 - Medication detail / editor
 - Schedule editor
@@ -718,7 +719,7 @@ The matrix is intended as a quick pattern-recognition tool, not as the only hist
 
 These wireframes are low-fidelity and used to define layout intent, not final visual design.
 
-> [!NOTE]  
+> [!NOTE]
 >
 > TODO: Create Figma wireframes for MVP screens
 >

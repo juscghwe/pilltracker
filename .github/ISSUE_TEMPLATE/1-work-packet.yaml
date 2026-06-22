@@ -3,7 +3,7 @@ description: A small, focused implementation or documentation task.
 title: "[Work Packet]: "
 labels: ["type: work packet"]
 projects: ["juscghwe/3"]
-assignees: 
+assignees:
   - juscghwe
 body:
   - type: markdown

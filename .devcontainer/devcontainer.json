@@ -1,24 +1,25 @@
 // See https://containers.dev/implementors/json_reference/ for configuration reference
 {
-    "name": "pilltracker",
-    "build": {
-        "dockerfile": "Dockerfile"
-    },
-    "remoteUser": "node",
-    "remoteEnv": { 
-        "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}" 
-    },
-    "features": {
-        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
-    },
-    "customizations": {
-        "vscode": {
-            "extensions": [
-                "dbaeumer.vscode-eslint",
-                "esbenp.prettier-vscode",
-                "qwtel.sqlite-viewer",
-                "ms-azuretools.vscode-containers"
-            ]
-        }
+  "name": "pilltracker",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "node",
+  "remoteEnv": {
+    "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "qwtel.sqlite-viewer",
+        "ms-azuretools.vscode-containers"
+      ]
     }
+  },
+  "postCreateCommand": "git config core.hooksPath .githooks && chmod +x .githooks/pre-commit"
 }

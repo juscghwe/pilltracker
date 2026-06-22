@@ -2,7 +2,7 @@ name: Docker Foundation CI
 
 on:
   pull_request:
-    branches: 
+    branches:
       - main
       - milestone/m1
 
@@ -46,7 +46,7 @@ jobs:
 
             console.log('Required packages import correctly');
           "
-      
+
       - name: Validate source bind mount
         run: |
           docker compose run --rm app sh -c "

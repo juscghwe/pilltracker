@@ -5,7 +5,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ${LOCAL_WORKSPACE_FOLDER:-.}:/app # make code edits visible immediately; uses the `LOCAL_WORKSPACE_FOLDER` env var set in devcontainer.json, or defaults to current directory if not set (e.g., when running outside of devcontainer) 
+      - ${LOCAL_WORKSPACE_FOLDER:-.}:/app # make code edits visible immediately; uses the `LOCAL_WORKSPACE_FOLDER` env var set in devcontainer.json, or defaults to current directory if not set (e.g., when running outside of devcontainer)
       - app_node_modules:/app/node_modules # keep container-side dependencies separate from host filesystem
       - app_data:/data # persistent storage for SQLite DB
     environment:
