@@ -1,0 +1,9 @@
+node_modules
+coverage
+dist
+build
+app_data
+*.sqlite
+
+package-lock.json
+.devcontainer/devcontainer-lock.json
