@@ -1,4 +1,4 @@
-FROM node:20-bookworm
+FROM node:24-bookworm
 
 # Install basic development tools
 RUN apt update && apt install -y \
