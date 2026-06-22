@@ -65,16 +65,16 @@ body:
     attributes:
       label: Impact
       description: What parts of the project will this decision affect?
-      placeholder: |
-        - backend
-        - database
-        - API
-        - frontend
-        - internal networking
-        - external networking
-        - security / authentication
-        - testing
-        - deployment
+      options:
+        - label: backend
+        - label: database
+        - label: API
+        - label: frontend
+        - label: internal networking
+        - label: external networking
+        - label: security / authentication
+        - label: testing
+        - label: deployment
   - type: textarea
     id: revisit
     attributes:
