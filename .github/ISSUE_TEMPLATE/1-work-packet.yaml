@@ -32,9 +32,10 @@ body:
       label: Expected task size
       description: How large should this task be?
       options:
-        - Small: one focused session
-        - Medium: a few focused sessions
-        - Large: split before starting
+        - "Tiny: a few lines of code or a small doc change"
+        - "Small: one focused session"
+        - "Medium: a few focused sessions"
+        - "Large: split before starting"
     validations:
       required: true
   - type: textarea
