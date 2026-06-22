@@ -60,8 +60,24 @@ body:
         Reason:
     validations:
       required: true
-  - type: checkboxes
+  - type: dropdown
     id: impact
+    attributes:
+      label: Impact
+      description: What parts of the project will this decision affect?
+      multiple: true
+      options:
+        - backend
+        - database
+        - API
+        - frontend
+        - internal networking
+        - external networking
+        - security / authentication
+        - testing
+        - deployment
+  - type: checkboxes
+    id: impact_check
     attributes:
       label: Impact
       description: What parts of the project will this decision affect?
