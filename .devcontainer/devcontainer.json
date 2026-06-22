@@ -20,5 +20,6 @@
         "ms-azuretools.vscode-containers"
       ]
     }
-  }
+  },
+  "postCreateCommand": "git config core.hooksPath .githooks && chmod +x .githooks/pre-commit"
 }

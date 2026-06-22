@@ -8,7 +8,9 @@
     "start": "node backend/src/server.js",
     "lint": "eslint backend frontend eslint.config.js",
     "format": "prettier . --write",
-    "format:check": "prettier . --check"
+    "format:check": "prettier . --check",
+    "check": "npm run format:check && npm run lint",
+    "fix": "npm run format && npm run lint"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",

@@ -2,6 +2,7 @@
 .git/
 .gitignore
 .github/
+.githooks/
 
 # Host dependencies
 node_modules/
