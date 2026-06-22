@@ -60,7 +60,7 @@ body:
         Reason:
     validations:
       required: true
-  - type: textarea
+  - type: checkboxes
     id: impact
     attributes:
       label: Impact
