@@ -1,6 +1,8 @@
 name: Decision
 description: A framework, design, architecture or tooling decision that needs to be made.
 title: "[Decision]: "
+labels: ["type: decision"]
+projects: ["juscghwe/3"]
 assignees: 
   - juscghwe
 body:
@@ -58,12 +60,13 @@ body:
         Reason:
     validations:
       required: true
-  - type: textarea
+  - type: dropdown
     id: impact
     attributes:
       label: Impact
       description: What parts of the project will this decision affect?
-      placeholder: |
+      multiple: true
+      options:
         - backend
         - database
         - API
