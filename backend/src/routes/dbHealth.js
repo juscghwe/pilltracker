@@ -10,7 +10,7 @@ dbHealthRouter.get("/", (_req, res) => {
   res.status(200).json({
     status: "ok",
     database: {
-      status: result.ok === 1 ? "healthy" : "unhealthy",
+      status: result.ok === 1 ? "ok" : "unhealthy",
       driver: "sqlite3",
       pathConfigured: Boolean(process.env.DB_PATH),
     },
