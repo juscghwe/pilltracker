@@ -6,7 +6,11 @@
   "scripts": {
     "backend:dev": "nodemon backend/src/server.js",
     "backend:start": "node backend/src/server.js",
+    "frontend:dev": "vite frontend --host 0.0.0.0 --port 5173",
+    "frontend:build": "vite build frontend",
+    "frontend:preview": "vite preview frontend --host 0.0.0.0 --port 4173",
     "test:backend:smoke": "node backend/tests/smoke/health.mjs",
+    "test:frontend:build": "npm run frontend:build",
     "repo:format": "prettier . --write",
     "repo:format:check": "prettier . --check",
     "repo:lint": "eslint backend frontend scripts eslint.config.js",
@@ -19,13 +23,17 @@
   "dependencies": {
     "better-sqlite3": "^12.11.1",
     "cors": "^2.8.6",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@vitejs/plugin-react": "^6.0.2",
     "eslint": "^10.5.0",
     "globals": "^17.7.0",
     "nodemon": "^3.1.14",
-    "prettier": "^3.8.4"
+    "prettier": "^3.8.4",
+    "vite": "^8.0.16"
   }
 }
