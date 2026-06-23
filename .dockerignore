@@ -39,3 +39,5 @@ Thumbs.db
 eslint.config.js
 .prettierrc.json
 .prettierignore
+
+# TODO: Add test frameworks that aint meant for deployment
