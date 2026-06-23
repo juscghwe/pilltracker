@@ -16,12 +16,13 @@ export default [
   js.configs.recommended,
 
   {
-    files: ["backend/**/*.js"],
+    files: ["backend/**/*.{js,mjs}", "scripts/**/*.mjs", "eslint.config.js"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
       globals: {
         ...globals.node,
+        fetch: "readonly",
       },
     },
     rules: {
@@ -31,12 +32,13 @@ export default [
   },
 
   {
-    files: ["frontend/**/*.js"],
+    files: ["frontend/**/*.{js,jsx,mjs}"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
       globals: {
         ...globals.browser,
+        fetch: "readonly",
       },
     },
     rules: {

@@ -4,13 +4,17 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nodemon backend/src/server.js",
-    "start": "node backend/src/server.js",
-    "lint": "eslint backend frontend eslint.config.js",
-    "format": "prettier . --write",
-    "format:check": "prettier . --check",
-    "check": "npm run format:check && npm run lint",
-    "fix": "npm run format && npm run lint"
+    "backend:dev": "nodemon backend/src/server.js",
+    "backend:start": "node backend/src/server.js",
+    "test:backend:smoke": "node backend/tests/smoke/health.mjs",
+    "repo:format": "prettier . --write",
+    "repo:format:check": "prettier . --check",
+    "repo:lint": "eslint backend frontend scripts eslint.config.js",
+    "check": "node scripts/check.mjs",
+    "fix": "node scripts/fix.mjs",
+    "precommit": "node scripts/pre-commit.mjs",
+    "dev": "npm run backend:dev",
+    "start": "npm run backend:start"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",
