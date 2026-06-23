@@ -1,0 +1,46 @@
+name: Backend Integration CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - milestone/m1
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      LOCAL_WORKSPACE_FOLDER: ${{ github.workspace }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start app container
+        run: docker compose up -d app
+
+      - name: Validate backend smoke tests
+        run: npm run test:backend:smoke
+
+      - name: Cleanup Docker resources
+        if: always()
+        run: |
+          docker compose down --volumes --remove-orphans
