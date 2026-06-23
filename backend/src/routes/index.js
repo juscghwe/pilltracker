@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { apiRoutes } from "../../constantRoutes.js";
+import { apiRoutes } from "../constants/apiRoutes.js";
 
 import dbHealthRouter from "./dbHealth.js";
-import healthRouter from "../backend/health.js";
+import healthRouter from "./health.js";
 
 const router = Router();
 
