@@ -32,7 +32,7 @@ jobs:
         run: npm ci
 
       - name: Validate formatting
-        run: npm run format:check
+        run: npm run repo:format:check
 
       - name: Validate linting
-        run: npm run lint
+        run: npm run repo:lint
