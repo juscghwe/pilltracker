@@ -9,9 +9,9 @@
     "test:backend:smoke": "node backend/tests/smoke/health.mjs",
     "repo:format": "prettier . --write",
     "repo:format:check": "prettier . --check",
-    "repo:lint": "eslint backend frontend eslint.config.js",
-    "check": "npm run repo:format:check && npm run repo:lint",
-    "fix": "npm run repo:format && npm run repo:lint",
+    "repo:lint": "eslint backend frontend scripts eslint.config.js",
+    "check": "node scripts/check.mjs",
+    "fix": "node scripts/fix.mjs",
     "dev": "npm run backend:dev",
     "start": "npm run backend:start"
   },
