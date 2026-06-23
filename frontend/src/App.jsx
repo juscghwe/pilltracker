@@ -37,6 +37,7 @@ export default function App() {
       ignoreResult = true;
     };
   }, []);
+
   return (
     <main className="app-shell">
       <section className="health-card">
@@ -49,34 +50,45 @@ export default function App() {
 }
 
 function HealthStatus({ health }) {
-  if (health.status === "loading") {
-    return <p>Checking backend connection...</p>;
-  } else if (health.status === "error") {
-    return (
-      <div className="status-error" role="status">
-        <h2>Backend connection failed</h2>
-        <p>{health.error}</p>
-      </div>
-    );
+  switch (health.status) {
+    case "loading":
+      return <p>Checking backend connection...</p>;
+
+    case "error":
+      return (
+        <div className="status-error" role="status">
+          <h2>Backend connection failed</h2>
+          <p>{health.error}</p>
+        </div>
+      );
+
+    case "connected":
+      return (
+        <div className="status-connected" role="status">
+          <h2>Backend connection successful</h2>
+
+          <dl>
+            <dt>Status</dt>
+            <dd>{health.data.status}</dd>
+
+            <dt>Service</dt>
+            <dd>{health.data.service}</dd>
+
+            <dt>Database</dt>
+            <dd>{health.data.database}</dd>
+
+            <dt>Timestamp</dt>
+            <dd>{health.data.timestamp}</dd>
+          </dl>
+        </div>
+      );
+
+    default:
+      return (
+        <div className="status-error" role="status">
+          <h2>Unknown health status</h2>
+          <p>{health.status}</p>
+        </div>
+      );
   }
-
-  return (
-    <div className="status-connected" role="status">
-      <h2>Backend connection successful</h2>
-
-      <dl>
-        <dt>Status</dt>
-        <dd>{health.data.status}</dd>
-
-        <dt>Service</dt>
-        <dd>{health.data.service}</dd>
-
-        <dt>Database</dt>
-        <dd>{health.data.database}</dd>
-
-        <dt>Timestamp</dt>
-        <dd>{health.data.timestamp}</dd>
-      </dl>
-    </div>
-  );
 }
