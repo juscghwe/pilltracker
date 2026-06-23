@@ -64,7 +64,7 @@ function HealthStatus({ health }) {
     <div className="status-connected" role="status">
       <h2>Backend connection successful</h2>
 
-      <d1>
+      <dl>
         <dt>Status</dt>
         <dd>{health.data.status}</dd>
 
@@ -76,7 +76,7 @@ function HealthStatus({ health }) {
 
         <dt>Timestamp</dt>
         <dd>{health.data.timestamp}</dd>
-      </d1>
+      </dl>
     </div>
   );
 }
