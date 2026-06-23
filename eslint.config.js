@@ -16,12 +16,13 @@ export default [
   js.configs.recommended,
 
   {
-    files: ["backend/**/*.js"],
+    files: ["backend/**/*.{js,mjs}"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
       globals: {
         ...globals.node,
+        fetch: "readonly",
       },
     },
     rules: {

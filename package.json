@@ -10,7 +10,8 @@
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "check": "npm run format:check && npm run lint",
-    "fix": "npm run format && npm run lint"
+    "fix": "npm run format && npm run lint",
+    "test:backend:smoke": "node backend/tests/smoke/health.mjs"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",
