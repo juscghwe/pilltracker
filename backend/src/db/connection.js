@@ -8,6 +8,7 @@ if (!dbPath) {
 
 const db = new Database(dbPath);
 
+// Remove if DB is intended outside volume, but this is a good default for local development
 db.pragma("journal_mode = WAL");
 
 export default db;
