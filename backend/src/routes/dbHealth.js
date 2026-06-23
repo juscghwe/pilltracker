@@ -1,11 +1,11 @@
 import { Router } from "express";
 
-import db from "../db/connection.js";
+import appDatabase from "../db/connection.js";
 
 const dbHealthRouter = Router();
 
 dbHealthRouter.get("/", (_req, res) => {
-  const [result, version] = db.prepare("SELECT 1, sqlite_version() AS ok, version").get();
+  const [result, version] = appDatabase.prepare("SELECT 1, sqlite_version() AS ok, version").get();
 
   res.status(200).json({
     status: "ok",
@@ -18,7 +18,7 @@ dbHealthRouter.get("/", (_req, res) => {
       driver: {
         name: "better-sqlite3", // TODO: This should be dynamic based on the database driver used
       },
-      mode: db.pragma("journal_mode"),
+      mode: appDatabase.pragma("journal_mode"),
       path: {
         Configured: Boolean(process.env.DB_PATH),
         Path: process.env.DB_PATH || "Not Configured",
