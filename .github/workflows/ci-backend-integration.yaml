@@ -1,4 +1,4 @@
-name: Repo Quality CI
+name: Backend Integration CI
 
 on:
   pull_request:
@@ -14,9 +14,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  repo-quality:
+  backend-integration:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
+
+    env:
+      LOCAL_WORKSPACE_FOLDER: ${{ github.workspace }}
 
     steps:
       - name: Checkout code
@@ -31,8 +34,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Validate formatting
-        run: npm run format:check
+      - name: Start app container
+        run: docker compose up -d app
 
-      - name: Validate linting
-        run: npm run lint
+      - name: Validate backend smoke tests
+        run: npm run test:backend:smoke
+
+      - name: Cleanup Docker resources
+        if: always()
+        run: |
+          docker compose down --volumes --remove-orphans

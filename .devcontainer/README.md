@@ -41,6 +41,21 @@ This means commits made inside the Dev Container run the repository quality chec
 >
 > Production deployment should always use a dedicated runtime Dockerfile / image that installs only runtime dependencies and starts the application with the normal `start` command.
 
+## Network access
+
+The Dev Container runs with host networking. This allows tools inside the Dev Container to access services published by Docker Compose through `localhost`.
+
+Example:
+
+```sh
+docker compose up -d app
+curl http://localhost:3000/api/health
+```
+
+The application container still runs as a normal Docker Compose service and publishes `port 3000` to the Docker host.
+
+This setup is set up for development VM workflow. Other environments, especially Docker Desktop on Windows / macOS, may behave differently.
+
 ## Possible ways to work on the project
 
 ### Recommended: VS Code Dev Containers

@@ -1,12 +1,3 @@
 #!/bin/sh
 
-echo "Running formatting check..."
-npm run format:check || {
-  echo ""
-  echo "Formatting check failed."
-  echo "Run: npm run fix"
-  exit 1
-}
-
-echo "Running lint check..."
-npm run lint
+npm run --silent precommit
