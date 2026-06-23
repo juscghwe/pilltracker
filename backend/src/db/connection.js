@@ -7,7 +7,9 @@ if (!appDatabasePath) {
 }
 
 const appDatabase = new Database(appDatabasePath);
-const journalMode = "WAL"; // Use Write-Ahead Logging for better concurrency and performance
+
+// Use Write-Ahead Logging for better concurrency and performance
+const journalMode = "WAL";
 
 // Remove if DB is intended outside volume, but this is a good default for local development
 appDatabase.pragma(`journal_mode = ${journalMode}`, { simple: true });
