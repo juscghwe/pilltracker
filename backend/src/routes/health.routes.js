@@ -25,7 +25,7 @@ healthRouter.get("/runtime", (_req, res) => {
   const health = getRuntimeHealth();
 
   res.status(200).json({
-    status: health.status,
+    ...health,
     timestamp: new Date().toISOString(),
   });
 });
@@ -39,8 +39,7 @@ healthRouter.get("/persistence", (req, res) => {
   const health = getPersistenceHealth({ includeDetails });
 
   res.status(health.status === "healthy" ? 200 : 503).json({
-    status: health.status,
-    persistence: health,
+    ...health,
     timestamp: new Date().toISOString(),
   });
 });
