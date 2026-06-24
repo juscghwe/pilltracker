@@ -1,6 +1,9 @@
 import Database from "better-sqlite3";
 import { appConfig } from "../../../config/appConfig.js";
 
+if (!appConfig.databasePath) {
+  throw new Error("DB_PATH environment variable is not set up!");
+}
 const db = new Database(appConfig.databasePath);
 
 const requestedJournalMode = appConfig.sqlite.requestedJournalMode;
