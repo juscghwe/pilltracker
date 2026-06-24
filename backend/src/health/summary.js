@@ -21,7 +21,7 @@ export function getHealthSummary() {
       },
       persistence: {
         status: persistenceHealth.status,
-        pathIsConfigured: persistenceHealth.pathIsConfigured,
+        pathIsConfigured: persistenceHealth.path.isConfigured,
       },
     },
   };

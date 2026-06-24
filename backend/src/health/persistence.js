@@ -19,7 +19,9 @@ export function getPersistenceHealth(options = {}) {
     status: fullHealth.status,
     adapter: fullHealth.adapter,
     engine: fullHealth.engine,
-    pathIsConfigured: fullHealth.path.isConfigured,
+    path: {
+      isConfigured: fullHealth.path.isConfigured,
+    },
   };
 }
 
@@ -31,6 +33,8 @@ export function getPersistenceHealthPartial() {
 
   return {
     status: fullHealth.status,
-    pathIsConfigured: fullHealth.path.isConfigured,
+    path: {
+      isConfigured: fullHealth.path.isConfigured,
+    },
   };
 }
