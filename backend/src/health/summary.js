@@ -4,7 +4,10 @@ import { getPersistenceHealthPartial } from "./persistence.js";
 export function getHealthSummary() {
   const runtimeHealth = getRuntimeHealth();
   const persistenceHealth = getPersistenceHealthPartial();
-  const overallHealth = runtimeHealth.status && persistenceHealth.status;
+  const overallHealth =
+    runtimeHealth.status === "healthy" && persistenceHealth.status === "healthy"
+      ? "healthy"
+      : "unhealthy";
 
   return {
     status: overallHealth,
