@@ -8,6 +8,23 @@ const sourceModule = import.meta.url;
 
 const requestedJournalMode = appConfig.sqlite.requestedJournalMode;
 
+function isDatabasePathConfigured() {
+  return Boolean(appConfig.database.path);
+}
+
+function getAdapterInfo() {
+  return {
+    id: adapterId,
+    sourceModule,
+  };
+}
+
+function getPathInfo() {
+  return {
+    isConfigured: isDatabasePathConfigured(),
+  };
+}
+
 function getConnection() {
   if (!appConfig.database.path) {
     throw new Error("DB_PATH environment variable is not configured");
@@ -19,6 +36,35 @@ function getConnection() {
   }
 
   return db;
+}
+
+function createUnhealthyHealth(error) {
+  return {
+    status: "unhealthy",
+    adapter: getAdapterInfo(),
+    path: getPathInfo(),
+    error: {
+      name: error.name,
+      message: error.message,
+    },
+  };
+}
+
+function createHealthyHealth({ probe, activeJournalMode }) {
+  return {
+    status: probe.ok === 1 ? "healthy" : "unhealthy",
+    engine: {
+      reportedFamily: "sqlite",
+      version: probe.sqliteVersion,
+      source: "database_query",
+    },
+    adapter: getAdapterInfo(),
+    journalMode: {
+      requested: requestedJournalMode,
+      active: activeJournalMode,
+    },
+    path: getPathInfo(),
+  };
 }
 
 export const persistenceAdapter = {
@@ -40,40 +86,9 @@ export const persistenceAdapter = {
 
       const activeJournalMode = connection.pragma("journal_mode", { simple: true });
 
-      return {
-        status: probe.ok === 1 ? "healthy" : "unhealthy",
-        engine: {
-          reportedFamily: "sqlite",
-          version: probe.sqliteVersion,
-          source: "database_query",
-        },
-        adapter: {
-          id: adapterId,
-          sourceModule: sourceModule,
-        },
-        journalMode: {
-          requested: requestedJournalMode,
-          active: activeJournalMode,
-        },
-        path: {
-          isConfigured: Boolean(appConfig.database.path),
-        },
-      };
+      return createHealthyHealth({ probe, activeJournalMode });
     } catch (error) {
-      return {
-        status: "unhealthy",
-        adapter: {
-          id: adapterId,
-          sourceModule,
-        },
-        path: {
-          isConfigured: Boolean(appConfig.database.path),
-        },
-        error: {
-          name: error.name,
-          message: error.message,
-        },
-      };
+      return createUnhealthyHealth(error);
     }
   },
 };
