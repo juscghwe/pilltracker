@@ -1,8 +1,8 @@
 import { Router } from "express";
 
-import { getHealthSummary } from "../health/summary";
-import { getRuntimeHealth } from "../health/runtime";
-import { getPersistenceHealth } from "../health/persistence";
+import { getHealthSummary } from "../health/summary.js";
+import { getRuntimeHealth } from "../health/runtime.js";
+import { getPersistenceHealth } from "../health/persistence.js";
 
 const healthRouter = Router();
 

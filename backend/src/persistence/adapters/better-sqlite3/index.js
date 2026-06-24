@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-import { appConfig } from "../../../config/index.js";
+import { appConfig } from "../../../config/appConfig.js";
 
 const db = new Database(appConfig.databasePath);
 

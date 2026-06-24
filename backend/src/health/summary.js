@@ -1,5 +1,5 @@
-import { getRuntimeHealth } from "./runtime";
-import { getPersistenceHealthPartial } from "./persistence";
+import { getRuntimeHealth } from "./runtime.js";
+import { getPersistenceHealthPartial } from "./persistence.js";
 
 export function getHealthSummary() {
   const runtimeHealth = getRuntimeHealth();
