@@ -29,7 +29,7 @@ const endpoints = [
     validateBody: (body) =>
       body.status === "healthy" &&
       body.persistence.status === "healthy" &&
-      body.persistence.pathIsConfigured === true,
+      body.persistence.path.isConfigured === true,
   },
 ];
 
