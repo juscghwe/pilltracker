@@ -17,8 +17,6 @@ healthRouter.get("/", (_req, res) => {
     allStates: health,
     timestamp: new Date().toISOString(),
   });
-
-  res.send("Endpoint not configured yet");
 });
 
 /**
