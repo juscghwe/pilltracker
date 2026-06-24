@@ -17,6 +17,7 @@ export function getHealthSummary() {
     checks: {
       runtime: {
         status: runtimeHealth.status,
+        uptimeSeconds: runtimeHealth.uptimeSeconds,
       },
       persistence: {
         status: persistenceHealth.status,
