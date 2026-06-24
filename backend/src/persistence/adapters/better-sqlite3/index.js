@@ -5,15 +5,16 @@ let db;
 
 const adapterId = "better-sqlite3";
 const sourceModule = import.meta.url;
+
 const requestedJournalMode = appConfig.sqlite.requestedJournalMode;
 
 function getConnection() {
-  if (!appConfig.databasePath) {
+  if (!appConfig.database.path) {
     throw new Error("DB_PATH environment variable is not configured");
   }
 
   if (!db) {
-    db = new Database(appConfig.databasePath);
+    db = new Database(appConfig.database.path);
     db.pragma(`journal_mode = ${requestedJournalMode}`, { simple: true });
   }
 
