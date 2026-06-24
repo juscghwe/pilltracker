@@ -5,6 +5,8 @@ build
 app_data
 *.sqlite
 
+frontend/dist/
+
 package-lock.json
 .devcontainer/devcontainer-lock.json
 
