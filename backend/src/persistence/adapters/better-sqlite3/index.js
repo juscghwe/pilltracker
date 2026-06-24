@@ -21,7 +21,7 @@ function getConnection() {
 }
 
 export const persistenceAdapter = {
-  getConnection: () => db,
+  getConnection,
 
   getHealth() {
     try {
