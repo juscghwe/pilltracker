@@ -17,7 +17,7 @@ export default function App() {
         const response = await fetch("/api/health");
 
         if (!response.status) {
-          throw new Error(`Backend returned HTTP error! status: ${response}`);
+          throw new Error(`Backend returned HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
@@ -79,8 +79,12 @@ function HealthStatus({ health }) {
             <dd>{health.data.checks.runtime.uptimeSeconds}</dd>
 
             <dt>Persistence</dt>
-            <dd>{health.data.checks.runtime.status}</dd>
-            <dd>{health.data.checks.runtime.pathIsConfigured}</dd>
+            <dd>{health.data.checks.persistence.status}</dd>
+            <dd>
+              {health.data.checks.persistence.pathIsConfigured
+                ? "Path is configured"
+                : "Path is configured"}
+            </dd>
 
             <dt>Timestamp</dt>
             <dd>{health.data.timestamp}</dd>
