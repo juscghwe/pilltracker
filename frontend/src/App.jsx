@@ -81,7 +81,7 @@ function HealthStatus({ health }) {
             <dt>Persistence</dt>
             <dd>{health.data.checks.persistence.status}</dd>
             <dd>
-              {health.data.checks.persistence.pathIsConfigured
+              {health.data.checks.persistence.path.isConfigured
                 ? "Path is configured"
                 : "Path is configured"}
             </dd>
