@@ -56,7 +56,7 @@ export const persistenceAdapter = {
           active: activeJournalMode,
         },
         path: {
-          isConfigured: Boolean(appConfig.databasePath),
+          isConfigured: Boolean(appConfig.database),
         },
       };
     } catch (error) {
@@ -67,7 +67,7 @@ export const persistenceAdapter = {
           sourceModule,
         },
         path: {
-          isConfigured: Boolean(appConfig.databasePath),
+          isConfigured: Boolean(appConfig.database),
         },
         error: {
           name: error.name,

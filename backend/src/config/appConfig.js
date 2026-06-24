@@ -23,18 +23,8 @@ function readOptionalString(name) {
   return rawValue;
 }
 
-function readEnvironment() {
-  const rawEnvironment = process.env.NODE_ENV ?? "development";
-
-  if (!validEnvironments.has(rawEnvironment)) {
-    throw new Error(`Invalid NODE_ENV: ${rawEnvironment}`);
-  }
-
-  return rawEnvironment;
-}
-
 export const appConfig = Object.freeze({
-  environment: readEnvironment(),
+  environment: readEnum("NODE_ENV", validEnvironments, "development"),
 
   database: Object.freeze({
     path: readOptionalString("DB_PATH"),
