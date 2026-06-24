@@ -26,10 +26,7 @@ const endpoints = [
     name: "Persistence health",
     path: "/api/health/persistence",
     expectedStatus: 200,
-    validateBody: (body) =>
-      body.status === "healthy" &&
-      body.persistence.status === "healthy" &&
-      body.persistence.path.isConfigured === true,
+    validateBody: (body) => body.status === "healthy" && body.path.isConfigured === true,
   },
 ];
 
