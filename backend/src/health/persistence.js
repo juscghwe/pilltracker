@@ -6,7 +6,7 @@ function getPersistenceAdapter() {
 
 /**
  *
- * @param {string} includeDetails - `full` for entire output, default reduced return
+ * @param {{ includeDetails?: boolean }} options includeDetails - `full` for entire output, default reduced return
  * @return {Object} persistenceHealth
  */
 export function getPersistenceHealth(options = {}) {
