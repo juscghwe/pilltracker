@@ -13,8 +13,7 @@ healthRouter.get("/", (_req, res) => {
   const health = getHealthSummary();
 
   res.status(health.status === "healthy" ? 200 : 503).json({
-    status: health.status,
-    allStates: health,
+    ...health,
     timestamp: new Date().toISOString(),
   });
 });
