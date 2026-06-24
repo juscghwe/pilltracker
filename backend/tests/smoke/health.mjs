@@ -4,11 +4,14 @@ const delayMs = Number(process.env.SMOKE_DELAY_MS ?? 1000);
 
 const endpoints = [
   {
-    name: "Backend health",
+    name: "Backend stack health",
     path: "/api/health",
     expectedStatus: 200,
     validateBody: (body) =>
-      body.status === "ok" && body.service === "pilltracker-api" && body.database === "not_checked",
+      body.status === "healthy" &&
+      body.service === "pilltracker-api" &&
+      body.checks.runtime.status === "healthy" &&
+      body.checks.persistence.status === "healthy",
   },
 ];
 
