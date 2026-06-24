@@ -9,7 +9,7 @@ const requestedJournalMode = appConfig.sqlite.requestedJournalMode;
 
 function getConnection() {
   if (!appConfig.databasePath) {
-    throw new Error("DB_PATH environment variable is not set up!");
+    throw new Error("DB_PATH environment variable is not configured");
   }
 
   if (!db) {
