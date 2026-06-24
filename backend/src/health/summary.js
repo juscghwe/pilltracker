@@ -1,5 +1,6 @@
 import { getRuntimeHealth } from "./runtime.js";
 import { getPersistenceHealthPartial } from "./persistence.js";
+import { appConfig } from "../config/appConfig.js";
 
 export function getHealthSummary() {
   const runtimeHealth = getRuntimeHealth();
@@ -12,7 +13,7 @@ export function getHealthSummary() {
   return {
     status: overallHealth,
     service: "pilltracker-api", // TODO: query dynamically and add the URI
-    environment: "development", // TOOD: gather from runtime
+    environment: appConfig.environment,
     checks: {
       runtime: {
         status: runtimeHealth.status,
