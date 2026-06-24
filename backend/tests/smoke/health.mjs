@@ -13,6 +13,24 @@ const endpoints = [
       body.checks.runtime.status === "healthy" &&
       body.checks.persistence.status === "healthy",
   },
+  {
+    name: "Runtime health",
+    path: "/api/health/runtime",
+    expectedStatus: 200,
+    validateBody: (body) =>
+      body.status === "healthy" &&
+      typeof body.uptimeSeconds === "number" &&
+      typeof body.nodeVersion === "string",
+  },
+  {
+    name: "Persistence health",
+    path: "/api/health/persistence",
+    expectedStatus: 200,
+    validateBody: (body) =>
+      body.status === "healthy" &&
+      body.persistence.status === "healthy" &&
+      body.persistence.pathIsConfigured === true,
+  },
 ];
 
 function sleep(ms) {
