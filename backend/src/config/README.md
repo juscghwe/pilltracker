@@ -10,7 +10,8 @@ It owns app-level config validation and keeps subsystem-specific config values f
 
 ### `validEnvironments`
 
-Allowed values for `NODE_ENV`.\
+Allowed values for `NODE_ENV`.
+
 Current values:
 
 ```
@@ -21,7 +22,8 @@ production
 
 ### `validSqliteJournalModes`
 
-Allowed values for `SQLITE_JOURNAL_MODE`.\
+Allowed values for `SQLITE_JOURNAL_MODE`.
+
 Current values:
 
 ```
@@ -37,7 +39,7 @@ off
 
 Resolved backend configuration object.
 
-usage:
+Usage:
 
 ```js
 import { appConfig } from "./appConfig.js";
@@ -70,12 +72,14 @@ import { appConfig } from "./appConfig.js";
 
 ### App-level config
 
-`NODE_ENV` is required app-level config.\
+`NODE_ENV` is required app-level config.
+
 If `NODE_ENV` is missing or invalid, the backend should fail during startup. The app should not silently fall back to `development`.
 
 ### Persistence-level config
 
-`DB_PATH` and `SQLITE_JOURNAL_MODE` are persistence-level config.\
+`DB_PATH` and `SQLITE_JOURNAL_MODE` are persistence-level config.
+
 They are intentionally allowed to be `null` in `appConfig` so the persistence layer can report missing or invalid persistence config through health checks instead of hiding backend runtime health.
 
 ## Config ownership rules
