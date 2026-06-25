@@ -6,6 +6,39 @@ const initialHealthState = {
   error: null,
 };
 
+function ConnectedHealthStatus({ data }) {
+  const backendIsHealthy = data.status === "healthy";
+
+  return (
+    <div className={backendIsHealthy ? "status-connected" : "status-error"} role="status">
+      <h2>{backendIsHealthy ? "Backend healthy" : "Backend reachable but unhealthy"}</h2>
+
+      <dl>
+        <dt>Status</dt>
+        <dd>{data.status}</dd>
+
+        <dt>Service</dt>
+        <dd>{data.service}</dd>
+
+        <dt>Runtime</dt>
+        <dd>{data.checks.runtime.status}</dd>
+        <dd>{data.checks.runtime.uptimeSeconds}</dd>
+
+        <dt>Persistence</dt>
+        <dd>{data.checks.persistence.status}</dd>
+        <dd>
+          {data.checks.persistence.path.isConfigured
+            ? "Path is configured"
+            : "Path is not configured"}
+        </dd>
+
+        <dt>Timestamp</dt>
+        <dd>{data.timestamp}</dd>
+      </dl>
+    </div>
+  );
+}
+
 export default function App() {
   const [health, setHealth] = useState(initialHealthState);
 
@@ -15,9 +48,10 @@ export default function App() {
     async function fetchHealth() {
       try {
         const response = await fetch("/api/health");
+        const contentType = response.headers.get("content-type") ?? "";
 
-        if (!response.ok) {
-          throw new Error(`Backend returned HTTP error! status: ${response.status}`);
+        if (!contentType.includes("application/json")) {
+          throw new Error(`Backend returned non-JSON response! status: ${response.status}`);
         }
 
         const data = await response.json();
@@ -63,25 +97,7 @@ function HealthStatus({ health }) {
       );
 
     case "connected":
-      return (
-        <div className="status-connected" role="status">
-          <h2>Backend connection successful</h2>
-
-          <dl>
-            <dt>Status</dt>
-            <dd>{health.data.status}</dd>
-
-            <dt>Service</dt>
-            <dd>{health.data.service}</dd>
-
-            <dt>Database</dt>
-            <dd>{health.data.database}</dd>
-
-            <dt>Timestamp</dt>
-            <dd>{health.data.timestamp}</dd>
-          </dl>
-        </div>
-      );
+      return <ConnectedHealthStatus data={health.data} />;
 
     default:
       return (
