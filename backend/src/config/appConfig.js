@@ -1,5 +1,12 @@
-const validEnvironments = new Set(["development", "test", "production"]);
-// const validSqliteJournalModes = new Set(["delete", "truncate", "persist", "memory", "wal", "off"]);
+export const validEnvironments = new Set(["development", "test", "production"]);
+export const validSqliteJournalModes = new Set([
+  "delete",
+  "truncate",
+  "persist",
+  "memory",
+  "wal",
+  "off",
+]);
 
 function readEnum(name, allowedValues, defaultValue) {
   const rawValue = process.env[name] ?? defaultValue;
@@ -31,6 +38,6 @@ export const appConfig = Object.freeze({
   }),
 
   sqlite: Object.freeze({
-    requestedJournalMode: readEnum("SQLITE_JOURNAL_MODE"),
+    requestedJournalMode: readOptionalString("SQLITE_JOURNAL_MODE"),
   }),
 });

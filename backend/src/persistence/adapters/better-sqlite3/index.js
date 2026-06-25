@@ -1,12 +1,11 @@
 import Database from "better-sqlite3";
 
-import { appConfig } from "../../../config/appConfig.js";
+import { appConfig, validSqliteJournalModes } from "../../../config/appConfig.js";
 
 let db;
 
 const adapterId = "better-sqlite3";
 const sourceModule = import.meta.url;
-const validSqliteJournalModes = new Set(["delete", "truncate", "persist", "memory", "wal", "off"]);
 
 function getAdapterInfo() {
   return {
