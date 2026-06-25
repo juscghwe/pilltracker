@@ -56,20 +56,6 @@ function readRequiredEnum(name, allowedValues) {
   return rawValue;
 }
 
-/*
-function readOptionalEnum(name, allowedValues, defaultValue) {
-  const rawValue = process.env[name] ?? defaultValue;
-
-  if (!allowedValues.has(rawValue)) {
-    throw new Error(
-      `Invalid ${name}: ${rawValue}. Expected one of: ${[...allowedValues].join(", ")}`,
-    );
-  }
-
-  return rawValue;
-}
-  */
-
 function readOptionalString(name) {
   const rawValue = process.env[name];
 
