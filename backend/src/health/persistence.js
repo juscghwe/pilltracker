@@ -1,3 +1,8 @@
+/**
+ * @typedef {object} PersistenceHealthOptions
+ * @property {boolean} [includeDetails] Return the full adapter health result when true.
+ */
+
 import { persistenceAdapter } from "../persistence/index.js";
 
 function getPersistenceAdapter() {
@@ -5,8 +10,11 @@ function getPersistenceAdapter() {
 }
 
 /**
- * @param {{ includeDetails?: boolean }} options includeDetails - `full` for entire output, default reduced return
- * @return {Object} persistenceHealth
+ * Returns persistence health for API responses.
+ *
+ * @param {PersistenceHealthOptions} [options]
+ * @returns {object} Persistence health result.
+ * @see ./README.md#persistence-health
  */
 export function getPersistenceHealth(options = {}) {
   const fullHealth = getPersistenceAdapter().getHealth();
@@ -26,7 +34,14 @@ export function getPersistenceHealth(options = {}) {
 }
 
 /**
- * @return {Object} vitals-only condensed `persistenceHealth`
+ * Returns condensed persistence health for the backend-wide health summary.
+ *
+ * @returns {{
+ *   status: "healthy" | "unhealthy",
+ *   path: {
+ *     isConfigured: boolean,
+ *   },
+ * }}
  */
 export function getPersistenceHealthPartial() {
   const fullHealth = getPersistenceAdapter().getHealth();

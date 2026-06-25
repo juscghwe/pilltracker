@@ -4,6 +4,12 @@ import { getHealthSummary } from "../health/summary.js";
 import { getRuntimeHealth } from "../health/runtime.js";
 import { getPersistenceHealth } from "../health/persistence.js";
 
+/**
+ * Express router exposing backend health endpoints.
+ *
+ * @type {import("express").Router}
+ * @see ./README.md#health-routes
+ */
 const healthRouter = Router();
 
 /**
