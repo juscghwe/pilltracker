@@ -158,6 +158,7 @@ Persistence health is a subsystem readiness check.\
 Health summary is the backend readiness check.
 
 Current readiness rule:
+
 ```
 overall healthy = healthy only if runtime health and persistence health are healthy
 overall unhealthy = at least one subsystem is unhealthy
