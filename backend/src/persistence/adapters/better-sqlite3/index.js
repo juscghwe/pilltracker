@@ -1,3 +1,9 @@
+/**
+ * @typedef {object} BetterSqlitePersistenceAdapter
+ * @property {() => Database.Database} getConnection Returns the active SQLite connection.
+ * @property {() => object} getHealth Returns SQLite persistence health.
+ */
+
 import Database from "better-sqlite3";
 
 import { appConfig, validSqliteJournalModes } from "../../../config/appConfig.js";
@@ -101,6 +107,12 @@ function createHealthyHealth({ probe, activeJournalMode, persistenceConfig }) {
   };
 }
 
+/**
+ * Persistence adapter backed by better-sqlite3.
+ *
+ * @type {BetterSqlitePersistenceAdapter}
+ * @see ./README.md#better-sqlite3-adapter
+ */
 export const persistenceAdapter = {
   getConnection,
 

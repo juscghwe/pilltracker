@@ -1,7 +1,10 @@
 import js from "@eslint/js";
 import globals from "globals";
 
-export default [
+/**
+ * ESLint flat config for backend, frontend, scripts, and repository-level JavaScript files.
+ */
+const eslintConfig = [
   {
     ignores: [
       "node_modules/",
@@ -52,3 +55,5 @@ export default [
     },
   },
 ];
+
+export default eslintConfig;

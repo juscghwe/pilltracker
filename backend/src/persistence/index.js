@@ -1,9 +1,8 @@
 import { persistenceAdapter as betterSqliteAdapter } from "./adapters/better-sqlite3/index.js";
 
 /**
- * Active persistence adapter used by the backend.
+ * Active persistence adapter used by backend modules.
  *
- * Backend modules should import this export instead of importing a concrete adapter implementation directly to avoid silent switches and fails.
- * Switching the persistence backend should happen here, not in consumers.
+ * Consumers should import this adapter seam instead of importing concrete adapter modules directly.
  */
 export const persistenceAdapter = betterSqliteAdapter;
