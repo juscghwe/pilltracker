@@ -1,16 +1,12 @@
 import Database from "better-sqlite3";
+
 import { appConfig } from "../../../config/appConfig.js";
 
 let db;
 
 const adapterId = "better-sqlite3";
 const sourceModule = import.meta.url;
-
-const requestedJournalMode = appConfig.sqlite.requestedJournalMode;
-
-function isDatabasePathConfigured() {
-  return Boolean(appConfig.database.path);
-}
+const validSqliteJournalModes = new Set(["delete", "truncate", "persist", "memory", "wal", "off"]);
 
 function getAdapterInfo() {
   return {
@@ -21,21 +17,61 @@ function getAdapterInfo() {
 
 function getPathInfo() {
   return {
-    isConfigured: isDatabasePathConfigured(),
+    isConfigured: Boolean(appConfig.database.path),
   };
 }
 
-function getConnection() {
-  if (!appConfig.database.path) {
+function getRequestedJournalModeInfo() {
+  const requestedJournalMode = appConfig.sqlite.requestedJournalMode;
+
+  return {
+    requested: requestedJournalMode,
+    isConfigured: Boolean(requestedJournalMode),
+    isValid: requestedJournalMode
+      ? validSqliteJournalModes.has(requestedJournalMode)
+      : false,
+  };
+}
+
+function getPersistenceConfig() {
+  const databasePath = appConfig.database.path;
+  const requestedJournalMode = appConfig.sqlite.requestedJournalMode;
+
+  if (!databasePath) {
     throw new Error("DB_PATH environment variable is not configured");
   }
 
+  if (!requestedJournalMode) {
+    throw new Error("SQLITE_JOURNAL_MODE environment variable is not configured");
+  }
+
+  if (!validSqliteJournalModes.has(requestedJournalMode)) {
+    throw new Error(
+      `Invalid SQLITE_JOURNAL_MODE: ${requestedJournalMode}. Expected one of: ${[
+        ...validSqliteJournalModes,
+      ].join(", ")}`,
+    );
+  }
+
+  return {
+    databasePath,
+    requestedJournalMode,
+  };
+}
+
+function openConnection(persistenceConfig) {
   if (!db) {
-    db = new Database(appConfig.database.path);
-    db.pragma(`journal_mode = ${requestedJournalMode}`, { simple: true });
+    db = new Database(persistenceConfig.databasePath);
+    db.pragma(`journal_mode = ${persistenceConfig.requestedJournalMode}`, { simple: true });
   }
 
   return db;
+}
+
+function getConnection() {
+  const persistenceConfig = getPersistenceConfig();
+
+  return openConnection(persistenceConfig);
 }
 
 function createUnhealthyHealth(error) {
@@ -43,6 +79,7 @@ function createUnhealthyHealth(error) {
     status: "unhealthy",
     adapter: getAdapterInfo(),
     path: getPathInfo(),
+    journalMode: getRequestedJournalModeInfo(),
     error: {
       name: error.name,
       message: error.message,
@@ -50,7 +87,7 @@ function createUnhealthyHealth(error) {
   };
 }
 
-function createHealthyHealth({ probe, activeJournalMode }) {
+function createHealthyHealth({ probe, activeJournalMode, persistenceConfig }) {
   return {
     status: probe.ok === 1 ? "healthy" : "unhealthy",
     engine: {
@@ -60,7 +97,7 @@ function createHealthyHealth({ probe, activeJournalMode }) {
     },
     adapter: getAdapterInfo(),
     journalMode: {
-      requested: requestedJournalMode,
+      requested: persistenceConfig.requestedJournalMode,
       active: activeJournalMode,
     },
     path: getPathInfo(),
@@ -72,7 +109,8 @@ export const persistenceAdapter = {
 
   getHealth() {
     try {
-      const connection = getConnection();
+      const persistenceConfig = getPersistenceConfig();
+      const connection = getConnection(persistenceConfig);
 
       const probe = connection
         .prepare(
@@ -86,7 +124,7 @@ export const persistenceAdapter = {
 
       const activeJournalMode = connection.pragma("journal_mode", { simple: true });
 
-      return createHealthyHealth({ probe, activeJournalMode });
+      return createHealthyHealth({ probe, activeJournalMode, persistenceConfig });
     } catch (error) {
       return createUnhealthyHealth(error);
     }

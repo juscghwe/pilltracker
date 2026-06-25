@@ -11,6 +11,7 @@ services:
     environment:
       NODE_ENV: development
       DB_PATH: /data/pilltracker.sqlite
+      SQLITE_JOURNAL_MODE: wal
     command: npm run dev # replace with `npm start` for production
 
 volumes:
