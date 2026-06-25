@@ -8,6 +8,7 @@ export default [
       "coverage/",
       "dist/",
       "build/",
+      "frontend/dist/**",
       "package-lock.json",
       ".devcontainer/devcontainer-lock.json",
     ],

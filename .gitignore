@@ -15,6 +15,7 @@ data/
 # Build output
 dist/
 build/
+frontend/dist/
 
 # IDE files
 .DS_Store
