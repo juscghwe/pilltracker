@@ -2,6 +2,13 @@
  * @typedef {object} PersistenceHealthOptions
  * @property {boolean} [includeDetails] Return the full adapter health result when true.
  */
+/**
+ * @typedef {object} ReducedPersistenceHealth
+ * @property {"healthy" | "unhealthy"} status Persistence readiness status.
+ * @property {object} adapter Persistence adapter identity.
+ * @property {object | undefined} engine Database engine metadata when available.
+ * @property {{ isConfigured: boolean }} path Database path config state.
+ */
 
 import { persistenceAdapter } from "../persistence/index.js";
 
@@ -13,7 +20,7 @@ function getPersistenceAdapter() {
  * Returns persistence health for API responses.
  *
  * @param {PersistenceHealthOptions} [options]
- * @returns {object} Persistence health result.
+ * @returns {ReducedPersistenceHealth | object} Persistence health result.
  * @see ./README.md#persistence-health
  */
 export function getPersistenceHealth(options = {}) {
