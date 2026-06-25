@@ -21,7 +21,7 @@ function getPersistenceAdapter() {
  *
  * @param {PersistenceHealthOptions} [options]
  * @returns {ReducedPersistenceHealth | object} Persistence health result.
- * @see ./README.md#persistence-health
+ * @see Module README, section "persistence-health"
  */
 export function getPersistenceHealth(options = {}) {
   const fullHealth = getPersistenceAdapter().getHealth();

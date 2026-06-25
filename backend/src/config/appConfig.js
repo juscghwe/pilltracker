@@ -70,7 +70,7 @@ function readOptionalString(name) {
  * Application configuration resolved from environment variables.
  *
  * @type {Readonly<AppConfig>}
- * @see Module README, section "appConfig".
+ * @see Module README, section "appConfig"
  */
 export const appConfig = Object.freeze({
   environment: readRequiredEnum("NODE_ENV", validEnvironments),

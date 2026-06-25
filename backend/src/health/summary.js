@@ -25,7 +25,7 @@ import { appConfig } from "../config/appConfig.js";
  * Builds the backend-wide health summary.
  *
  * @returns {HealthSummary}
- * @see ./README.md#health-summary
+ * @see Module README, section "health-summary"
  */
 export function getHealthSummary() {
   const runtimeHealth = getRuntimeHealth();
