@@ -1,4 +1,4 @@
-import { persistenceAdapter as betterSqliteAdapter } from "./adapters/better-sqlite3/index.js";
+import { betterSqlitePersistenceAdapter as betterSqliteAdapter } from "./adapters/better-sqlite3/index.js";
 
 /**
  * Active persistence adapter used by backend modules.
