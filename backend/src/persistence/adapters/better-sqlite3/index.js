@@ -107,7 +107,7 @@ export const persistenceAdapter = {
   getHealth() {
     try {
       const persistenceConfig = getPersistenceConfig();
-      const connection = getConnection(persistenceConfig);
+      const connection = openConnection(persistenceConfig);
 
       const probe = connection
         .prepare(
