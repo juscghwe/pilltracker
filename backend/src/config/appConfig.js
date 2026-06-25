@@ -8,7 +8,30 @@ export const validSqliteJournalModes = new Set([
   "off",
 ]);
 
-function readEnum(name, allowedValues, defaultValue) {
+function readRequiredString(name) {
+  const rawValue = process.env[name];
+
+  if (rawValue === undefined || rawValue === "") {
+    throw new Error(`${name} environment variable is not configured`);
+  }
+
+  return rawValue;
+}
+
+function readRequiredEnum(name, allowedValues) {
+  const rawValue = readRequiredString(name);
+
+  if (!allowedValues.has(rawValue)) {
+    throw new Error(
+      `Invalid ${name}: ${rawValue}. Expected one of: ${[...allowedValues].join(", ")}`,
+    );
+  }
+
+  return rawValue;
+}
+
+/*
+function readOptionalEnum(name, allowedValues, defaultValue) {
   const rawValue = process.env[name] ?? defaultValue;
 
   if (!allowedValues.has(rawValue)) {
@@ -19,6 +42,7 @@ function readEnum(name, allowedValues, defaultValue) {
 
   return rawValue;
 }
+  */
 
 function readOptionalString(name) {
   const rawValue = process.env[name];
@@ -31,7 +55,7 @@ function readOptionalString(name) {
 }
 
 export const appConfig = Object.freeze({
-  environment: readEnum("NODE_ENV", validEnvironments, "development"),
+  environment: readRequiredEnum("NODE_ENV", validEnvironments),
 
   database: Object.freeze({
     path: readOptionalString("DB_PATH"),
