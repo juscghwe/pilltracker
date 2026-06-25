@@ -27,9 +27,7 @@ function getRequestedJournalModeInfo() {
   return {
     requested: requestedJournalMode,
     isConfigured: Boolean(requestedJournalMode),
-    isValid: requestedJournalMode
-      ? validSqliteJournalModes.has(requestedJournalMode)
-      : false,
+    isValid: requestedJournalMode ? validSqliteJournalModes.has(requestedJournalMode) : false,
   };
 }
 
