@@ -1,16 +1,13 @@
-/**
- * @typedef {"development" | "test" | "production"} RuntimeEnvironment
- */
+/** @typedef {"development" | "test" | "production"} RuntimeEnvironment */
 
-/**
- * @typedef {"delete" | "truncate" | "persist" | "memory" | "wal" | "off"} SqliteJournalMode
- */
+/** @typedef {"delete" | "truncate" | "persist" | "memory" | "wal" | "off"} SqliteJournalMode */
 
 /**
  * @typedef {object} AppConfig
  * @property {RuntimeEnvironment} environment App runtime environment.
  * @property {Readonly<{ path: string | null }>} database Database configuration.
- * @property {Readonly<{ requestedJournalMode: SqliteJournalMode | null }>} sqlite SQLite configuration.
+ * @property {Readonly<{ requestedJournalMode: SqliteJournalMode | null }>} sqlite SQLite
+ *   configuration.
  */
 
 /**

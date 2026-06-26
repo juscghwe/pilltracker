@@ -110,9 +110,10 @@ function createHealthyHealth({ probe, activeJournalMode, persistenceConfig }) {
 }
 
 /**
- * better-sqlite3 implementation of the persistence adapter contract.
+ * Better-sqlite3 implementation of the persistence adapter contract.
  *
- * This is the concrete SQLite adapter. Application consumers should import the active adapter from the persistence seam instead of importing this module directly.
+ * This is the concrete SQLite adapter. Application consumers should import the active adapter from
+ * the persistence seam instead of importing this module directly.
  *
  * @type {BetterSqlitePersistenceAdapter}
  * @see Module README, section "better-sqlite3 adapter".

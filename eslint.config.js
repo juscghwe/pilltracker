@@ -2,9 +2,7 @@ import js from "@eslint/js";
 import globals from "globals";
 import { jsdoc } from "eslint-plugin-jsdoc";
 
-/**
- * ESLint flat config for backend, frontend, scripts, and repository-level JavaScript files.
- */
+/** ESLint flat config for backend, frontend, scripts, and repository-level JavaScript files. */
 const eslintConfig = [
   {
     ignores: [

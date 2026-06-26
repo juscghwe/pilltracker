@@ -44,10 +44,10 @@ export function getPersistenceHealth(options = {}) {
  * Returns condensed persistence health for the backend-wide health summary.
  *
  * @returns {{
- *   status: "healthy" | "unhealthy",
+ *   status: "healthy" | "unhealthy";
  *   path: {
- *     isConfigured: boolean,
- *   },
+ *     isConfigured: boolean;
+ *   };
  * }}
  */
 export function getPersistenceHealthPartial() {
