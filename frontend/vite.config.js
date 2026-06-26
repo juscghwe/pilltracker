@@ -1,9 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-/**
- * Vite configuration for the frontend development server and production build.
- */
+/** Vite configuration for the frontend development server and production build. */
 const viteConfig = defineConfig({
   plugins: [react()],
   server: {

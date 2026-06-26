@@ -5,16 +5,17 @@
  * @property {string} environment Runtime environment.
  * @property {{
  *   runtime: {
- *     status: "healthy" | "unhealthy",
- *     uptimeSeconds: number,
- *   },
+ *     status: "healthy" | "unhealthy";
+ *     uptimeSeconds: number;
+ *   };
  *   persistence: {
- *     status: "healthy" | "unhealthy",
+ *     status: "healthy" | "unhealthy";
  *     path: {
- *       isConfigured: boolean,
- *     },
- *   },
- * }} checks Subsystem health checks.
+ *       isConfigured: boolean;
+ *     };
+ *   };
+ * }} checks
+ *   Subsystem health checks.
  */
 
 import { getRuntimeHealth } from "./runtime.js";

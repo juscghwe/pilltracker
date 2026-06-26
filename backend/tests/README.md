@@ -4,9 +4,11 @@
 
 This directory contains backend-focused tests.
 
-The current backend test layer is intentionally small and currently smoke-test oriented. It verifies that a running backend instance exposes the expected health behavior through HTTP.
+The current backend test layer is intentionally small and currently smoke-test oriented. It verifies
+that a running backend instance exposes the expected health behavior through HTTP.
 
-These tests are not unit tests yet. They are integration-style smoke tests against a running backend process.
+These tests are not unit tests yet. They are integration-style smoke tests against a running backend
+process.
 
 ## Current test suites
 
@@ -38,7 +40,8 @@ Run the normal repository check with:
 npm run check
 ```
 
-`npm run check` currently validates formatting and linting. It does not currently run the backend smoke test automatically.
+`npm run check` currently validates formatting and linting. It does not currently run the backend
+smoke test automatically.
 
 #### Required backend state
 
@@ -102,7 +105,8 @@ Smoke tests should not duplicate implementation details from modules.
 
 ### Unit tests
 
-Unit tests, when added, should live close to the module they test or follow a clearly documented test structure.
+Unit tests, when added, should live close to the module they test or follow a clearly documented
+test structure.
 
 ## Adding backend tests
 
@@ -114,7 +118,8 @@ When adding a backend feature, prefer adding tests at the lowest useful level.
 | Integration test | Multiple backend modules must work together                      |
 | Smoke test       | Running backend must expose expected external behavior           |
 
-For API-visible behavior, include at least one smoke or integration test that proves the public contract.
+For API-visible behavior, include at least one smoke or integration test that proves the public
+contract.
 
 ## Known limitations
 
@@ -142,4 +147,5 @@ npm run check
 npm run test:backend:smoke
 ```
 
-For changes that affect config, persistence, or health behavior, also test at least one failure case manually.
+For changes that affect config, persistence, or health behavior, also test at least one failure case
+manually.

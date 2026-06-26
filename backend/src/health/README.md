@@ -2,7 +2,8 @@
 
 ## Purpose
 
-This module builds backend health objects for runtime checks, persistence checks and overall application readiness.
+This module builds backend health objects for runtime checks, persistence checks and overall
+application readiness.
 
 It separates process reachability from application readiness so callers can distinguish:
 
@@ -10,7 +11,8 @@ It separates process reachability from application readiness so callers can dist
 - required subsystems are usable
 - the application is ready to serve real work
 
-HTTP routes may expose these health objects but this module does not own routing, HTTP status codes or response timestamps.
+HTTP routes may expose these health objects but this module does not own routing, HTTP status codes
+or response timestamps.
 
 ## Health model
 
@@ -24,7 +26,8 @@ Health is reported in layers:
 
 Runtime health alone does not mean the backend is ready.
 
-A backend can be reachable while still reporting unhealthy application readiness when a required subsystem fails.
+A backend can be reachable while still reporting unhealthy application readiness when a required
+subsystem fails.
 
 ## Public entrypoints
 
@@ -38,7 +41,8 @@ Returns process-local runtime health.
 
 > [!Warning]
 >
-> Currently the status for runtime health is hardcoded and will always return `"healthy"`. This will be swapped against dynamic queries in the near future.
+> Currently the status for runtime health is hardcoded and will always return `"healthy"`. This will
+> be swapped against dynamic queries in the near future.
 
 Current shape:
 
@@ -52,9 +56,11 @@ Current shape:
 }
 ```
 
-Runtime health currently reports whether the Node.js backend process can respond and provide runtime facts.
+Runtime health currently reports whether the Node.js backend process can respond and provide runtime
+facts.
 
-It does not validate persistence, scheduler state, notification state, or other application subsystems.
+It does not validate persistence, scheduler state, notification state, or other application
+subsystems.
 
 ### Persistence health `getPersistenceHealth()` & `getPersistenceHealthPartial()`
 
@@ -166,13 +172,15 @@ overall healthy = healthy only if runtime health and persistence health are heal
 overall unhealthy = at least one subsystem is unhealthy
 ```
 
-This allows the backend to start and report useful diagnostics even when persistence config is missing or SQLite access fails.
+This allows the backend to start and report useful diagnostics even when persistence config is
+missing or SQLite access fails.
 
 ## Ownership rules
 
 Runtime health owns process-local runtime facts.
 
-Persistence health owns the health contract between health reporting and the active persistence adapter.
+Persistence health owns the health contract between health reporting and the active persistence
+adapter.
 
 Health summary owns aggregation of required subsystem health.
 
@@ -210,4 +218,5 @@ When changing health summary behavior, test both:
 - healthy backend configuration
 - broken subsystem configuration
 
-At minimum, persistence failure should keep runtime health reachable while making overall backend readiness unhealthy.
+At minimum, persistence failure should keep runtime health reachable while making overall backend
+readiness unhealthy.

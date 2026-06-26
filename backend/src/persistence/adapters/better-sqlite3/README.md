@@ -14,7 +14,8 @@ It owns SQLite-specific behavior, including:
 
 Backend consumers should not import this adapter directly.
 
-Consumers should import the active persistence adapter from [the persistence seam](../../README.md) instead:
+Consumers should import the active persistence adapter from [the persistence seam](../../README.md)
+instead:
 
 ```js
 import { persistenceAdapter } from "../../index.js";
@@ -52,9 +53,11 @@ If persistence config is missing or invalid, `getConnection()` throws.
 
 Returns SQLite persistence health.
 
-`getHealth()` must not throw for expected persistence failures. It should return an unhealthy health object when SQLite config or access is invalid.
+`getHealth()` must not throw for expected persistence failures. It should return an unhealthy health
+object when SQLite config or access is invalid.
 
-This allows the backend to stay reachable and report persistence diagnostics through health endpoints.
+This allows the backend to stay reachable and report persistence diagnostics through health
+endpoints.
 
 ## Config contract
 
@@ -214,4 +217,5 @@ When changing adapter behavior, test at least:
 - invalid `SQLITE_JOURNAL_MODE`
 - unavailable or unreadable database path
 
-The backend should remain reachable when persistence is unhealthy, but overall backend readiness should report unhealthy.
+The backend should remain reachable when persistence is unhealthy, but overall backend readiness
+should report unhealthy.

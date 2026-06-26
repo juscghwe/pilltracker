@@ -2,11 +2,11 @@
  * Returns runtime health for the current Node.js backend process.
  *
  * @returns {{
- *   status: "healthy",
- *   nodeVersion: string,
- *   platform: NodeJS.Platform,
- *   architecture: string,
- *   uptimeSeconds: number,
+ *   status: "healthy";
+ *   nodeVersion: string;
+ *   platform: NodeJS.Platform;
+ *   architecture: string;
+ *   uptimeSeconds: number;
  * }}
  * @see Module README, section "runtime-health"
  */

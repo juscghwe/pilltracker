@@ -2,9 +2,11 @@
 
 ## Purpose
 
-This module reads backend runtime configuration from environment variables and exposes the resolved config to the rest of the backend.
+This module reads backend runtime configuration from environment variables and exposes the resolved
+config to the rest of the backend.
 
-It owns app-level config validation and keeps subsystem-specific config values for the modules that validate them.
+It owns app-level config validation and keeps subsystem-specific config values for the modules that
+validate them.
 
 ## Public entrypoints
 
@@ -74,19 +76,23 @@ import { appConfig } from "./appConfig.js";
 
 `NODE_ENV` is required app-level config.
 
-If `NODE_ENV` is missing or invalid, the backend should fail during startup. The app should not silently fall back to `development`.
+If `NODE_ENV` is missing or invalid, the backend should fail during startup. The app should not
+silently fall back to `development`.
 
 ### Persistence-level config
 
 `DB_PATH` and `SQLITE_JOURNAL_MODE` are persistence-level config.
 
-They are intentionally allowed to be `null` in `appConfig` so the persistence layer can report missing or invalid persistence config through health checks instead of hiding backend runtime health.
+They are intentionally allowed to be `null` in `appConfig` so the persistence layer can report
+missing or invalid persistence config through health checks instead of hiding backend runtime
+health.
 
 ## Config ownership rules
 
 App-level config belongs here.
 
-Subsystem config may be read here, but subsystem-specific validation should stay with the subsystem when the app must still be able to report partial health.
+Subsystem config may be read here, but subsystem-specific validation should stay with the subsystem
+when the app must still be able to report partial health.
 
 Current split:
 
@@ -100,7 +106,8 @@ Current split:
 
 Consumers should import `appConfig` instead of reading `process.env` directly.
 
-Allowed-value sets may be imported when another module needs to validate the same public config contract.
+Allowed-value sets may be imported when another module needs to validate the same public config
+contract.
 
 Example:
 
@@ -112,7 +119,8 @@ Do not add silent defaults for required app-level config without documenting the
 
 > [!IMPORTANT]
 >
-> Do not validate e.g. persistence readiness in this module. Persistence readiness belongs to the persistence adapter and health checks.
+> Do not validate e.g. persistence readiness in this module. Persistence readiness belongs to the
+> persistence adapter and health checks.
 
 ## Testing
 

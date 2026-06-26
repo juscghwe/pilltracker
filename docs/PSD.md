@@ -5,7 +5,8 @@
 - Self-hosted medication and supplement tracker
 - Privacy-first: no external third-party analytics, no external trackers, etc
 - No cloud hosting to not expose sensitive health data
-- Support both required and optional intake schedules while remaining non-intrusive for non-critical routines
+- Support both required and optional intake schedules while remaining non-intrusive for non-critical
+  routines
 
 ## Goals
 

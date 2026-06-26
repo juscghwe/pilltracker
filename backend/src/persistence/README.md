@@ -4,9 +4,11 @@
 
 This module exposes the active persistence adapter used by backend modules.
 
-It acts as the persistence seam between backend consumers and the concrete persistence implementation.
+It acts as the persistence seam between backend consumers and the concrete persistence
+implementation.
 
-Consumers should depend on this module instead of importing a concrete adapter directly. (see [Section Adapter ownership](#adapter-ownership) for more information about why)
+Consumers should depend on this module instead of importing a concrete adapter directly. (see
+[Section Adapter ownership](#adapter-ownership) for more information about why)
 
 ## Public entrypoints
 
@@ -24,7 +26,8 @@ import { persistenceAdapter } from "./persistence/index.js";
 
 > [!Warning]
 >
-> These methods are not provided by the `persistenceAdapter` itself but the concrete adapter loaded by the `persistenceAdapter`. Thereby they can be subject to change.
+> These methods are not provided by the `persistenceAdapter` itself but the concrete adapter loaded
+> by the `persistenceAdapter`. Thereby they can be subject to change.
 
 Current active adapter: `better - sqlite3`
 
@@ -52,7 +55,8 @@ Backend modules should not import concrete adapters directly:
 import { betterSqlitePersistenceAdapter } from "../persistence/adapters/better-sqlite3/index.js";
 ```
 
-Concrete adapter imports should stay inside this module unless a test intentionally targets the adapter implementation.
+Concrete adapter imports should stay inside this module unless a test intentionally targets the
+adapter implementation.
 
 ## Adapter ownership
 
@@ -66,7 +70,8 @@ Concrete adapters own implementation details such as:
 - database-specific configuration validation
 - database-specific proof queries
 
-The health module may call the active adapter, but it should not know which concrete adapter is active.
+The health module may call the active adapter, but it should not know which concrete adapter is
+active.
 
 ## Switching adapters
 
@@ -94,9 +99,11 @@ When switching adapters update:
 
 The persistence module should not open a database connection by being imported.
 
-Database connections should be opened by adapter methods such as `getConnection()` or by health checks that intentionally prove persistence availability.
+Database connections should be opened by adapter methods such as `getConnection()` or by health
+checks that intentionally prove persistence availability.
 
-This keeps imports lightweight and allows the backend to report useful health information even when persistence configuration is invalid.
+This keeps imports lightweight and allows the backend to report useful health information even when
+persistence configuration is invalid.
 
 ## Testing
 
