@@ -13,3 +13,4 @@
 ## Project workflow
 
 - [Backend test](./backend/tests/README.md)
+- [Scripts](./scripts/README.md)
