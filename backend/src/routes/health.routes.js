@@ -4,11 +4,15 @@ import { getHealthSummary } from "../health/summary.js";
 import { getRuntimeHealth } from "../health/runtime.js";
 import { getPersistenceHealth } from "../health/persistence.js";
 
+/**
+ * Express router exposing backend health endpoints.
+ *
+ * @type {import("express").Router}
+ * @see ./README.md#health-routes
+ */
 const healthRouter = Router();
 
-/**
- * Summarizes the entire backend health status in health statements only
- */
+/** Summarizes the entire backend health status in health statements only */
 healthRouter.get("/", (_req, res) => {
   const health = getHealthSummary();
 
@@ -18,9 +22,7 @@ healthRouter.get("/", (_req, res) => {
   });
 });
 
-/**
- * Runtime health: Node.js server reachable
- */
+/** Runtime health: Node.js server reachable */
 healthRouter.get("/runtime", (_req, res) => {
   const health = getRuntimeHealth();
 
@@ -30,9 +32,7 @@ healthRouter.get("/runtime", (_req, res) => {
   });
 });
 
-/**
- * Persistence health: SQLite DBs reachable
- */
+/** Persistence health: SQLite DBs reachable */
 healthRouter.get("/persistence", (req, res) => {
   const includeDetails = req.query.details === "full";
 

@@ -1,3 +1,9 @@
+/**
+ * @typedef {object} BetterSqlitePersistenceAdapter
+ * @property {() => Database.Database} getConnection Returns the active SQLite connection.
+ * @property {() => object} getHealth Returns SQLite persistence health.
+ */
+
 import Database from "better-sqlite3";
 
 import { appConfig, validSqliteJournalModes } from "../../../config/appConfig.js";
@@ -59,7 +65,9 @@ function getPersistenceConfig() {
 function openConnection(persistenceConfig) {
   if (!db) {
     db = new Database(persistenceConfig.databasePath);
-    db.pragma(`journal_mode = ${persistenceConfig.requestedJournalMode}`, { simple: true });
+    db.pragma(`journal_mode = ${persistenceConfig.requestedJournalMode}`, {
+      simple: true,
+    });
   }
 
   return db;
@@ -101,7 +109,17 @@ function createHealthyHealth({ probe, activeJournalMode, persistenceConfig }) {
   };
 }
 
-export const persistenceAdapter = {
+/**
+ * Better-sqlite3 implementation of the persistence adapter contract.
+ *
+ * This is the concrete SQLite adapter. Application consumers should import the active adapter from
+ * the persistence seam instead of importing this module directly.
+ *
+ * @type {BetterSqlitePersistenceAdapter}
+ * @see Module README, section "better-sqlite3 adapter".
+ * @see Persistence seam README, section "Public entrypoints".
+ */
+export const betterSqlitePersistenceAdapter = {
   getConnection,
 
   getHealth() {
@@ -119,9 +137,15 @@ export const persistenceAdapter = {
         )
         .get();
 
-      const activeJournalMode = connection.pragma("journal_mode", { simple: true });
+      const activeJournalMode = connection.pragma("journal_mode", {
+        simple: true,
+      });
 
-      return createHealthyHealth({ probe, activeJournalMode, persistenceConfig });
+      return createHealthyHealth({
+        probe,
+        activeJournalMode,
+        persistenceConfig,
+      });
     } catch (error) {
       return createUnhealthyHealth(error);
     }

@@ -1,16 +1,17 @@
 # PillTracker
 
-Self-hosted medication and supplement intake tracker for web, designed with Android and some times in the future Home Assistant integration in mind.
+Self-hosted medication and supplement intake tracker for web, designed with Android and some times
+in the future Home Assistant integration in mind.
 
 1. [Project scope definition](docs/PSD.md)
 2. [Software design documentation](docs/SDD.md)
 
 ## Project Status
 
-> [!WARNING]
-> Early development
+> [!WARNING] Early development
 >
-> PillTracker is currently in the planning and architecture phase. No functional release is available yet.
+> PillTracker is currently in the planning and architecture phase. No functional release is
+> available yet.
 
 Current focus:
 
@@ -22,7 +23,8 @@ Current focus:
 
 ## Vision
 
-Most common medication tracking apps require cloud services and store highly sensitive health-related data on third-party infrastructure.
+Most common medication tracking apps require cloud services and store highly sensitive
+health-related data on third-party infrastructure.
 
 I aim to provide a privacy-first, self-hosted alternative with:
 

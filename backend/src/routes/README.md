@@ -1,1 +1,177 @@
-// TODO: Decide wether necessary
+# Backend routes module
+
+## Purpose
+
+This module defines backend API routes and maps route-level HTTP behavior to backend modules.
+
+It owns:
+
+- Express router composition
+- API path structure
+- HTTP status mapping
+- request query handling
+- API response timestamps
+
+It does not own business logic, health check implementation, persistence checks or frontend display
+behavior.
+
+## Public entrypoints
+
+### Root API router
+
+```js
+import router from "./routes/index.js";
+```
+
+The root API router is mounted below `/api` by the backend app.
+
+Current mounted route groups:
+
+| Mount path | Router         | Purpose                  |
+| ---------- | -------------- | ------------------------ |
+| `/health`  | `healthRouter` | Backend health endpoints |
+
+### Health routes
+
+```js
+import healthRouter from "./health.routes.js";
+```
+
+The health router exposes backend health information over HTTP.
+
+Current public endpoints:
+
+| Endpoint                  | Method | Success status | Failure status | Purpose                                |
+| ------------------------- | ------ | -------------- | -------------- | -------------------------------------- |
+| `/api/health`             | `GET`  | `200`          | `503`          | Backend readiness summary              |
+| `/api/health/runtime`     | `GET`  | `200`          | none currently | Backend process / runtime reachability |
+| `/api/health/persistence` | `GET`  | `200`          | `503`          | Persistence readiness                  |
+
+#### `GET /api/health`
+
+Returns backend-wide application readiness.
+
+This route calls the health summary module and maps the result to HTTP status:
+
+```txt
+healthy   -> 200
+unhealthy -> 503
+```
+
+The response includes a route-level timestamp.
+
+The health summary shape is documented in the [health module README](../health/README.md).
+
+#### `GET /api/health/runtime`
+
+Returns runtime health for the backend process.
+
+This endpoint currently always returns HTTP `200` when the backend process can respond.
+
+Runtime health proves process reachability. It does not prove persistence readiness or full
+application readiness.
+
+The response includes a route-level timestamp.
+
+The runtime health shape is documented in the [health module README](../health/README.md).
+
+#### `GET /api/health/persistence`
+
+Returns persistence readiness.
+
+This route calls the persistence health module and maps the result to HTTP status:
+
+```txt
+healthy -> 200
+unhealthy -> 503
+```
+
+---
+
+The response includes a route-level timestamp.
+
+The persistence health shape is documented in the [health module README](../health/README.md).
+
+##### Query parameters
+
+| Query parameter | Value  | Behavior                                           |
+| --------------- | ------ | -------------------------------------------------- |
+| `details`       | `full` | Returns the full persistence adapter health result |
+
+Example:
+
+```html
+GET /api/health/persistence?details=full
+```
+
+Any other details value is treated as the default reduced response.
+
+## Route ownership rules
+
+Routes may
+
+- choose HTTP status codes
+- read request parameters
+- add response metadata such as timestamps
+- call backend modules to build response bodies
+
+Routes should not:
+
+- validate persistence config directly
+- open database connections directly
+- aggregate subsystem health manually
+- decide frontend display states
+
+Health behavior belongs to the health module.
+
+Concrete persistence behavior belongs to the active persistence adapter.
+
+Frontend display behavior belongs to the frontend.
+
+## Timestamp behavior
+
+Health route responses add a `timestamp` field at response time.
+
+The health module does not add timestamps because timestamps are transport metadata, not health
+model state.
+
+Current timestamp format:
+
+```js
+new Date().toISOString();
+```
+
+## Adding routes
+
+When adding a new route group
+
+- create a dedicated route module
+- mount it in routes/index.js
+- keep business logic outside the route module
+- document the public endpoint contract here or in a dedicated route README if the group becomes
+  large
+- add or update tests
+
+Route modules should stay thin.
+
+If a route starts owning domain behavior, move that behavior into a backend module and let the route
+call it.
+
+## Testing
+
+Route behavior is currently covered through backend health smoke tests.
+
+Run:
+
+```bash
+npm run check
+npm run test:backend:smoke
+```
+
+When changing route behavior, test
+
+- expected HTTP status codes
+- response JSON shape
+- route-level timestamps
+- query parameter behavior
+- reachable runtime health when persistence is unhealthy
