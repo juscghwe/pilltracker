@@ -65,7 +65,9 @@ function getPersistenceConfig() {
 function openConnection(persistenceConfig) {
   if (!db) {
     db = new Database(persistenceConfig.databasePath);
-    db.pragma(`journal_mode = ${persistenceConfig.requestedJournalMode}`, { simple: true });
+    db.pragma(`journal_mode = ${persistenceConfig.requestedJournalMode}`, {
+      simple: true,
+    });
   }
 
   return db;
@@ -134,9 +136,15 @@ export const betterSqlitePersistenceAdapter = {
         )
         .get();
 
-      const activeJournalMode = connection.pragma("journal_mode", { simple: true });
+      const activeJournalMode = connection.pragma("journal_mode", {
+        simple: true,
+      });
 
-      return createHealthyHealth({ probe, activeJournalMode, persistenceConfig });
+      return createHealthyHealth({
+        probe,
+        activeJournalMode,
+        persistenceConfig,
+      });
     } catch (error) {
       return createUnhealthyHealth(error);
     }

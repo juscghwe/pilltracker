@@ -3,5 +3,5 @@
   "singleQuote": false,
   "trailingComma": "all",
   "printWidth": 100,
-  "max_line_length": 60
+  "proseWrap": "always"
 }

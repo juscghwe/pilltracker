@@ -6,7 +6,8 @@ This directory contains repository maintenance scripts used by npm commands.
 
 The scripts provide small workflow wrappers around formatting, linting, and pre-commit validation.
 
-They are intentionally lightweight. Project behavior should not live here unless it is part of repository maintenance or developer workflow.
+They are intentionally lightweight. Project behavior should not live here unless it is part of
+repository maintenance or developer workflow.
 
 ## Public commands
 
@@ -58,11 +59,13 @@ Linting currently runs after formatting, but the lint command is not documented 
 
 Checks staged files before commit.
 
-The script reads staged files with Git and only runs relevant checks for files that are currently staged.
+The script reads staged files with Git and only runs relevant checks for files that are currently
+staged.
 
 > [!NOTE]
 >
-> This check gets executed on file level. If a document is staged, it will execute on the entire file, not just the changes. This might get fixed in the future.
+> This check gets executed on file level. If a document is staged, it will execute on the entire
+> file, not just the changes. This might get fixed in the future.
 
 Current staged-file checks:
 
@@ -126,7 +129,8 @@ Scripts should not
 - hide validation behavior that should be visible in `package.json`
 - replace dedicated tests
 
-If a script starts becoming complex, split the behavior into a focused helper and document the public command here.
+If a script starts becoming complex, split the behavior into a focused helper and document the
+public command here.
 
 ## Adding scripts
 

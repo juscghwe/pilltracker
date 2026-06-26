@@ -12,7 +12,8 @@ It owns:
 - request query handling
 - API response timestamps
 
-It does not own business logic, health check implementation, persistence checks or frontend display behavior.
+It does not own business logic, health check implementation, persistence checks or frontend display
+behavior.
 
 ## Public entrypoints
 
@@ -67,7 +68,8 @@ Returns runtime health for the backend process.
 
 This endpoint currently always returns HTTP `200` when the backend process can respond.
 
-Runtime health proves process reachability. It does not prove persistence readiness or full application readiness.
+Runtime health proves process reachability. It does not prove persistence readiness or full
+application readiness.
 
 The response includes a route-level timestamp.
 
@@ -130,7 +132,8 @@ Frontend display behavior belongs to the frontend.
 
 Health route responses add a `timestamp` field at response time.
 
-The health module does not add timestamps because timestamps are transport metadata, not health model state.
+The health module does not add timestamps because timestamps are transport metadata, not health
+model state.
 
 Current timestamp format:
 
@@ -145,12 +148,14 @@ When adding a new route group
 - create a dedicated route module
 - mount it in routes/index.js
 - keep business logic outside the route module
-- document the public endpoint contract here or in a dedicated route README if the group becomes large
+- document the public endpoint contract here or in a dedicated route README if the group becomes
+  large
 - add or update tests
 
 Route modules should stay thin.
 
-If a route starts owning domain behavior, move that behavior into a backend module and let the route call it.
+If a route starts owning domain behavior, move that behavior into a backend module and let the route
+call it.
 
 ## Testing
 
