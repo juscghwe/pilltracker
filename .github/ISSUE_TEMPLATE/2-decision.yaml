@@ -45,7 +45,9 @@ body:
     id: tradeoffs
     attributes:
       label: Trade-offs
-      description: What are the relevant pros, cons, risks and benefits? Consider both implementation complexity and learning value.
+      description:
+        What are the relevant pros, cons, risks and benefits? Consider both implementation
+        complexity and learning value.
       placeholder: |
         - ...
         - ...

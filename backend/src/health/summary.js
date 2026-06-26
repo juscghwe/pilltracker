@@ -1,7 +1,33 @@
+/**
+ * @typedef {object} HealthSummary
+ * @property {"healthy" | "unhealthy"} status Overall backend readiness.
+ * @property {string} service Service identifier.
+ * @property {string} environment Runtime environment.
+ * @property {{
+ *   runtime: {
+ *     status: "healthy" | "unhealthy";
+ *     uptimeSeconds: number;
+ *   };
+ *   persistence: {
+ *     status: "healthy" | "unhealthy";
+ *     path: {
+ *       isConfigured: boolean;
+ *     };
+ *   };
+ * }} checks
+ *   Subsystem health checks.
+ */
+
 import { getRuntimeHealth } from "./runtime.js";
 import { getPersistenceHealthPartial } from "./persistence.js";
 import { appConfig } from "../config/appConfig.js";
 
+/**
+ * Builds the backend-wide health summary.
+ *
+ * @returns {HealthSummary}
+ * @see Module README, section "health-summary"
+ */
 export function getHealthSummary() {
   const runtimeHealth = getRuntimeHealth();
   const persistenceHealth = getPersistenceHealthPartial();

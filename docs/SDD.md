@@ -1,8 +1,10 @@
 # Software Design Document
 
-The Software Design Document describes the MVP architecture, while also noting some of the future extension. The MVP target is single-user operation.
+The Software Design Document describes the MVP architecture, while also noting some of the future
+extension. The MVP target is single-user operation.
 
-Multi-user operation, household/parental mode, Android app and Home Assistant integration are future goals unless explicitly pulled into a later milestone.
+Multi-user operation, household/parental mode, Android app and Home Assistant integration are future
+goals unless explicitly pulled into a later milestone.
 
 #### Table of Contents
 
@@ -53,7 +55,8 @@ flowchart TB
 - Display privacy-aware browser / UI notifications
 - Validate user input for usability purposes
 
-The frontend must not be treated as trusted. All relevant authorization and business rules are enforced by the backend.
+The frontend must not be treated as trusted. All relevant authorization and business rules are
+enforced by the backend.
 
 #### Backend (Node.js exposing a REST API)
 
@@ -95,7 +98,8 @@ MVP authentication uses single-user login with server-managed sessions.
 
 Sessions are stored server-side and transmitted via secure cookies when HTTPS is available.
 
-Future authentication extensions may include TOTP and Android biometric unlock. Biometric unlock is treated as a client-side convenience and does not replace backend session authentication.
+Future authentication extensions may include TOTP and Android biometric unlock. Biometric unlock is
+treated as a client-side convenience and does not replace backend session authentication.
 
 ---
 
@@ -234,16 +238,20 @@ erDiagram
 
 </details>
 
-This user story demonstrates how the data model interacts during a typical medication intake workflow.
+This user story demonstrates how the data model interacts during a typical medication intake
+workflow.
 
 <details>
 <summary>User Story: Daily Vitamin D intake</summary>
 
 ### Scenario
 
-The user has configured Vitamin D (`MEDICATIONS:med_name`) to be taken every day (`SCHEDULE_RULES:frequency_type`) 15 minutes before (`SCHEDULE_RULES:offset_minutes`) breakfast (`SCHEDULE_RULES:meal`).
+The user has configured Vitamin D (`MEDICATIONS:med_name`) to be taken every day
+(`SCHEDULE_RULES:frequency_type`) 15 minutes before (`SCHEDULE_RULES:offset_minutes`) breakfast
+(`SCHEDULE_RULES:meal`).
 
-Breakfast is configured for 08:00 (`MEAL_PROFILES:breakfast_time`), resulting in a scheduled intake time of 07:45.
+Breakfast is configured for 08:00 (`MEAL_PROFILES:breakfast_time`), resulting in a scheduled intake
+time of 07:45.
 
 The medication uses the 'normal' reminder policy (`MEDICATIONS:reminder_policy`).
 
@@ -253,7 +261,8 @@ The medication uses the 'normal' reminder policy (`MEDICATIONS:reminder_policy`)
 2. An intake log entry is generated for 07:45 (`INTAKE_LOGS:scheduled_time`).
 3. A browser notification is sent (`NOTIFICATIONS`).
 4. The user marks the medication as taken.
-5. The intake log is updated and the notification is acknowledged (`NOTIFICATIONS:acknowledged_at && INTAKE_LOGS:taken_time`).
+5. The intake log is updated and the notification is acknowledged
+   (`NOTIFICATIONS:acknowledged_at && INTAKE_LOGS:taken_time`).
 6. Inventory is decremented by one tablet (`INVENTORY:current_units`).
 
 ### Data Flow
@@ -303,8 +312,9 @@ How errors and exceptions will be handled
 Security and authentication methods
 -->
 
-PillTracker exposes a REST-style HTTP API used by the React web interface and future clients such as Android and Home Assistant.
-All clients communicate with the backend through the API. Clients do not access the database directly.
+PillTracker exposes a REST-style HTTP API used by the React web interface and future clients such as
+Android and Home Assistant. All clients communicate with the backend through the API. Clients do not
+access the database directly.
 
 ### API Style
 
@@ -398,7 +408,9 @@ Common HTTP status codes:
 
 ### Authentication
 
-The web interface uses server-managed sessions. The frontend must not store sensitive authentication secrets directly. Future Android and Home Assistant integrations may use separate token-based authentication.
+The web interface uses server-managed sessions. The frontend must not store sensitive authentication
+secrets directly. Future Android and Home Assistant integrations may use separate token-based
+authentication.
 
 #### Security Notes
 
@@ -420,7 +432,8 @@ Algorithms and processing logic
 Dependencies on other components or external systems
 -->
 
-The backend is split into logical service components. Each component owns one part of the business logic and communicates with other components through explicit service calls.
+The backend is split into logical service components. Each component owns one part of the business
+logic and communicates with other components through explicit service calls.
 
 The goal is to avoid placing business logic directly inside API route handlers or frontend code.
 
@@ -668,7 +681,8 @@ Accessibility considerations
 
 ### UI goals
 
-- Fast daily intake confirmation from both notifications and landing page, simple enough for daily use without requiring detailed navigation
+- Fast daily intake confirmation from both notifications and landing page, simple enough for daily
+  use without requiring detailed navigation
 - Low friction handling for supplements and non-critical medication
 - Strong visibility and escalation for critical medications
 - Privacy-aware display of medication names and reminder content
@@ -699,7 +713,8 @@ Accessibility considerations
 
 ### History visualization
 
-The history view should provide a compact matrix-style overview inspired by GitHub contribution graphs.
+The history view should provide a compact matrix-style overview inspired by GitHub contribution
+graphs.
 
 Each cell represents an intake state for a specific day, medication or planned intake slot.
 
@@ -713,7 +728,8 @@ Suggested states:
 
 (The final color keys are still up to debate.)
 
-The matrix is intended as a quick pattern-recognition tool, not as the only history interface. Detailed intake records should remain available through day or medication selection.
+The matrix is intended as a quick pattern-recognition tool, not as the only history interface.
+Detailed intake records should remain available through day or medication selection.
 
 ### Wireframe approach
 
@@ -744,14 +760,31 @@ Constraints related to hardware, software, or infrastructure
 Any regulatory or compliance requirements
 -->
 
-- **Frontend:** The frontend is based on React. The browser UI is the primary client for the MVP. Android and Home Assistant integrations are future projects.
+- **Frontend:** The frontend is based on React. The browser UI is the primary client for the MVP.
+  Android and Home Assistant integrations are future projects.
 - **API:** The backend exposes a REST-style HTTP API using JSON request and response bodies.
-- **Backend:** The backend is based on Node.js. The exact API framework is not decided yet (most likely express for the MVP).
+- **Backend:** The backend is based on Node.js. The exact API framework is not decided yet (most
+  likely express for the MVP).
 - **Persistence:** The primary local database is using SQLite.
-- **Backups:** Backups must be encrypted. Backup encryption keys must not be stored inside the backup directory.
+- **Backups:** Backups must be encrypted. Backup encryption keys must not be stored inside the
+  backup directory.
 - **Deployment:** The application is designed for local-first, self-hosted deployment using Docker.
-- **Transport security:** HTTPS is strongly recommended. Local HTTP may exist during development or limited local-only deployments.
-- **Development environment:** Development is based on a VSCode devcontainer to keep tooling reproducible for possible contributors.
-- **Scope limitation:** The SDD describes the MVP architecture and selected future extension points. Future extensions are not required for the first backend / API implementation unless explicitly pulled into a later issue.
-- **Development scaling:** Development will start with a minimal operational foundation before implementing domain-specific features. The first goal is to prove that the backend, API, transport layer and frontend can interact meaningfully. This allows later features to be implemented and tested through realistic integration paths instead of isolated placeholder logic. Early foundation tests may be replaced or refactored as the real domain model becomes available. This approach keeps framework choices flexible after the MVP stack proved practical.
-- **Contributing:** Contributions are welcome, especially in the form of pull requests or discussions and issue threads related to security, privacy, and secondarily architecture. Pull requests that replace the selected MVP stack or rewrite major parts of the project in a different framework or language are out of scope before MVP. Framework and language discussions with meaningfull argumentation will be collected for possible post-MVP reconsideration, but they should not block the MVP development.
+- **Transport security:** HTTPS is strongly recommended. Local HTTP may exist during development or
+  limited local-only deployments.
+- **Development environment:** Development is based on a VSCode devcontainer to keep tooling
+  reproducible for possible contributors.
+- **Scope limitation:** The SDD describes the MVP architecture and selected future extension points.
+  Future extensions are not required for the first backend / API implementation unless explicitly
+  pulled into a later issue.
+- **Development scaling:** Development will start with a minimal operational foundation before
+  implementing domain-specific features. The first goal is to prove that the backend, API, transport
+  layer and frontend can interact meaningfully. This allows later features to be implemented and
+  tested through realistic integration paths instead of isolated placeholder logic. Early foundation
+  tests may be replaced or refactored as the real domain model becomes available. This approach
+  keeps framework choices flexible after the MVP stack proved practical.
+- **Contributing:** Contributions are welcome, especially in the form of pull requests or
+  discussions and issue threads related to security, privacy, and secondarily architecture. Pull
+  requests that replace the selected MVP stack or rewrite major parts of the project in a different
+  framework or language are out of scope before MVP. Framework and language discussions with
+  meaningfull argumentation will be collected for possible post-MVP reconsideration, but they should
+  not block the MVP development.

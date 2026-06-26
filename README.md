@@ -1,17 +1,19 @@
 # PillTracker
 
-Self-hosted medication and supplement intake tracker for web, designed with future Android notification support and possible Home Assistant integration in mind.
+Self-hosted medication and supplement intake tracker for web, designed with future Android
+notification support and possible Home Assistant integration in mind.
 
-PillTracker is built as a privacy-first alternative to medication tracking apps that depend on cloud services or third-party storage for sensitive health-related data.
+PillTracker is built as a privacy-first alternative to medication tracking apps that depend on cloud
+services or third-party storage for sensitive health-related data.
 
 ## Project Status
 
-> [!WARNING]
-> Early development
+> [!WARNING] Early development
 >
 > PillTracker is not production-ready and has no functional release yet.
 
-The project has moved from pure planning into early implementation. Current work is focused on the M1 backend scaffold and the first vertical development slices.
+The project has moved from pure planning into early implementation. Current work is focused on the
+M1 backend scaffold and the first vertical development slices.
 
 Current status:
 
@@ -27,11 +29,13 @@ Current status:
 - [ ] Authentication and user model
 - [ ] Encrypted backups
 
-Active development happens on milestone and feature branches before being merged through PR back into `main`.
+Active development happens on milestone and feature branches before being merged through PR back
+into `main`.
 
 ## Vision
 
-Most common medication tracking apps require cloud services and store highly sensitive health-related data on third-party infrastructure.
+Most common medication tracking apps require cloud services and store highly sensitive
+health-related data on third-party infrastructure.
 
 PillTracker aims to provide a privacy-first, self-hosted alternative with:
 
@@ -70,13 +74,15 @@ This roadmap is intentionally iterative and may change as implementation reveals
 - [Project scope definition](docs/PSD.md)
 - [Software design documentation](docs/SDD.md)
 
-Concrete implementation documentation can be found in the corresponding branches till they get merged into `main`.
+Concrete implementation documentation can be found in the corresponding branches till they get
+merged into `main`.
 
 ## Contributing
 
 The project is still early and primarily used as a learning and architecture project for now.
 
-Feedback, ideas, architectural discussions, and issue comments are welcome. The codebase is not yet stable enough for production use.
+Feedback, ideas, architectural discussions, and issue comments are welcome. The codebase is not yet
+stable enough for production use.
 
 ## License
 

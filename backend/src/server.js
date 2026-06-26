@@ -1,8 +1,6 @@
 const PORT = process.env.PORT || 3000;
 
-/**
- * Dynamic import of `./app.js` to catch startup error.
- */
+/** Dynamic import of `./app.js` to catch startup error. */
 async function startServer() {
   const { default: app } = await import("./app.js");
 

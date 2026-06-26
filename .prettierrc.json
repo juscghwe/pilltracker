@@ -2,5 +2,10 @@
   "semi": true,
   "singleQuote": false,
   "trailingComma": "all",
-  "printWidth": 100
+  "printWidth": 100,
+  "proseWrap": "always",
+  "objectWrap": "preserve",
+  "plugins": ["prettier-plugin-jsdoc"],
+  "jsdocPrintWidth": 100,
+  "jsdocLineWrappingStyle": "greedy"
 }

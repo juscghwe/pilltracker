@@ -3,6 +3,11 @@ import express from "express";
 
 import router from "./routes/index.js";
 
+/**
+ * Express application configured with shared middleware and API routes.
+ *
+ * @type {import("express").Express}
+ */
 const app = express();
 
 app.use(cors());

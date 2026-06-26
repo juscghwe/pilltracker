@@ -1,5 +1,17 @@
+/**
+ * @typedef {object} HealthState
+ * @property {"loading" | "connected" | "error"} status
+ * @property {object | null} data
+ * @property {string | null} error
+ */
+
 import { useEffect, useState } from "react";
 
+/**
+ * Initial frontend health request state.
+ *
+ * @type {HealthState}
+ */
 const initialHealthState = {
   status: "loading",
   data: null,
@@ -39,7 +51,12 @@ function ConnectedHealthStatus({ data }) {
   );
 }
 
-export default function App() {
+/**
+ * Root frontend application component.
+ *
+ * @returns {import("react").JSX.Element}
+ */
+function App() {
   const [health, setHealth] = useState(initialHealthState);
 
   useEffect(() => {
@@ -108,3 +125,5 @@ function HealthStatus({ health }) {
       );
   }
 }
+
+export default App;
