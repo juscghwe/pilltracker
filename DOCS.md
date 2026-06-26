@@ -14,5 +14,6 @@ No frontend module docs yet.
 
 ## Project workflow
 
+- [.devcontainer](./.devcontainer/README.md)
 - [Backend tests](./backend/tests/README.md)
 - [Scripts](./scripts/README.md)
