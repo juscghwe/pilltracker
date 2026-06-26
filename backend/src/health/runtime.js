@@ -8,7 +8,7 @@
  *   architecture: string,
  *   uptimeSeconds: number,
  * }}
- * @see ./README.md#runtime-health
+ * @see Module README, section "runtime-health"
  */
 export function getRuntimeHealth() {
   return {
