@@ -13,7 +13,7 @@ Consumers should depend on this module instead of importing a concrete adapter d
 ### `persistenceAdapter`
 
 ```js
-import { persistenceAdaper } from "./persistence/index.js";
+import { persistenceAdapter } from "./persistence/index.js";
 ```
 
 `persistenceAdapter` is the active persistence adapter for the backend.
@@ -26,11 +26,7 @@ import { persistenceAdaper } from "./persistence/index.js";
 >
 > These methods are not provided by the `persistenceAdapter` itself but the concrete adapter loaded by the `persistenceAdapter`. Thereby they can be subject to change.
 
-Current active adapter:
-
-```js
-better - sqlite3;
-```
+Current active adapter: `better - sqlite3`
 
 Current adapter capabilities:
 
@@ -53,7 +49,7 @@ Backend modules should not import concrete adapters directly:
 
 ```js
 // Avoid this in consumers:
-import { persistenceAdapter } from "../persistence/adapters/better-sqlite3/index.js";
+import { betterSqlitePersistenceAdapter } from "../persistence/adapters/better-sqlite3/index.js";
 ```
 
 Concrete adapter imports should stay inside this module unless a test intentionally targets the adapter implementation.
@@ -70,7 +66,7 @@ Concrete adapters own implementation details such as:
 - database-specific configuration validation
 - database-specific proof queries
 
-The health module may call the active adapert, but it should not know which concrete adapter is active.
+The health module may call the active adapter, but it should not know which concrete adapter is active.
 
 ## Switching adapters
 
@@ -96,9 +92,9 @@ When switching adapters update:
 
 ## Runtime behavior
 
-The persistence module should not open a database connection by beeing imported.
+The persistence module should not open a database connection by being imported.
 
-Database connections should be opened by adapter methods such as `getConnection()` or by health checks that intentionally prove persistence availibility.
+Database connections should be opened by adapter methods such as `getConnection()` or by health checks that intentionally prove persistence availability.
 
 This keeps imports lightweight and allows the backend to report useful health information even when persistence configuration is invalid.
 

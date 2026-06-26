@@ -14,7 +14,7 @@ It owns SQLite-specific behavior, including:
 
 Backend consumers should not import this adapter directly.
 
-Consumers should import the active persistence adapter from [the persistence seam](./backend/src/persistence/README.md) instead:
+Consumers should import the active persistence adapter from [the persistence seam](../../README.md) instead:
 
 ```js
 import { persistenceAdapter } from "../../index.js";
@@ -25,7 +25,7 @@ import { persistenceAdapter } from "../../index.js";
 ### better-sqlite3 adapter
 
 ```js
-import { persistenceAdapter } from "../../index.js";
+import { betterSqlitePersistenceAdapter } from "./index.js";
 ```
 
 The adapter exposes:
@@ -113,7 +113,7 @@ If that becomes necessary, add it intentionally and document the lifecycle rules
 3. a SQLite connection can be opened
 4. `SELECT 1` succeeds
 5. `sqlite_version()` can be queried
-6. active `PRAGME journal_mode` can be observed
+6. active `PRAGMA journal_mode` can be observed
 
 A healthy result includes:
 

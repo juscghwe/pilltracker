@@ -59,7 +59,7 @@ unhealthy -> 503
 
 The response includes a route-level timestamp.
 
-The health summary shape is documented in the [health module README](./backend/src/health/README.md).
+The health summary shape is documented in the [health module README](../health/README.md).
 
 #### `GET /api/health/runtime`
 
@@ -71,7 +71,7 @@ Runtime health proves process reachability. It does not prove persistence readin
 
 The response includes a route-level timestamp.
 
-The runtime health shape is documented in the [health module README](./backend/src/health/README.md).
+The runtime health shape is documented in the [health module README](../health/README.md).
 
 #### `GET /api/health/persistence`
 
@@ -79,17 +79,18 @@ Returns persistence readiness.
 
 This route calls the persistence health module and maps the result to HTTP status:
 
-\*\*\*txt
+```txt
 healthy -> 200
 unhealthy -> 503
+```
 
 ---
 
 The response includes a route-level timestamp.
 
-The persistence health shape is documented in the [health module README](./backend/src/health/README.md).
+The persistence health shape is documented in the [health module README](../health/README.md).
 
-##### Querry parameters
+##### Query parameters
 
 | Query parameter | Value  | Behavior                                           |
 | --------------- | ------ | -------------------------------------------------- |
@@ -158,7 +159,8 @@ Route behavior is currently covered through backend health smoke tests.
 Run:
 
 ```bash
-npm run check npm run test:backend:smoke
+npm run check
+npm run test:backend:smoke
 ```
 
 When changing route behavior, test

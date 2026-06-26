@@ -10,7 +10,9 @@
 
 ## Frontend modules
 
+No frontend module docs yet.
+
 ## Project workflow
 
-- [Backend test](./backend/tests/README.md)
+- [Backend tests](./backend/tests/README.md)
 - [Scripts](./scripts/README.md)

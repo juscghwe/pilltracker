@@ -60,9 +60,9 @@ Checks staged files before commit.
 
 The script reads staged files with Git and only runs relevant checks for files that are currently staged.
 
-> [!Note]
+> [!NOTE]
 >
-> This check gets executed on file level. If a document is staged, it will execute on the entire file, not just the changes. This might get fixed in near future.
+> This check gets executed on file level. If a document is staged, it will execute on the entire file, not just the changes. This might get fixed in the future.
 
 Current staged-file checks:
 

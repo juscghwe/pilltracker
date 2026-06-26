@@ -6,7 +6,7 @@ This module reads backend runtime configuration from environment variables and e
 
 It owns app-level config validation and keeps subsystem-specific config values for the modules that validate them.
 
-## Public entrypoints - READ
+## Public entrypoints
 
 ### `validEnvironments`
 
@@ -110,13 +110,13 @@ import { appConfig, validSqliteJournalModes } from "../config/appConfig.js";
 
 Do not add silent defaults for required app-level config without documenting the operational reason.
 
-> [!Important]
+> [!IMPORTANT]
 >
 > Do not validate e.g. persistence readiness in this module. Persistence readiness belongs to the persistence adapter and health checks.
 
 ## Testing
 
-Config behavior is currently covered indirectly through backend startup and health smokre tests.
+Config behavior is currently covered indirectly through backend startup and health smoke tests.
 
 When adding new config values, check:
 

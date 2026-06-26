@@ -142,6 +142,4 @@ npm run check
 npm run test:backend:smoke
 ```
 
-Those will run as CI on GitHub as well post PR creation.
-
 For changes that affect config, persistence, or health behavior, also test at least one failure case manually.

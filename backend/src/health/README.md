@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This module binds backend health objects for runtime checks, persistence checks and overall application readiness.
+This module builds backend health objects for runtime checks, persistence checks and overall application readiness.
 
 It separates process reachability from application readiness so callers can distinguish:
 
@@ -18,7 +18,7 @@ Health is reported in layers:
 
 | Layer              | Meaning                                                   | Public entrypoint        |
 | ------------------ | --------------------------------------------------------- | ------------------------ |
-| Runtime health     | Backend process is reachable and can report project facts | `getRuntimeHealth()`     |
+| Runtime health     | Backend process is reachable and can report process facts | `getRuntimeHealth()`     |
 | Persistence health | Persistence config and SQLite access are valid            | `getPersistenceHealth()` |
 | Health summary     | Backend application readiness across required subsystems  | `getHealthSummary()`     |
 
@@ -38,7 +38,7 @@ Returns process-local runtime health.
 
 > [!Warning]
 >
-> Currently the status for runtime health is hardcoded and will always return `"healthy"`. This will be swapped agains dynamic queries in the near future.
+> Currently the status for runtime health is hardcoded and will always return `"healthy"`. This will be swapped against dynamic queries in the near future.
 
 Current shape:
 
@@ -153,8 +153,10 @@ Those concerns belong to the route layer.
 
 ## Readiness policy
 
-Runtime health is a reachability check.\
-Persistence health is a subsystem readiness check.\
+Runtime health is a reachability check.
+
+Persistence health is a subsystem readiness check.
+
 Health summary is the backend readiness check.
 
 Current readiness rule:
@@ -168,7 +170,7 @@ This allows the backend to start and report useful diagnostics even when persist
 
 ## Ownership rules
 
-Runtime health own process-local runtime facts.
+Runtime health owns process-local runtime facts.
 
 Persistence health owns the health contract between health reporting and the active persistence adapter.
 
@@ -194,7 +196,7 @@ If the check cannot prove the subsystem is healthy, it should report unhealthy.
 
 ## Testing
 
-Health behavior is currently coverered through backened health smoke tests.
+Health behavior is currently covered through backend health smoke tests.
 
 Run:
 
