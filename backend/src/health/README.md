@@ -6,7 +6,7 @@ This module binds backend health objects for runtime checks, persistence checks 
 
 It separates process reachability from application readiness so callers can distinguish:
 
-- the bakcned process is running
+- the backend process is running
 - required subsystems are usable
 - the application is ready to serve real work
 
@@ -38,7 +38,7 @@ Returns process-local runtime health.
 
 > [!Warning]
 >
-> Currently the status for Runtime health is hardcoded and will always return `"healthy"`. This will be swapped agains dynamic queries in the near future.
+> Currently the status for runtime health is hardcoded and will always return `"healthy"`. This will be swapped agains dynamic queries in the near future.
 
 Current shape:
 

@@ -14,7 +14,7 @@ It owns SQLite-specific behavior, including:
 
 Backend consumers should not import this adapter directly.
 
-Consumers should import the active persistence adapter from the persistence seam instead:
+Consumers should import the active persistence adapter from [the persistence seam](./backend/src/persistence/README.md) instead:
 
 ```js
 import { persistenceAdapter } from "../../index.js";
