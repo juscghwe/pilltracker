@@ -1,4 +1,4 @@
-import { AppError } from "./app-errors.js";
+import { AppError } from "./AppError.js";
 
 /** Error thrown when SQLite reports a different active journal mode than requested. */
 export class SqliteJournalModeMismatchError extends AppError {

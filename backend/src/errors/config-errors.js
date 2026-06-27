@@ -1,4 +1,4 @@
-import { AppError } from "./app-errors.js";
+import { AppError } from "./AppError.js";
 
 /** Error thrown when a required environment variable is missing. */
 export class MissingEnvironmentVariableError extends AppError {
