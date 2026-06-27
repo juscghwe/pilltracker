@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS dev_notes_temp (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  text_temp TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+);
