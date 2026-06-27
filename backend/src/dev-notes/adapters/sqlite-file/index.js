@@ -128,16 +128,10 @@ function openConnection(persistenceConfig) {
 
   assertJournalMode(db, persistenceConfig);
 
-  return db;
-}
+  db.exec(schemaSql);
+  seedDevNotes(db, minDevNoteEntries); // Optional. Only use if you explicitly want demo rows.
 
-/**
- * Ensures correct table schema
- *
- * @param {import("better-sqlite3").Database} Active SQLite connection.
- */
-function ensureSchema(connection) {
-  connection.exec(schemaSql);
+  return db;
 }
 
 /**
@@ -156,12 +150,8 @@ function ensureSchema(connection) {
  */
 function getConnection() {
   const persistenceConfig = getPersistenceConfig();
-  const database = openConnection(persistenceConfig);
 
-  ensureSchema(database);
-  seedDevNotes(database, minDevNoteEntries); // Optional. Only use if you explicitly want demo rows.
-
-  return database;
+  return openConnection(persistenceConfig);
 }
 
 /**
