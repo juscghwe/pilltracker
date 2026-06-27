@@ -4,10 +4,24 @@
 
 /**
  * @typedef {object} AppConfig
- * @property {RuntimeEnvironment} environment App runtime environment.
- * @property {Readonly<{ path: string | null }>} database Database configuration.
+ * @property {RuntimeEnvironment} environment App runtime environment
+ * @property {Readonly<{ path: string | null }>} database Database configuration
  * @property {Readonly<{ requestedJournalMode: SqliteJournalMode | null }>} sqlite SQLite
- *   configuration.
+ * @property {Readonly<DevNote>} devNotes Settings configuration.
+ */
+
+/**
+ * @typedef {object} DevNoteConfig
+ * @property {Readonly<{ enabled: boolean | false }>} enabled Dev-Notes are enbabled in
+ *   configuration
+ * @property {Readonly<{ temp: DevNoteStorage; persistent: DevNoteStorage }>} storage Description of
+ *   individual storage objects
+ */
+
+/**
+ * @typedef {object} DevNoteStorage
+ * @property {Readonly<{ enabled: boolean | true }>} enabled
+ * @property {Readonly<{ databasePath: string | null }>} databasePath
  */
 
 /**
@@ -53,6 +67,20 @@ function readRequiredEnum(name, allowedValues) {
   return rawValue;
 }
 
+function readOptionalBoolean(name) {
+  const rawValue = process.env[name];
+
+  if (rawValue === undefined || rawValue === "") {
+    return null;
+  }
+
+  if (rawValue === true || rawValue === "true" || rawValue === 1) {
+    return true;
+  }
+
+  return false;
+}
+
 function readOptionalString(name) {
   const rawValue = process.env[name];
 
@@ -79,4 +107,33 @@ export const appConfig = Object.freeze({
   sqlite: Object.freeze({
     requestedJournalMode: readOptionalString("SQLITE_JOURNAL_MODE"),
   }),
+
+  devNotes: Object.freeze(getDevNotesConfig()),
 });
+
+/**
+ * Pure Dev-Notes Application configuration resolved from environmental variables.
+ *
+ * Default values get set here bcs its a runtime level decision.
+ *
+ * @type {ReadOnly<DevNoteConfig>}
+ * @see Module README, section "DevNotesConfig"
+ */
+
+function getDevNotesConfig() {
+  return {
+    enabled: readOptionalBoolean("ENABLE_DEV_NOTES") | false,
+
+    storage: Object.freeze({
+      temp: Object.freeze({
+        enabled: readOptionalBoolean("ENABLE_DEV_NOTES_TEMP", true),
+        databasePath: ":memory:",
+      }),
+
+      persistent: Object.freeze({
+        enabled: readOptionalBoolean("ENABLE_DEV_NOTES_PERSISTENT", true),
+        databasePath: readOptionalString("DEV_NOTES_DB_PATH"),
+      }),
+    }),
+  };
+}
