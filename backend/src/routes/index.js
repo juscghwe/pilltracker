@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import healthRouter from "./health.routes.js";
+import devNotesRouter from "./dev-notes.routes.js";
 
 /**
  * Root API router mounted below `/api`.
@@ -10,5 +11,6 @@ import healthRouter from "./health.routes.js";
 const router = Router();
 
 router.use("/health", healthRouter);
+router.use("/dev-notes", devNotesRouter);
 
 export default router;
