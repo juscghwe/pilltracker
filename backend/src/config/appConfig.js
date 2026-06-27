@@ -26,6 +26,11 @@
  *   Dev-notes storage target configuration
  */
 
+import {
+  InvalidEnvironmentVariableError,
+  MissingEnvironmentVariableError,
+} from "../errors/index.js";
+
 /**
  * Runtime environments accepted by app-level configuration.
  *
@@ -51,7 +56,9 @@ function readRequiredString(name) {
   const rawValue = process.env[name];
 
   if (rawValue === undefined || rawValue === "") {
-    throw new Error(`${name} environment variable is not configured`);
+    throw new MissingEnvironmentVariableError(name, {
+      moduleName: "backend config appConfig",
+    });
   }
 
   return rawValue;
@@ -61,9 +68,9 @@ function readRequiredEnum(name, allowedValues) {
   const rawValue = readRequiredString(name);
 
   if (!allowedValues.has(rawValue)) {
-    throw new Error(
-      `Invalid ${name}: ${rawValue}. Expected one of: ${[...allowedValues].join(", ")}`,
-    );
+    throw new InvalidEnvironmentVariableError(name, rawValue, allowedValues, {
+      moduleName: "backend config appConfig",
+    });
   }
 
   return rawValue;
@@ -84,7 +91,9 @@ function readOptionalBoolean(name) {
     return false;
   }
 
-  throw new Error(`${name} must be one of: true, false, 1, 0`);
+  throw new InvalidEnvironmentVariableError(name, rawValue, ["true", "false", "1", "0"], {
+    moduleName: "backend config appConfig",
+  });
 }
 
 function readOptionalString(name) {

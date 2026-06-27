@@ -11,7 +11,7 @@ import {
   MissingEnvironmentVariableError,
   SqliteJournalModeMismatchError,
   InvalidEnvironmentVariableError,
-} from "../../../errors/AppError.js";
+} from "../../../errors/index.js";
 
 let db;
 
