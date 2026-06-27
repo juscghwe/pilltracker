@@ -76,24 +76,14 @@ export function getActiveSqliteJournalMode(connection) {
  * @returns {import("better-sqlite3").Database} Configured SQLite connection.
  */
 export function openConfiguredSqliteConnection(input) {
-  let connection = openSqliteConnection(input.databasePath);
-  applySqliteJournalMode(input.requestedJournalMode);
-  return connection;
-}
+  const connection = openSqliteConnection({
+    databasePath: input.databasePath,
+  });
 
-/**
- * Runs SQLite schema or setup statements sequentially.
- *
- * This helper is intended for adapter-owned schema setup such as `CREATE TABLE IF NOT EXISTS ...`.
- *
- * @param {import("better-sqlite3").Database} connection SQLite connection.
- * @param {RunSqliteStatementsInput} input SQL statement input.
- * @returns {void}
- */
-export function runSqliteStatements(connection, input) {
-  try {
-    return connection.prepare(input);
-  } catch (error) {
-    return error;
-  }
+  applySqliteJournalMode({
+    connection,
+    requestedJournalMode: input.requestedJournalMode,
+  });
+
+  return connection;
 }
