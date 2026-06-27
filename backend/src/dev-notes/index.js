@@ -17,3 +17,7 @@
  * - DeleteDevNote(storageKind, id)
  * - GetDevNotesHealth()
  */
+
+import { devNotesSqliteFileAdapter } from "./adapters/sqlite-file.js";
+
+export const devNotesPersistenceAdapter = devNotesSqliteFileAdapter;

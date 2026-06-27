@@ -12,6 +12,8 @@
  *   adapter.
  */
 
+import { readFileSync } from "node:fs";
+
 import { appConfig, validSqliteJournalModes } from "../../../config/appConfig.js";
 import {
   InvalidEnvironmentVariableError,
@@ -23,11 +25,16 @@ import {
   openConfiguredSqliteConnection,
 } from "../../../sqlite/connection.js";
 import { createSqliteHealthReporter } from "../../../sqlite/health.js";
+import { seedDevNotes } from "./seed-dev.js";
 
 let db;
 
 const adapterId = "better-sqlite3";
 const moduleName = "dev-notes sqlite-file adapter";
+
+const minDevNoteEntries = 10;
+
+const schemaSql = readFileSync(new URL("./schema.sql", import.meta.url), "utf8");
 
 /**
  * Resolves and validates configuration required by the dev-notes SQLite file adapter.
@@ -125,6 +132,15 @@ function openConnection(persistenceConfig) {
 }
 
 /**
+ * Ensures correct table schema
+ *
+ * @param {import("better-sqlite3").Database} Active SQLite connection.
+ */
+function ensureSchema(connection) {
+  connection.exec(schemaSql);
+}
+
+/**
  * Returns the active dev-notes SQLite file connection.
  *
  * This is the public connection entrypoint for the concrete adapter. It resolves adapter
@@ -140,8 +156,12 @@ function openConnection(persistenceConfig) {
  */
 function getConnection() {
   const persistenceConfig = getPersistenceConfig();
+  const database = openConnection(persistenceConfig);
 
-  return openConnection(persistenceConfig);
+  ensureSchema(database);
+  seedDevNotes(database, 10); // Optional. Only use if you explicitly want demo rows.
+
+  return database;
 }
 
 /**
