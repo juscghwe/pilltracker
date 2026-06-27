@@ -124,12 +124,12 @@ function openConnection(persistenceConfig) {
       databasePath: persistenceConfig.databasePath,
       requestedJournalMode: persistenceConfig.requestedJournalMode,
     });
+
+    db.exec(schemaSql);
+    seedDevNotes(db, minDevNoteEntries); // Optional. Only use if you explicitly want demo rows.
   }
 
   assertJournalMode(db, persistenceConfig);
-
-  db.exec(schemaSql);
-  seedDevNotes(db, minDevNoteEntries); // Optional. Only use if you explicitly want demo rows.
 
   return db;
 }
