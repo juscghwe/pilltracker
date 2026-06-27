@@ -126,7 +126,12 @@ function openConnection(persistenceConfig) {
     });
 
     db.exec(schemaSql);
-    seedDevNotes(db, minDevNoteEntries); // Optional. Only use if you explicitly want demo rows.
+
+    // Optional. Only use if you explicitly want demo rows.
+    seedDevNotes(db, {
+      count: minDevNoteEntries,
+      mode: "maintain-minimum",
+    });
   }
 
   assertJournalMode(db, persistenceConfig);

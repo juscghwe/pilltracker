@@ -1,11 +1,18 @@
 /**
- * Inserts demo dev-notes when the table is too small.
+ * Inserts demo dev-notes for manual development.
+ *
+ * Modes:
+ *
+ * - `when-empty`: insert demo notes only if the table is empty.
+ * - `maintain-minimum`: insert missing demo notes until at least `count` rows exist.
  *
  * @param {import("better-sqlite3").Database} connection SQLite connection.
- * @param {number} count Number of demo notes that should exist.
+ * @param {object} [options] Seed options.
+ * @param {number} [options.count] Number of demo notes to create or maintain.
+ * @param {"when-empty" | "maintain-minimum"} [options.mode] Seed behavior.
  * @returns {void}
  */
-export function seedDevNotes(connection, count = 10) {
+export function seedDevNotes(connection, { count = 10, mode = "when-empty" } = {}) {
   const existing = connection
     .prepare(
       `
@@ -15,7 +22,11 @@ export function seedDevNotes(connection, count = 10) {
     )
     .get();
 
-  if (existing.count > count) {
+  if (mode === "when-empty" && existing.count > 0) {
+    return;
+  }
+
+  if (mode === "maintain-minimum" && existing.count >= count) {
     return;
   }
 
@@ -36,8 +47,9 @@ export function seedDevNotes(connection, count = 10) {
 
   const insertMany = connection.transaction(() => {
     const now = new Date().toISOString();
+    const firstIndex = mode === "maintain-minimum" ? existing.count + 1 : 1;
 
-    for (let index = 1; index <= count; index += 1) {
+    for (let index = firstIndex; index <= count; index += 1) {
       insertNote.run({
         text: `Demo note ${index}`,
         createdAt: now,
