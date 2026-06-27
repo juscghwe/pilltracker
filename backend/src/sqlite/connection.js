@@ -29,8 +29,6 @@
 
 import Database from "better-sqlite3";
 
-let database;
-
 /**
  * Opens a SQLite connection.
  *
@@ -41,11 +39,7 @@ let database;
  * @returns {import("better-sqlite3").Database} SQLite connection.
  */
 export function openSqliteConnection(input) {
-  if (!database) {
-    database = new Database(input.databasePath);
-  }
-
-  return database;
+  return new Database(input.databasePath);
 }
 
 /**
@@ -69,7 +63,7 @@ export function applySqliteJournalMode(input) {
  * @returns {string} Active SQLite journal mode.
  */
 export function getActiveSqliteJournalMode(connection) {
-  return connection.pragma(connection);
+  return connection.pragma("journal_mode", { simple: true });
 }
 
 /**
@@ -82,7 +76,9 @@ export function getActiveSqliteJournalMode(connection) {
  * @returns {import("better-sqlite3").Database} Configured SQLite connection.
  */
 export function openConfiguredSqliteConnection(input) {
-  return openSqliteConnection(input);
+  let connection = openSqliteConnection(input.databasePath);
+  applySqliteJournalMode(input.requestedJournalMode);
+  return connection;
 }
 
 /**
@@ -90,12 +86,13 @@ export function openConfiguredSqliteConnection(input) {
  *
  * This helper is intended for adapter-owned schema setup such as `CREATE TABLE IF NOT EXISTS ...`.
  *
+ * @param {import("better-sqlite3").Database} connection SQLite connection.
  * @param {RunSqliteStatementsInput} input SQL statement input.
  * @returns {void}
  */
-export function runSqliteStatements(input) {
+export function runSqliteStatements(connection, input) {
   try {
-    return database.prepare(input);
+    return connection.prepare(input);
   } catch (error) {
     return error;
   }

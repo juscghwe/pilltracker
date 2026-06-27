@@ -102,28 +102,16 @@ export function createRequestedJournalModeInfo(requestedJournalMode, validJourna
  * @returns {SqliteHealthProbe} SQLite proof query result.
  */
 export function runSqliteHealthProbe(connection) {
-  try {
-    const probe = connection
-      .prepare(
-        `
-                SELECT 
-                    1 AS ok,
-                    sqlite_version() AS sqliteVersion
-                `,
-      )
-      .get();
-
-    const activeJournalMode = connection.pragma("journal_mode", {
-      simple: true,
-    });
-
-    return createHealthySqliteHealth({
-      probe,
-      activeJournalMode,
-    });
-  } catch (error) {
-    return createUnhealthySqliteHealth(error);
-  }
+  const probe = connection
+    .prepare(
+      `
+        SELECT 
+            1 AS ok,
+            sqlite_version() AS sqliteVersion
+      `,
+    )
+    .get();
+  return probe;
 }
 
 /**
@@ -132,15 +120,11 @@ export function runSqliteHealthProbe(connection) {
  */
 export function createHealthySqliteHealth(input) {
   return {
-    status: input.probe.ok === 1 ? "healthy" : "unhealthy",
-    engine: {
-      reportedFamily: "sqlite",
-      version: input.probe.sqliteVersion,
-      source: "database_query",
-    },
-    adapter: createAdapterInfo(input.adapter),
-    journalMode: createRequestedJournalModeInfo(input.journalMode),
-    path: createPathInfo(input.path),
+    status: input.status,
+    engine: input.engine,
+    adapter: input.adapter.id,
+    journalMode: input.journalMode,
+    path: input.path,
   };
 }
 
@@ -150,10 +134,10 @@ export function createHealthySqliteHealth(input) {
  */
 export function createUnhealthySqliteHealth(input) {
   return {
-    status: "unhealthy",
-    adapter: createAdapterInfo(input.adapter),
-    path: createPathInfo(input.path),
-    journalMode: createRequestedJournalModeInfo(input.journalMode),
+    status: input.status,
+    adapter: input.adapter.id,
+    path: input.path,
+    journalMode: input.journalMode,
     error: {
       name: input.error.name,
       message: input.error.message,
