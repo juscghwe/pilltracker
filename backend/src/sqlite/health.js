@@ -169,7 +169,9 @@ export function createSqliteHealthReporter(input) {
         }),
         error: {
           name: error.name,
+          code: error.code ?? "UNKNOWN_ERROR",
           message: error.message,
+          details: error.details ?? null,
         },
       });
     }
