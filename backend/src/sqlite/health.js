@@ -39,7 +39,7 @@
  * @returns {Readonly<HealthySqliteHealth | UnhealthySqliteHealth>} SQLite health result.
  */
 
-import { getActiveSqliteJournalMode, runSqliteStatements } from "./connection.js";
+import { getActiveSqliteJournalMode } from "./connection.js";
 
 /**
  * Builds adapter identity metadata for SQLite health results.
@@ -138,7 +138,7 @@ export function createSqliteHealthReporter(input) {
   const adapter = createAdapterInfo(input.adapterId, input.sourceModule);
   const path = createPathInfo(input.databasePath);
 
-  return function getSqliteHealth(connection) {
+  return function getSqliteHealth() {
     try {
       const connection = input.getConnection();
       const probe = runSqliteHealthProbe(connection);
