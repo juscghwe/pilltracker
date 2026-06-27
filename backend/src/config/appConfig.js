@@ -81,7 +81,7 @@ function readOptionalBoolean(name) {
   }
 
   if (rawValue === false || rawValue === "false" || rawValue === 0) {
-    return true;
+    return false;
   }
 
   throw new Error(`${name} must be one of: true, false, 1, 0`);
