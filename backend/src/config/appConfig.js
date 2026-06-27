@@ -7,21 +7,23 @@
  * @property {RuntimeEnvironment} environment App runtime environment
  * @property {Readonly<{ path: string | null }>} database Database configuration
  * @property {Readonly<{ requestedJournalMode: SqliteJournalMode | null }>} sqlite SQLite
- * @property {Readonly<DevNote>} devNotes Settings configuration.
+ * @property {Readonly<DevNotesConfig>} devNotes Settings configuration.
  */
 
 /**
- * @typedef {object} DevNoteConfig
- * @property {Readonly<{ enabled: boolean | false }>} enabled Dev-Notes are enbabled in
- *   configuration
- * @property {Readonly<{ temp: DevNoteStorage; persistent: DevNoteStorage }>} storage Description of
- *   individual storage objects
+ * @typedef {object} DevNotesStorageConfig
+ * @property {boolean | true} enabled Whether this dev-notes storage target is enabled
+ * @property {string | null} databasePath SQLite database path for this storage target
  */
 
 /**
- * @typedef {object} DevNoteStorage
- * @property {Readonly<{ enabled: boolean | true }>} enabled
- * @property {Readonly<{ databasePath: string | null }>} databasePath
+ * @typedef {object} DevNotesConfig
+ * @property {Readonly<boolean | false>} enabled Whether dev-notes routes may be mounted
+ * @property {Readonly<{
+ *   temp: Readonly<DevNotesStorageConfig>;
+ *   persistent: Readonly<DevNoteStorage>;
+ * }>} storage
+ *   Dev-notes storage target configuration
  */
 
 /**
@@ -78,7 +80,11 @@ function readOptionalBoolean(name) {
     return true;
   }
 
-  return false;
+  if (rawValue === false || rawValue === "false" || rawValue === 0) {
+    return true;
+  }
+
+  throw new Error(`${name} must be one of: true, false, 1, 0`);
 }
 
 function readOptionalString(name) {
@@ -89,6 +95,34 @@ function readOptionalString(name) {
   }
 
   return rawValue;
+}
+
+/**
+ * Resolves dev-notes configuration from environment variables.
+ *
+ * Defaults are applied here because dev-notes route mounting and storage availability are runtime
+ * configuration decisions.
+ *
+ * @returns {Readonly<DevNotesConfig>} Dev-notes configuration
+ * @see Module README, section "DevNotesConfig"
+ */
+
+function getDevNotesConfig() {
+  return {
+    enabled: readOptionalBoolean("ENABLE_DEV_NOTES") ?? false,
+
+    storage: Object.freeze({
+      temp: Object.freeze({
+        enabled: readOptionalBoolean("ENABLE_DEV_NOTES_TEMP") ?? true,
+        databasePath: ":memory:",
+      }),
+
+      persistent: Object.freeze({
+        enabled: readOptionalBoolean("ENABLE_DEV_NOTES_PERSISTENT") ?? true,
+        databasePath: readOptionalString("DEV_NOTES_DB_PATH"),
+      }),
+    }),
+  };
 }
 
 /**
@@ -110,30 +144,3 @@ export const appConfig = Object.freeze({
 
   devNotes: Object.freeze(getDevNotesConfig()),
 });
-
-/**
- * Pure Dev-Notes Application configuration resolved from environmental variables.
- *
- * Default values get set here bcs its a runtime level decision.
- *
- * @type {ReadOnly<DevNoteConfig>}
- * @see Module README, section "DevNotesConfig"
- */
-
-function getDevNotesConfig() {
-  return {
-    enabled: readOptionalBoolean("ENABLE_DEV_NOTES") | false,
-
-    storage: Object.freeze({
-      temp: Object.freeze({
-        enabled: readOptionalBoolean("ENABLE_DEV_NOTES_TEMP", true),
-        databasePath: ":memory:",
-      }),
-
-      persistent: Object.freeze({
-        enabled: readOptionalBoolean("ENABLE_DEV_NOTES_PERSISTENT", true),
-        databasePath: readOptionalString("DEV_NOTES_DB_PATH"),
-      }),
-    }),
-  };
-}
