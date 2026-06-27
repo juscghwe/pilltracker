@@ -12,6 +12,7 @@
 /**
  * @typedef {object} SqliteRequestedJournalModeInfo
  * @property {string | null} requested Requested SQLite journal mode.
+ * @property {string} set Queried SQLite journal mode.
  * @property {boolean} isConfigured Whether a journal mode was configured.
  * @property {boolean} isValid Whether the requested journal mode is allowed.
  */
@@ -51,45 +52,48 @@
  * }} error Error metadata.
  */
 
+import { getActiveSqliteJournalMode, runSqliteStatements } from "./connection.js";
+import { requestedJournalMode, validSqliteJournalModes } from "../config/appConfig";
+
 /**
  * Builds adapter identity metadata for SQLite health results.
  *
  * @param {string} adapterId Stable adapter identifier.
  * @param {string} sourceModule Source module URL.
- * @returns {SqliteAdapterInfo} Adapter health metadata.
+ * @returns {readonly<SqliteAdapterInfo>} Adapter health metadata.
  */
 export function createAdapterInfo(adapterId, sourceModule) {
-  return {
+  return Object.freeze({
     id: adapterId,
     sourceModule,
-  };
+  });
 }
 
 /**
  * Builds database path configuration metadata for SQLite health results.
  *
  * @param {string | null} databasePath Configured database path.
- * @returns {SqlitePathInfo} Path configuration metadata.
+ * @returns {readonly<SqlitePathInfo>} Path configuration metadata.
  */
 export function createPathInfo(databasePath) {
-  return {
+  return Object.freeze({
     isConfigured: Boolean(databasePath),
-  };
+  });
 }
 
 /**
  * Builds requested SQLite journal mode metadata for health results.
  *
- * @param {string | null} requestedJournalMode Requested SQLite journal mode.
- * @param {Set<string>} validJournalModes Allowed SQLite journal modes.
- * @returns {SqliteRequestedJournalModeInfo} Journal mode metadata.
+ * @param {import("better-sqlite3").Database} connection SQLite connection.
+ * @returns {readonly<SqliteRequestedJournalModeInfo>} Journal mode metadata.
  */
-export function createRequestedJournalModeInfo(requestedJournalMode, validJournalModes) {
-  return {
+export function createRequestedJournalModeInfo(connection) {
+  return Object.freeze({
     requested: requestedJournalMode,
+    set: getActiveSqliteJournalMode(connection),
     isConfigured: Boolean(requestedJournalMode),
-    isValid: requestedJournalMode ? validJournalModes.has(requestedJournalMode) : false,
-  };
+    isValid: requestedJournalMode ? validSqliteJournalModes.has(requestedJournalMode) : false,
+  });
 }
 
 /**
@@ -99,48 +103,51 @@ export function createRequestedJournalModeInfo(requestedJournalMode, validJourna
  * version.
  *
  * @param {import("better-sqlite3").Database} connection SQLite connection.
- * @returns {SqliteHealthProbe} SQLite proof query result.
+ * @returns {readonly<SqliteHealthProbe>} SQLite proof query result.
  */
 export function runSqliteHealthProbe(connection) {
-  const probe = connection
-    .prepare(
-      `
+  const probe = runSqliteStatements(
+    connection,
+    `
         SELECT 
             1 AS ok,
             sqlite_version() AS sqliteVersion
-      `,
-    )
-    .get();
-  return probe;
+    `,
+  );
+  return Object.freeze(probe);
 }
 
 /**
- * @param {HealthySqliteHealthInput} input Health result input.
- * @returns {HealthySqliteHealth} SQLite adapter health result.
+ * Generate SQLite health report.
+ *
+ * @param {import("better-sqlite3").Database} connection SQLite connection.
+ * @returns {readonly <HealthySqliteHealth | HealthySqliteHealth>} SQLite proof query result.
  */
-export function createHealthySqliteHealth(input) {
-  return {
-    status: input.status,
-    engine: input.engine,
-    adapter: input.adapter.id,
-    journalMode: input.journalMode,
-    path: input.path,
-  };
-}
+export function createSQLHealth(connection, adapterID, sourceModule, dbPath) {
+  try {
+    const probe = runSqliteHealthProbe(connection);
 
-/**
- * @param {UnhealthySqliteHealthInput} input Health result input.
- * @returns {UnhealthySqliteHealth} SQLite adapter health result.
- */
-export function createUnhealthySqliteHealth(input) {
-  return {
-    status: input.status,
-    adapter: input.adapter.id,
-    path: input.path,
-    journalMode: input.journalMode,
-    error: {
-      name: input.error.name,
-      message: input.error.message,
-    },
-  };
+    return Object.freeze({
+      status: probe.ok === 1 ? "healthy" : "unhealthy",
+      engine: {
+        reportedFamily: "sqlite",
+        version: probe.sqliteVersion,
+        source: "database_query",
+      },
+      adapter: createAdapterInfo(adapterID, sourceModule),
+      journalMode: createRequestedJournalModeInfo(connection),
+      path: createPathInfo(dbPath),
+    });
+  } catch (error) {
+    return Object.freeze({
+      status: "unhealthy",
+      adapter: createAdapterInfo(adapterID, sourceModule),
+      path: createPathInfo(dbPath),
+      journalMode: createRequestedJournalModeInfo(connection),
+      error: {
+        name: error.name,
+        message: error.message,
+      },
+    });
+  }
 }
