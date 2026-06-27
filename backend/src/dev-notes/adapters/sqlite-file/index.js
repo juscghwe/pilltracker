@@ -159,7 +159,7 @@ function getConnection() {
   const database = openConnection(persistenceConfig);
 
   ensureSchema(database);
-  seedDevNotes(database, 10); // Optional. Only use if you explicitly want demo rows.
+  seedDevNotes(database, minDevNoteEntries); // Optional. Only use if you explicitly want demo rows.
 
   return database;
 }
