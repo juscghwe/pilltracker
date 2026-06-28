@@ -26,6 +26,8 @@ let db;
 
 const adapterId = "better-sqlite3";
 const moduleName = "sqlite-file adapter persistency";
+const sourceModule = import.meta.url;
+const configuredPersistence = appConfig.app.persistence;
 
 /**
  * Resolves and validates configuration required by the SQLite file adapter.
@@ -39,24 +41,24 @@ const moduleName = "sqlite-file adapter persistency";
  * @see Module README, section "sqlite-file adapter".
  */
 function getPersistenceConfig() {
-  const databasePath = appConfig.app.persistence.path;
-  const requestedJournalMode = appConfig.app.persistence.sqlite.requestedJournalMode;
+  const databasePath = configuredPersistence.path;
+  const requestedJournalMode = configuredPersistence.sqlite.requestedJournalMode;
 
   if (!databasePath) {
-    throw new MissingEnvironmentVariableError("DB_PATH", {
+    throw new MissingEnvironmentVariableError("APP_DB_PATH", {
       moduleName,
     });
   }
 
   if (!requestedJournalMode) {
-    throw new MissingEnvironmentVariableError("SQLITE_JOURNAL_MODE", {
+    throw new MissingEnvironmentVariableError("APP_SQLITE_JOURNAL_MODE", {
       moduleName,
     });
   }
 
   if (!validSqliteJournalModes.has(requestedJournalMode)) {
     throw new InvalidEnvironmentVariableError(
-      "SQLITE_JOURNAL_MODE",
+      "APP_SQLITE_JOURNAL_MODE",
       requestedJournalMode,
       validSqliteJournalModes,
       { moduleName },
@@ -153,9 +155,9 @@ function getConnection() {
  */
 const getHealth = createSqliteHealthReporter({
   adapterId,
-  sourceModule: import.meta.url,
-  databasePath: appConfig.app.persistence.path,
-  requestedJournalMode: appConfig.app.persistence.sqlite.requestedJournalMode,
+  sourceModule: sourceModule,
+  databasePath: configuredPersistence.path,
+  requestedJournalMode: configuredPersistence.sqlite.requestedJournalMode,
   validJournalModes: validSqliteJournalModes,
   getConnection,
 });

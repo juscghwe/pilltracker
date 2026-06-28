@@ -3,33 +3,53 @@
 /** @typedef {"delete" | "truncate" | "persist" | "memory" | "wal" | "off"} SqliteJournalMode */
 
 /**
- * @typedef {object} AppConfig
- * @property {RuntimeEnvironment} environment App runtime environment
- * @property {Readonly<{ path: string | null }>} database Database configuration
- * @property {Readonly<{ requestedJournalMode: SqliteJournalMode | null }>} sqlite SQLite
- * @property {Readonly<DevNotesConfig>} devNotes Settings configuration.
+ * @typedef {object} AppPersistenceSqliteConfig
+ * @property {SqliteJournalMode | null} requestedJournalMode Requested SQLite journal mode.
+ */
+
+/**
+ * @typedef {object} AppPersistenceConfig
+ * @property {string | null} path Main application database path.
+ * @property {Readonly<AppPersistenceSqliteConfig>} sqlite Main application SQLite configuration.
+ */
+
+/**
+ * @typedef {object} AppRuntimeConfig
+ * @property {Readonly<AppPersistenceConfig>} persistence Main application persistence
+ *   configuration.
  */
 
 /**
  * @typedef {object} DevNotesStorageConfig
- * @property {boolean | true} enabled Whether this dev-notes storage target is enabled
- * @property {string | null} databasePath SQLite database path for this storage target
+ * @property {boolean} enabled Whether this dev-notes storage target is enabled.
+ * @property {string | null} databasePath SQLite database path for this storage target.
+ * @property {SqliteJournalMode | null} journalMode Requested SQLite journal mode for this storage
+ *   target.
  */
 
 /**
  * @typedef {object} DevNotesConfig
- * @property {Readonly<boolean | false>} enabled Whether dev-notes routes may be mounted
+ * @property {boolean} enabled Whether dev-notes routes may be mounted.
  * @property {Readonly<{
  *   temp: Readonly<DevNotesStorageConfig>;
- *   persistent: Readonly<DevNoteStorage>;
+ *   persistent: Readonly<DevNotesStorageConfig>;
  * }>} storage
- *   Dev-notes storage target configuration
+ *   Dev-notes storage target configuration.
+ */
+
+/**
+ * @typedef {object} AppConfig
+ * @property {RuntimeEnvironment} environment App runtime environment.
+ * @property {Readonly<AppRuntimeConfig>} app Main application configuration.
+ * @property {Readonly<DevNotesConfig>} devNotes Dev-notes configuration.
  */
 
 import {
   InvalidEnvironmentVariableError,
   MissingEnvironmentVariableError,
 } from "../errors/index.js";
+
+const moduleName = "backend config appConfig";
 
 /**
  * Runtime environments accepted by app-level configuration.
@@ -57,7 +77,7 @@ function readRequiredString(name) {
 
   if (rawValue === undefined || rawValue === "") {
     throw new MissingEnvironmentVariableError(name, {
-      moduleName: "backend config appConfig",
+      moduleName: moduleName,
     });
   }
 
@@ -69,7 +89,7 @@ function readRequiredEnum(name, allowedValues) {
 
   if (!allowedValues.has(rawValue)) {
     throw new InvalidEnvironmentVariableError(name, rawValue, allowedValues, {
-      moduleName: "backend config appConfig",
+      moduleName: moduleName,
     });
   }
 
@@ -92,7 +112,7 @@ function readOptionalBoolean(name) {
   }
 
   throw new InvalidEnvironmentVariableError(name, rawValue, ["true", "false", "1", "0"], {
-    moduleName: "backend config appConfig",
+    moduleName: moduleName,
   });
 }
 
@@ -148,12 +168,12 @@ export const appConfig = Object.freeze({
   environment: readRequiredEnum("NODE_ENV", validEnvironments),
 
   app: Object.freeze({
-    persistence: {
+    persistence: Object.freeze({
       path: readOptionalString("APP_DB_PATH"),
       sqlite: Object.freeze({
         requestedJournalMode: readOptionalString("APP_SQLITE_JOURNAL_MODE"),
       }),
-    },
+    }),
   }),
 
   devNotes: Object.freeze(getDevNotesConfig()),

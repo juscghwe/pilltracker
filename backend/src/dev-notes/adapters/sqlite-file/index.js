@@ -31,6 +31,8 @@ let db;
 
 const adapterId = "better-sqlite3";
 const moduleName = "dev-notes sqlite-file adapter";
+const sourceModule = import.meta.url;
+const configuredPersistence = appConfig.devNotes.storage.persistent;
 
 const minDevNoteEntries = 10;
 
@@ -49,8 +51,8 @@ const schemaSql = readFileSync(new URL("./schema.sql", import.meta.url), "utf8")
  * @see Module README, section "sqlite-file adapter".
  */
 function getPersistenceConfig() {
-  const databasePath = appConfig.devNotes.storage.persistent.databasePath;
-  const requestedJournalMode = appConfig.sqlite.requestedJournalMode;
+  const databasePath = configuredPersistence.databasePath;
+  const requestedJournalMode = configuredPersistence.journalMode;
 
   if (!databasePath) {
     throw new MissingEnvironmentVariableError("DEV_NOTES_DB_PATH", {
@@ -59,14 +61,14 @@ function getPersistenceConfig() {
   }
 
   if (!requestedJournalMode) {
-    throw new MissingEnvironmentVariableError("SQLITE_JOURNAL_MODE", {
+    throw new MissingEnvironmentVariableError("DEV_NOTES_PERSISTENT_JOURNAL_MODE", {
       moduleName,
     });
   }
 
   if (!validSqliteJournalModes.has(requestedJournalMode)) {
     throw new InvalidEnvironmentVariableError(
-      "SQLITE_JOURNAL_MODE",
+      "DEV_NOTES_PERSISTENT_JOURNAL_MODE",
       requestedJournalMode,
       validSqliteJournalModes,
       { moduleName },
@@ -171,9 +173,9 @@ function getConnection() {
  */
 const getHealth = createSqliteHealthReporter({
   adapterId,
-  sourceModule: import.meta.url,
-  databasePath: appConfig.devNotes.storage.persistent.databasePath,
-  requestedJournalMode: appConfig.sqlite.requestedJournalMode,
+  sourceModule: sourceModule,
+  databasePath: configuredPersistence.databasePath,
+  requestedJournalMode: configuredPersistence.journalMode,
   validJournalModes: validSqliteJournalModes,
   getConnection,
 });
