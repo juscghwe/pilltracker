@@ -11,7 +11,7 @@
  * @property {() => Readonly<object>} getHealth Returns SQLite health for the file adapter.
  */
 
-import { appConfig, validSqliteJournalModes } from "../../../config/appConfig.js";
+import { appConfig, validSqliteJournalModes, environmentKeys } from "../../../config/appConfig.js";
 import {
   InvalidEnvironmentVariableError,
   MissingEnvironmentVariableError,
@@ -28,6 +28,7 @@ const adapterId = "better-sqlite3";
 const moduleName = "sqlite-file adapter persistency";
 const sourceModule = import.meta.url;
 const configuredPersistence = appConfig.app.persistence;
+const persistenceEnvKeys = environmentKeys.app.persistence;
 
 /**
  * Resolves and validates configuration required by the SQLite file adapter.
@@ -45,20 +46,20 @@ function getPersistenceConfig() {
   const requestedJournalMode = configuredPersistence.sqlite.requestedJournalMode;
 
   if (!databasePath) {
-    throw new MissingEnvironmentVariableError("APP_DB_PATH", {
+    throw new MissingEnvironmentVariableError(persistenceEnvKeys.databasePath, {
       moduleName,
     });
   }
 
   if (!requestedJournalMode) {
-    throw new MissingEnvironmentVariableError("APP_SQLITE_JOURNAL_MODE", {
+    throw new MissingEnvironmentVariableError(persistenceEnvKeys.sqliteJournalMode, {
       moduleName,
     });
   }
 
   if (!validSqliteJournalModes.has(requestedJournalMode)) {
     throw new InvalidEnvironmentVariableError(
-      "APP_SQLITE_JOURNAL_MODE",
+      persistenceEnvKeys.sqliteJournalMode,
       requestedJournalMode,
       validSqliteJournalModes,
       { moduleName },

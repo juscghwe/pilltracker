@@ -44,12 +44,23 @@
  * @property {Readonly<DevNotesConfig>} devNotes Dev-notes configuration.
  */
 
+import { envKeys } from "./envKeys.js";
 import {
   InvalidEnvironmentVariableError,
   MissingEnvironmentVariableError,
 } from "../errors/index.js";
 
 const moduleName = "backend config appConfig";
+
+/**
+ * Environment variable names used by app configuration and adapter validation.
+ *
+ * Keep these names centralized so config parsing and adapter error messages cannot drift apart.
+ *
+ * @type {Readonly<EnvKeys>}
+ * @see backend/src/config/envKeys.js
+ */
+export const environmentKeys = envKeys;
 
 /**
  * Runtime environments accepted by app-level configuration.
@@ -138,21 +149,21 @@ function readOptionalString(name) {
 
 function getDevNotesConfig() {
   return {
-    enabled: readOptionalBoolean("DEV_NOTES_ENABLE") ?? false,
+    enabled: readOptionalBoolean(envKeys.devNotes.enabled) ?? false,
 
     storage: Object.freeze({
       temp: Object.freeze({
-        enabled: readOptionalBoolean("DEV_NOTES_ENABLE_IN_MEMORY") ?? true,
-        databasePath: readOptionalString("DEV_NOTES_IN_MEMORY_PATH") ?? ":memory:",
-        journalMode: readOptionalString("DEV_NOTES_IN_MEMORY_JOURNAL_MODE") ?? "memory",
+        enabled: readOptionalBoolean(envKeys.devNotes.storage.temp.enabled) ?? true,
+        databasePath: readOptionalString(envKeys.devNotes.storage.temp.databasePath) ?? ":memory:",
+        journalMode: readOptionalString(envKeys.devNotes.storage.temp.journalMode) ?? "memory",
       }),
 
       persistent: Object.freeze({
-        enabled: readOptionalBoolean("DEV_NOTES_ENABLE_PERSISTENT") ?? true,
-        databasePath: readOptionalString("DEV_NOTES_DB_PATH"),
+        enabled: readOptionalBoolean(envKeys.devNotes.storage.persistent.enabled) ?? true,
+        databasePath: readOptionalString(envKeys.devNotes.storage.persistent.databasePath),
         journalMode:
-          readOptionalString("DEV_NOTES_PERSISTENT_JOURNAL_MODE") ??
-          readOptionalString("APP_SQLITE_JOURNAL_MODE"),
+          readOptionalString(envKeys.devNotes.storage.persistent.journalMode) ??
+          readOptionalString(envKeys.app.persistence.sqliteJournalMode),
       }),
     }),
   };
@@ -165,13 +176,13 @@ function getDevNotesConfig() {
  * @see Module README, section "appConfig"
  */
 export const appConfig = Object.freeze({
-  environment: readRequiredEnum("NODE_ENV", validEnvironments),
+  environment: readRequiredEnum(envKeys.nodeEnv, validEnvironments),
 
   app: Object.freeze({
     persistence: Object.freeze({
-      path: readOptionalString("APP_DB_PATH"),
+      path: readOptionalString(envKeys.app.persistence.databasePath),
       sqlite: Object.freeze({
-        requestedJournalMode: readOptionalString("APP_SQLITE_JOURNAL_MODE"),
+        requestedJournalMode: readOptionalString(envKeys.app.persistence.sqliteJournalMode),
       }),
     }),
   }),

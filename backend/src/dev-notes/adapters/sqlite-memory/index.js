@@ -14,7 +14,7 @@
 
 import { readFileSync } from "node:fs";
 
-import { appConfig, validSqliteJournalModes } from "../../../config/appConfig.js";
+import { appConfig, validSqliteJournalModes, environmentKeys } from "../../../config/appConfig.js";
 import {
   InvalidEnvironmentVariableError,
   MissingEnvironmentVariableError,
@@ -33,6 +33,7 @@ const adapterId = "better-sqlite3-memory";
 const moduleName = "dev-notes sqlite-memory adapter";
 const sourceModule = import.meta.url;
 const configuredStorage = appConfig.devNotes.storage.temp;
+const tempEnvKeys = environmentKeys.devNotes.storage.temp;
 
 const expectedDatabasePath = ":memory:";
 const minDevNoteEntries = 10;
@@ -45,7 +46,7 @@ function warnIfTempStorageIsFileBacked(databasePath) {
   }
 
   console.warn(
-    `[${moduleName}] DEV_NOTES_IN_MEMORY_PATH is set to "${databasePath}". ` +
+    `[${moduleName}] ${tempEnvKeys.databasePath} is set to "${databasePath}". ` +
       `Temp dev-notes storage will be file-backed and may survive backend restarts. ` +
       `Use ":memory:" for process-lifetime-only storage.`,
   );
@@ -68,7 +69,7 @@ function getPersistenceConfig() {
   const requestedJournalMode = configuredStorage.journalMode;
 
   if (!databasePath) {
-    throw new MissingEnvironmentVariableError("DEV_NOTES_IN_MEMORY_PATH", {
+    throw new MissingEnvironmentVariableError(tempEnvKeys.databasePath, {
       moduleName,
     });
   }
@@ -76,14 +77,14 @@ function getPersistenceConfig() {
   warnIfTempStorageIsFileBacked(databasePath);
 
   if (!requestedJournalMode) {
-    throw new MissingEnvironmentVariableError("DEV_NOTES_IN_MEMORY_JOURNAL_MODE", {
+    throw new MissingEnvironmentVariableError(tempEnvKeys.journalMode, {
       moduleName,
     });
   }
 
   if (!validSqliteJournalModes.has(requestedJournalMode)) {
     throw new InvalidEnvironmentVariableError(
-      "DEV_NOTES_IN_MEMORY_JOURNAL_MODE",
+      tempEnvKeys.journalMode,
       requestedJournalMode,
       validSqliteJournalModes,
       { moduleName },

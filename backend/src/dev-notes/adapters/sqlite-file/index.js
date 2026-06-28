@@ -14,7 +14,7 @@
 
 import { readFileSync } from "node:fs";
 
-import { appConfig, validSqliteJournalModes } from "../../../config/appConfig.js";
+import { appConfig, validSqliteJournalModes, environmentKeys } from "../../../config/appConfig.js";
 import {
   InvalidEnvironmentVariableError,
   MissingEnvironmentVariableError,
@@ -33,6 +33,7 @@ const adapterId = "better-sqlite3";
 const moduleName = "dev-notes sqlite-file adapter";
 const sourceModule = import.meta.url;
 const configuredPersistence = appConfig.devNotes.storage.persistent;
+const persistenceEnvKeys = environmentKeys.devNotes.storage.persistent;
 
 const minDevNoteEntries = 10;
 
@@ -55,20 +56,20 @@ function getPersistenceConfig() {
   const requestedJournalMode = configuredPersistence.journalMode;
 
   if (!databasePath) {
-    throw new MissingEnvironmentVariableError("DEV_NOTES_DB_PATH", {
+    throw new MissingEnvironmentVariableError(persistenceEnvKeys.databasePath, {
       moduleName,
     });
   }
 
   if (!requestedJournalMode) {
-    throw new MissingEnvironmentVariableError("DEV_NOTES_PERSISTENT_JOURNAL_MODE", {
+    throw new MissingEnvironmentVariableError(persistenceEnvKeys.journalMode, {
       moduleName,
     });
   }
 
   if (!validSqliteJournalModes.has(requestedJournalMode)) {
     throw new InvalidEnvironmentVariableError(
-      "DEV_NOTES_PERSISTENT_JOURNAL_MODE",
+      persistenceEnvKeys.journalMode,
       requestedJournalMode,
       validSqliteJournalModes,
       { moduleName },
