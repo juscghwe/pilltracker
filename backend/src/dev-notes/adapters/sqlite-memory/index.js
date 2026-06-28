@@ -39,19 +39,29 @@ const minDevNoteEntries = 10;
 
 const schemaSql = readFileSync(new URL("./schema.sql", import.meta.url), "utf8");
 
+function warnIfTempStorageIsFileBacked(databasePath) {
+  if (databasePath === expectedDatabasePath) {
+    return;
+  }
+
+  console.warn(
+    `[${moduleName}] DEV_NOTES_IN_MEMORY_PATH is set to "${databasePath}". ` +
+      `Temp dev-notes storage will be file-backed and may survive backend restarts. ` +
+      `Use ":memory:" for process-lifetime-only storage.`,
+  );
+}
+
 /**
- * Resolves and validates configuration required by the dev-notes SQLite in-memory adapter.
+ * Resolves and validates configuration required by the dev-notes SQLite temp adapter.
  *
- * This adapter owns validation for the temp dev-notes storage target because the values are optional
- * at app-config level but required when this concrete adapter is used. The temp adapter must use the
- * SQLite `:memory:` database path so its data remains process-lifetime only.
+ * The temp adapter defaults to SQLite `:memory:` storage. If a file path is configured instead, the
+ * adapter still starts but logs a warning because data may survive backend restarts.
  *
- * @returns {DevNotesSqliteMemoryPersistenceConfig} Validated in-memory persistence configuration.
+ * @returns {DevNotesSqliteMemoryPersistenceConfig} Validated temp persistence configuration.
  * @throws {MissingEnvironmentVariableError} When `DEV_NOTES_IN_MEMORY_PATH` or
  *   `DEV_NOTES_IN_MEMORY_JOURNAL_MODE` is missing.
- * @throws {InvalidEnvironmentVariableError} When `DEV_NOTES_IN_MEMORY_PATH` is not `:memory:` or
- *   `DEV_NOTES_IN_MEMORY_JOURNAL_MODE` is not supported.
- * @see Module README, section "sqlite-memory adapter".
+ * @throws {InvalidEnvironmentVariableError} When `DEV_NOTES_IN_MEMORY_JOURNAL_MODE` is not
+ *   supported.
  */
 function getPersistenceConfig() {
   const databasePath = configuredStorage.databasePath;
@@ -63,14 +73,7 @@ function getPersistenceConfig() {
     });
   }
 
-  if (databasePath !== expectedDatabasePath) {
-    throw new InvalidEnvironmentVariableError(
-      "DEV_NOTES_IN_MEMORY_PATH",
-      databasePath,
-      [expectedDatabasePath],
-      { moduleName },
-    );
-  }
+  warnIfTempStorageIsFileBacked(databasePath);
 
   if (!requestedJournalMode) {
     throw new MissingEnvironmentVariableError("DEV_NOTES_IN_MEMORY_JOURNAL_MODE", {
