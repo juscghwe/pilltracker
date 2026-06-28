@@ -18,6 +18,8 @@
  * - GetDevNotesHealth()
  */
 
-import { devNotesSqliteFileAdapter } from "./adapters/sqlite-file.js";
+import { devNotesSqliteFileAdapter } from "./sqlite-file.js";
+import { devNotesSqliteMemoryAdapter } from "./sqlite-memory/index.js";
 
 export const devNotesPersistenceAdapter = devNotesSqliteFileAdapter;
+export const devNotesTempAdapter = devNotesSqliteMemoryAdapter;
