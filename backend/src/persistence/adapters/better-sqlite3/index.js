@@ -39,8 +39,8 @@ const moduleName = "sqlite-file adapter persistency";
  * @see Module README, section "sqlite-file adapter".
  */
 function getPersistenceConfig() {
-  const databasePath = appConfig.database.path;
-  const requestedJournalMode = appConfig.sqlite.requestedJournalMode;
+  const databasePath = appConfig.app.persistence.path;
+  const requestedJournalMode = appConfig.app.persistence.sqlite.requestedJournalMode;
 
   if (!databasePath) {
     throw new MissingEnvironmentVariableError("DB_PATH", {
@@ -154,8 +154,8 @@ function getConnection() {
 const getHealth = createSqliteHealthReporter({
   adapterId,
   sourceModule: import.meta.url,
-  databasePath: appConfig.database.path,
-  requestedJournalMode: appConfig.sqlite.requestedJournalMode,
+  databasePath: appConfig.app.persistence.path,
+  requestedJournalMode: appConfig.app.persistence.sqlite.requestedJournalMode,
   validJournalModes: validSqliteJournalModes,
   getConnection,
 });

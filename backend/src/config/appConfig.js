@@ -118,17 +118,21 @@ function readOptionalString(name) {
 
 function getDevNotesConfig() {
   return {
-    enabled: readOptionalBoolean("ENABLE_DEV_NOTES") ?? false,
+    enabled: readOptionalBoolean("DEV_NOTES_ENABLE") ?? false,
 
     storage: Object.freeze({
       temp: Object.freeze({
-        enabled: readOptionalBoolean("ENABLE_DEV_NOTES_TEMP") ?? true,
-        databasePath: ":memory:",
+        enabled: readOptionalBoolean("DEV_NOTES_ENABLE_IN_MEMORY") ?? true,
+        databasePath: readOptionalString("DEV_NOTES_IN_MEMORY_PATH") ?? ":memory:",
+        journalMode: readOptionalString("DEV_NOTES_IN_MEMORY_JOURNAL_MODE") ?? "memory",
       }),
 
       persistent: Object.freeze({
-        enabled: readOptionalBoolean("ENABLE_DEV_NOTES_PERSISTENT") ?? true,
+        enabled: readOptionalBoolean("DEV_NOTES_ENABLE_PERSISTENT") ?? true,
         databasePath: readOptionalString("DEV_NOTES_DB_PATH"),
+        journalMode:
+          readOptionalString("DEV_NOTES_PERSISTENT_JOURNAL_MODE") ??
+          readOptionalString("APP_SQLITE_JOURNAL_MODE"),
       }),
     }),
   };
@@ -143,12 +147,13 @@ function getDevNotesConfig() {
 export const appConfig = Object.freeze({
   environment: readRequiredEnum("NODE_ENV", validEnvironments),
 
-  database: Object.freeze({
-    path: readOptionalString("DB_PATH"),
-  }),
-
-  sqlite: Object.freeze({
-    requestedJournalMode: readOptionalString("SQLITE_JOURNAL_MODE"),
+  app: Object.freeze({
+    persistence: {
+      path: readOptionalString("APP_DB_PATH"),
+      sqlite: Object.freeze({
+        requestedJournalMode: readOptionalString("APP_SQLITE_JOURNAL_MODE"),
+      }),
+    },
   }),
 
   devNotes: Object.freeze(getDevNotesConfig()),
