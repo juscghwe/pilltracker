@@ -135,7 +135,7 @@ function openConnection(persistenceConfig) {
     // Optional. Only use if you explicitly want demo rows.
     seedDevNotes(db, {
       count: minDevNoteEntries,
-      mode: "maintain-minimum",
+      mode: "when-empty",
     });
   }
 
