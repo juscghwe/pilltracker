@@ -46,14 +46,16 @@ const schemaSql = readFileSync(new URL("./schema.sql", import.meta.url), "utf8")
  * optional at app-config level but required when this concrete adapter is used.
  *
  * @returns {DevNotesSqliteFilePersistenceConfig} Validated persistence configuration.
- * @throws {MissingEnvironmentVariableError} When `DEV_NOTES_DB_PATH` or `SQLITE_JOURNAL_MODE` is
- *   missing.
- * @throws {InvalidEnvironmentVariableError} When `SQLITE_JOURNAL_MODE` is not supported.
+ * @throws {MissingEnvironmentVariableError} When `DEV_NOTES_DB_PATH` is missing or neither
+ *   `DEV_NOTES_PERSISTENT_JOURNAL_MODE` nor `APP_SQLITE_JOURNAL_MODE` is configured.
+ * @throws {InvalidEnvironmentVariableError} When `DEV_NOTES_PERSISTENT_JOURNAL_MODE` is not
+ *   supported.
  * @see Module README, section "sqlite-file adapter".
  */
 function getPersistenceConfig() {
   const databasePath = configuredPersistence.databasePath;
   const requestedJournalMode = configuredPersistence.journalMode;
+  const journalModeEnvName = `${persistenceEnvKeys.journalMode} or ${environmentKeys.app.persistence.sqliteJournalMode}`;
 
   if (!databasePath) {
     throw new MissingEnvironmentVariableError(persistenceEnvKeys.databasePath, {
@@ -62,14 +64,14 @@ function getPersistenceConfig() {
   }
 
   if (!requestedJournalMode) {
-    throw new MissingEnvironmentVariableError(persistenceEnvKeys.journalMode, {
+    throw new MissingEnvironmentVariableError(journalModeEnvName, {
       moduleName,
     });
   }
 
   if (!validSqliteJournalModes.has(requestedJournalMode)) {
     throw new InvalidEnvironmentVariableError(
-      persistenceEnvKeys.journalMode,
+      journalModeEnvName,
       requestedJournalMode,
       validSqliteJournalModes,
       { moduleName },

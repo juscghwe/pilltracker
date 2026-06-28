@@ -37,8 +37,9 @@ const persistenceEnvKeys = environmentKeys.app.persistence;
  * app-config level but required when this concrete adapter is used.
  *
  * @returns {SqliteFilePersistenceConfig} Validated persistence configuration.
- * @throws {MissingEnvironmentVariableError} When `DB_PATH` or `SQLITE_JOURNAL_MODE` is missing.
- * @throws {InvalidEnvironmentVariableError} When `SQLITE_JOURNAL_MODE` is not supported.
+ * @throws {MissingEnvironmentVariableError} When `APP_DB_PATH` or `APP_SQLITE_JOURNAL_MODE` is
+ *   missing.
+ * @throws {InvalidEnvironmentVariableError} When `APP_SQLITE_JOURNAL_MODE` is not supported.
  * @see Module README, section "sqlite-file adapter".
  */
 function getPersistenceConfig() {

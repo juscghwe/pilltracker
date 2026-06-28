@@ -37,11 +37,12 @@ const tempEnvKeys = environmentKeys.devNotes.storage.temp;
 
 const expectedDatabasePath = ":memory:";
 const minDevNoteEntries = 10;
+let warnedAboutFileBackendTempStorageAlready = false;
 
 const schemaSql = readFileSync(new URL("./schema.sql", import.meta.url), "utf8");
 
 function warnIfTempStorageIsFileBacked(databasePath) {
-  if (databasePath === expectedDatabasePath) {
+  if (databasePath === expectedDatabasePath || warnedAboutFileBackendTempStorageAlready) {
     return;
   }
 
@@ -50,6 +51,8 @@ function warnIfTempStorageIsFileBacked(databasePath) {
       `Temp dev-notes storage will be file-backed and may survive backend restarts. ` +
       `Use ":memory:" for process-lifetime-only storage.`,
   );
+
+  warnedAboutFileBackendTempStorageAlready = true;
 }
 
 /**
@@ -196,12 +199,10 @@ const getHealth = createSqliteHealthReporter({
 });
 
 /**
- * SQLite in-memory implementation of the temp dev-notes storage adapter.
+ * SQLite implementation of the temp dev-notes storage adapter.
  *
- * This adapter stores disposable dev-notes data in an in-memory SQLite database. Data is tied to
- * the backend process and is lost when the process exits. It must not be used for medication-domain
- * persistence and should be accessed through the dev-notes storage facade instead of imported
- * directly by routes.
+ * This adapter defaults to an in-memory SQLite database. A custom path may be configured for
+ * development experiments, but file-backed temp storage may survive backend restarts.
  *
  * @type {Readonly<DevNotesSqliteMemoryAdapter>}
  * @see Module README, section "sqlite-memory adapter".
