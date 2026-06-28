@@ -40,7 +40,7 @@ export function seedDevNotes(connection, { count = 10, mode = "when-empty" } = {
       VALUES (
         @text_temp,
         @createdAt,
-        @updatedAt,
+        @updatedAt
       )
     `,
   );

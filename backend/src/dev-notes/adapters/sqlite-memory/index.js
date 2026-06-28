@@ -79,9 +79,10 @@ const getHealth = createSqliteHealthReporter({
 /**
  * SQLite in-memory implementation of the temp dev-notes storage adapter.
  *
- * This adapter stores disposable dev-notes data in a separate SQLite database in-memory. It must
- * not be used for medication-domain persistence and should be accessed through the dev-notes
- * storage facade instead of imported directly by routes.
+ * This adapter stores disposable dev-notes data in an in-memory SQLite database. Data is tied to
+ * the backend process and is lost when the process exits. It must not be used for medication-domain
+ * persistence and should be accessed through the dev-notes storage facade instead of imported
+ * directly by routes.
  *
  * @type {Readonly<DevNotesSqliteMemoryAdapter>}
  * @see Module README, section "sqlite-memory adapter".
