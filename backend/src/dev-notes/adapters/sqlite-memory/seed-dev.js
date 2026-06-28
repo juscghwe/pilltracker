@@ -34,11 +34,13 @@ export function seedDevNotes(connection, { count = 10, mode = "when-empty" } = {
     `
       INSERT INTO dev_notes_temp (
         text_temp,
-        created_at
+        created_at,
+        updated_at
       )
       VALUES (
-        @text,
-        @createdAt
+        @text_temp,
+        @createdAt,
+        @updatedAt,
       )
     `,
   );
@@ -49,8 +51,9 @@ export function seedDevNotes(connection, { count = 10, mode = "when-empty" } = {
 
     for (let index = firstIndex; index <= count; index += 1) {
       insertNote.run({
-        text: `Demo temp note ${index}`,
+        text_temp: `Demo temp note ${index}`,
         createdAt: now,
+        updatedAt: now,
       });
     }
   });
