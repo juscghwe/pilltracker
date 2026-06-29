@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS dev_notes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  text TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);

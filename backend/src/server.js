@@ -12,7 +12,7 @@ async function startServer() {
 try {
   await startServer();
 } catch (error) {
-  console.error("Backendd failed to start.");
+  console.error("Backend failed to start.");
   console.error(error);
 
   process.exit(1);

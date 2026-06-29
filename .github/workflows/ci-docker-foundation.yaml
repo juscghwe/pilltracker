@@ -63,8 +63,8 @@ jobs:
               throw new Error('NODE_ENV is not set to development');
             }
 
-            if (process.env.DB_PATH !== '/data/pilltracker.sqlite') {
-              throw new Error('DB_PATH is not set to /data/pilltracker.sqlite');
+            if (process.env.APP_DB_PATH !== '/data/pilltracker.sqlite') {
+              throw new Error('APP_DB_PATH is not set to /data/pilltracker.sqlite');
             }
 
             console.log('Environment variables are correctly set');

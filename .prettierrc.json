@@ -5,7 +5,7 @@
   "printWidth": 100,
   "proseWrap": "always",
   "objectWrap": "preserve",
-  "plugins": ["prettier-plugin-jsdoc"],
+  "plugins": ["prettier-plugin-jsdoc", "prettier-plugin-sql"],
   "jsdocPrintWidth": 100,
   "jsdocLineWrappingStyle": "greedy"
 }
