@@ -10,6 +10,12 @@
  *   SQLite file connection.
  * @property {() => Readonly<object>} getHealth Returns SQLite health for the dev-notes file
  *   adapter.
+ * @property {() => import("../../types.js").DevNote[]} listDevNotes Lists dev-notes from this
+ *   storage adapter.
+ * @property {(
+ *   input: import("../../types.js").CreateDevNoteInput,
+ * ) => import("../../types.js").DevNote} createDevNote
+ *   Creates a dev-note in this storage adapter.
  */
 
 import { readFileSync } from "node:fs";
@@ -184,6 +190,85 @@ const getHealth = createSqliteHealthReporter({
 });
 
 /**
+ * Lists dev-notes stored in the dev-notes SQLite file database.
+ *
+ * This adapter owns the SQL mapping from its internal table layout to the public dev-note shape.
+ *
+ * @returns {import("../../types.js").DevNote[]} Dev-notes ordered by id.
+ * @throws {MissingEnvironmentVariableError} When required adapter configuration is missing.
+ * @throws {InvalidEnvironmentVariableError} When configured adapter values are invalid.
+ * @throws {SqliteJournalModeMismatchError} When SQLite reports an unexpected active journal mode.
+ * @throws {Error} When SQLite cannot execute the query.
+ * @see Module README, section "dev-notes CRUD".
+ */
+function listDevNotes() {
+  const database = getConnection();
+
+  const rows = database
+    .prepare(
+      `
+        SELECT
+          id,
+          text,
+          created_at AS createdAt,
+          updated_at AS updatedAt
+        FROM dev_notes
+        ORDER BY id ASC
+    `,
+    )
+    .all();
+
+  return rows;
+}
+
+/**
+ * Creates a dev-note in the dev-notes SQLite file database.
+ *
+ * This adapter owns the SQL mapping from the public create payload to its internal table layout.
+ *
+ * @param {import("../../types.js").CreateDevNoteInput} input Create payload.
+ * @returns {import("../../types.js").DevNote} Created dev-note.
+ * @throws {MissingEnvironmentVariableError} When required adapter configuration is missing.
+ * @throws {InvalidEnvironmentVariableError} When configured adapter values are invalid.
+ * @throws {SqliteJournalModeMismatchError} When SQLite reports an unexpected active journal mode.
+ * @throws {Error} When SQLite cannot execute the insert.
+ * @see Module README, section "dev-notes CRUD".
+ */
+function createDevNote(input) {
+  const now = new Date().toISOString();
+  const database = getConnection();
+  const text = input.text.trim();
+
+  const insertDevNote = database.prepare(
+    `
+      INSERT INTO dev_notes (
+        text,
+        created_at,
+        updated_at
+      )
+      VALUES (
+        @text,
+        @createdAt,
+        @updatedAt
+      )
+    `,
+  );
+
+  const result = insertDevNote.run({
+    text: text,
+    createdAt: now,
+    updatedAt: now,
+  });
+
+  return Object.freeze({
+    id: Number(result.lastInsertRowid),
+    text: input.text,
+    createdAt: now,
+    updatedAt: now,
+  });
+}
+
+/**
  * SQLite file implementation of the persistent dev-notes storage adapter.
  *
  * This adapter stores disposable dev-notes data in a separate SQLite database file. It must not be
@@ -197,4 +282,6 @@ const getHealth = createSqliteHealthReporter({
 export const devNotesSqliteFileAdapter = {
   getConnection,
   getHealth,
+  listDevNotes,
+  createDevNote,
 };
