@@ -1,25 +1,5 @@
-/**
- * Description:
- *
- * - Read dev-notes config from appConfig
- * - Know which storage targets are enabled
- * - Map requested storage kind to concrete adapter
- * - Expose high-level dev-notes operations
- * - Return meaningful unavailable/unknown-storage results
- *
- * Exports:
- *
- * - ListDevNotes(storageKind)
- * - GetDevNote(storageKind, id)
- * - CreateDevNote(storageKind, payload)
- * - ReplaceDevNote(storageKind, id, payload)
- * - UpdateDevNote(storageKind, id, payload)
- * - DeleteDevNote(storageKind, id)
- * - GetDevNotesHealth()
- */
-
 import { appConfig } from "../config/appConfig.js";
-import { devNotesSqliteFileAdapter } from "./sqlite-file.js";
+import { devNotesSqliteFileAdapter } from "./sqlite-file/index.js";
 import { devNotesSqliteMemoryAdapter } from "./sqlite-memory/index.js";
 
 /**
@@ -79,30 +59,29 @@ const storageTargets = Object.freeze({
  *   Resolved storage target or failure result.
  */
 function resolveStorageTarget(storageKind) {
-  const storageKindString = storageKind.text.trim();
+  const storageKindString = String(storageKind).trim();
+  const storageTarget = storageTargets[storageKindString];
 
-  if (!(storageKindString in devNotesStorageKinds)) {
+  if (!storageTarget) {
     return Object.freeze({
       ok: false,
-      storageKind: "unknown-storage",
-      message: `There's no storage of name\n${storageKindString}\ndefined in the Backend.`,
+      status: "unknown-storage",
+      message: `Unknown dev-notes storage target: ${storageKindString}`,
     });
   }
 
-  const standIn = storageTargets[devNotesStorageKinds[storageKindString]];
-
-  if (!standIn.config.enabled) {
+  if (!storageTarget.config.enabled) {
     return Object.freeze({
       ok: false,
       status: "storage-disabled",
-      message: `The storage of name\n${storageKindString}\nis disabled. You need to enable it in docker-compose.yaml.`,
+      message: `Dev-notes storage target is disabled: ${storageKindString}`,
     });
   }
 
   return Object.freeze({
     ok: true,
     storageKind: storageKindString,
-    storageTarget: Object.freeze(standIn),
+    storageTarget,
   });
 }
 
@@ -115,19 +94,17 @@ function resolveStorageTarget(storageKind) {
  * @see Dev-notes README, section "storage facade".
  */
 export function listDevNotes(input) {
-  const adapterModel = resolveStorageTarget(input.storageKind.trim());
+  const resolvedStorage = resolveStorageTarget(input.storageKind);
 
-  if (adapterModel.ok) {
-    const adapter = adapterModel.storageTarget.adapter;
-
-    return Object.freeze({
-      ok: true,
-      status: adapter.getHealth(),
-      notes: adapter.listDevNotes(),
-    });
+  if (!resolvedStorage.ok) {
+    return resolvedStorage;
   }
 
-  return adapterModel;
+  return Object.freeze({
+    ok: true,
+    status: "ok",
+    notes: resolvedStorage.storageTarget.adapter.listDevNotes(),
+  });
 }
 
 /**
@@ -140,17 +117,17 @@ export function listDevNotes(input) {
  * @see Dev-notes README, section "storage facade".
  */
 export function createDevNote(input) {
-  const adapterModel = resolveStorageTarget(input.storageKind.trim());
+  const resolvedStorage = resolveStorageTarget(input.storageKind);
 
-  if (adapterModel.ok) {
-    const adapter = adapterModel.storageTarget.adapter;
-
-    return Object.freeze({
-      ok: true,
-      status: adapter.getHealth(),
-      notes: adapter.createDevNotes(input.text.trim()),
-    });
+  if (!resolvedStorage.ok) {
+    return resolvedStorage;
   }
 
-  return adapterModel;
+  return Object.freeze({
+    ok: true,
+    status: "created",
+    note: resolvedStorage.storageTarget.adapter.createDevNote({
+      text: input.text,
+    }),
+  });
 }

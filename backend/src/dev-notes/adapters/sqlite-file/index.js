@@ -218,7 +218,14 @@ function listDevNotes() {
     )
     .all();
 
-  return rows;
+  rows.map((row) =>
+    Object.freeze({
+      id: row.id,
+      text: row.text,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
+    }),
+  );
 }
 
 /**
@@ -262,7 +269,7 @@ function createDevNote(input) {
 
   return Object.freeze({
     id: Number(result.lastInsertRowid),
-    text: input.text,
+    text: text,
     createdAt: now,
     updatedAt: now,
   });

@@ -224,16 +224,23 @@ function listDevNotes() {
       `
         SELECT
           id,
-          text,
+          text_temp AS text,
           created_at AS createdAt,
           updated_at AS updatedAt
-        FROM dev_notes
+        FROM dev_notes_temp
         ORDER BY id ASC
     `,
     )
     .all();
 
-  return rows;
+  return rows.map((row) =>
+    Object.freeze({
+      id: row.id,
+      text: row.text,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
+    }),
+  );
 }
 
 /**
@@ -257,12 +264,12 @@ function createDevNote(input) {
   const insertDevNote = database.prepare(
     `
       INSERT INTO dev_notes_temp (
-        text,
+        text_temp,
         created_at,
         updated_at
       )
       VALUES (
-        @text,
+        @textTemp,
         @createdAt,
         @updatedAt
       )
@@ -270,14 +277,14 @@ function createDevNote(input) {
   );
 
   const result = insertDevNote.run({
-    text: text,
+    textTemp: text,
     createdAt: now,
     updatedAt: now,
   });
 
   return Object.freeze({
     id: Number(result.lastInsertRowid),
-    text: input.text,
+    text: text,
     createdAt: now,
     updatedAt: now,
   });
