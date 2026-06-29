@@ -4,20 +4,6 @@
  * @property {string} requestedJournalMode Requested SQLite journal mode.
  */
 
-/**
- * @typedef {object} DevNotesSqliteMemoryAdapter
- * @property {() => import("better-sqlite3").Database} getConnection Returns the active dev-notes
- *   SQLite temp connection.
- * @property {() => Readonly<object>} getHealth Returns SQLite health for the dev-notes temp
- *   adapter.
- * @property {() => import("../../types.js").DevNote[]} listDevNotes Lists dev-notes from this
- *   storage adapter.
- * @property {(
- *   input: import("../../types.js").CreateDevNoteInput,
- * ) => import("../../types.js").DevNote} createDevNote
- *   Creates a dev-note in this storage adapter.
- */
-
 import { readFileSync } from "node:fs";
 
 import { appConfig, validSqliteJournalModes, environmentKeys } from "../../../config/appConfig.js";
@@ -296,7 +282,7 @@ function createDevNote(input) {
  * This adapter defaults to an in-memory SQLite database. A custom path may be configured for
  * development experiments, but file-backed temp storage may survive backend restarts.
  *
- * @type {Readonly<DevNotesSqliteMemoryAdapter>}
+ * @type {Readonly<import("../../types.js").DevNotesStorageAdapter>}
  * @see Module README, section "sqlite-memory adapter".
  * @see Dev-notes README, section "storage facade".
  */
