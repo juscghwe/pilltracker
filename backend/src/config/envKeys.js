@@ -19,7 +19,11 @@
 /**
  * @typedef {object} DevNotesEnvKeys
  * @property {string} enabled Dev-notes enable env var.
- * @property {Readonly<{temp: Readonly<DevNotesStorageEnvKeys>; persistent: Readonly<DevNotesStorageEnvKeys>;}>} storage Dev-notes storage env vars.
+ * @property {Readonly<{
+ *   temp: Readonly<DevNotesStorageEnvKeys>;
+ *   persistent: Readonly<DevNotesStorageEnvKeys>;
+ * }>} storage
+ *   Dev-notes storage env vars.
  */
 
 /**
