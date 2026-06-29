@@ -14,9 +14,19 @@
 /** @typedef {"temp" | "persistent"} DevNotesStorageKind */
 
 /**
+ * @typedef {object} DevNotesStorageAdapter
+ * @property {() => import("better-sqlite3").Database} getConnection Returns the active dev-notes
+ *   SQLite connection.
+ * @property {() => Readonly<object>} getHealth Returns SQLite health for this storage adapter.
+ * @property {() => DevNote[]} listDevNotes Lists dev-notes from this storage adapter.
+ * @property {(input: CreateDevNoteInput) => DevNote} createDevNote Creates a dev-note in this
+ *   storage adapter.
+ */
+
+/**
  * @typedef {object} DevNotesStorageTarget
  * @property {Readonly<object>} config Storage target configuration.
- * @property {Readonly<object>} adapter Storage target adapter.
+ * @property {Readonly<DevNotesStorageAdapter>} adapter Storage target adapter.
  */
 
 /**
