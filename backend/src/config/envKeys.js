@@ -1,89 +1,36 @@
-/** @typedef {"development" | "test" | "production"} RuntimeEnvironment */
-
-/** @typedef {"delete" | "truncate" | "persist" | "memory" | "wal" | "off"} SqliteJournalMode */
-
-/**
- * @typedef {object} AppPersistenceSqliteConfig
- * @property {SqliteJournalMode | null} requestedJournalMode Requested SQLite journal mode.
- */
-
-/**
- * @typedef {object} AppPersistenceConfig
- * @property {string | null} path Main application database path.
- * @property {Readonly<AppPersistenceSqliteConfig>} sqlite Main application SQLite configuration.
- */
-
-/**
- * @typedef {object} AppRuntimeConfig
- * @property {Readonly<AppPersistenceConfig>} persistence Main application persistence configuration.
- */
-
-/**
- * @typedef {object} DevNotesStorageConfig
- * @property {boolean} enabled Whether this dev-notes storage target is enabled.
- * @property {string | null} databasePath SQLite database path for this storage target.
- * @property {SqliteJournalMode | null} journalMode Requested SQLite journal mode for this storage
- *   target.
- */
-
-/**
- * @typedef {object} DevNotesConfig
- * @property {boolean} enabled Whether dev-notes routes may be mounted.
- * @property {Readonly<{
- *   temp: Readonly<DevNotesStorageConfig>;
- *   persistent: Readonly<DevNotesStorageConfig>;
- * }>} storage Dev-notes storage target configuration.
- */
-
-/**
- * @typedef {object} AppConfig
- * @property {RuntimeEnvironment} environment App runtime environment.
- * @property {Readonly<AppRuntimeConfig>} app Main application configuration.
- * @property {Readonly<DevNotesConfig>} devNotes Dev-notes configuration.
- */
-
 /**
  * @typedef {object} AppPersistenceEnvKeys
- * @property {string} databasePath Environment variable name for the main app database path.
- * @property {string} sqliteJournalMode Environment variable name for the main app SQLite journal
- *   mode.
+ * @property {string} databasePath Main app DB path env var.
+ * @property {string} sqliteJournalMode Main app SQLite journal-mode env var.
  */
 
 /**
  * @typedef {object} AppEnvKeys
- * @property {Readonly<AppPersistenceEnvKeys>} persistence Main app persistence environment variable
- *   names.
+ * @property {Readonly<AppPersistenceEnvKeys>} persistence Main app persistence env vars.
  */
 
 /**
  * @typedef {object} DevNotesStorageEnvKeys
- * @property {string} enabled Environment variable name for enabling this dev-notes storage target.
- * @property {string} databasePath Environment variable name for this dev-notes storage database
- *   path.
- * @property {string} journalMode Environment variable name for this dev-notes storage SQLite
- *   journal mode.
+ * @property {string} enabled Storage enable env var.
+ * @property {string} databasePath Storage DB path env var.
+ * @property {string} journalMode Storage journal-mode env var.
  */
 
 /**
  * @typedef {object} DevNotesEnvKeys
- * @property {string} enabled Environment variable name for enabling dev-notes routes.
- * @property {Readonly<{
- *   temp: Readonly<DevNotesStorageEnvKeys>;
- *   persistent: Readonly<DevNotesStorageEnvKeys>;
- * }>} storage Dev-notes storage environment variable names.
+ * @property {string} enabled Dev-notes enable env var.
+ * @property {Readonly<{temp: Readonly<DevNotesStorageEnvKeys>; persistent: Readonly<DevNotesStorageEnvKeys>;}>} storage Dev-notes storage env vars.
  */
 
 /**
  * @typedef {object} EnvKeys
- * @property {string} nodeEnv Environment variable name for the runtime environment.
- * @property {Readonly<AppEnvKeys>} app Main app environment variable names.
- * @property {Readonly<DevNotesEnvKeys>} devNotes Dev-notes environment variable names.
+ * @property {string} nodeEnv Runtime env var.
+ * @property {Readonly<AppEnvKeys>} app Main app env vars.
+ * @property {Readonly<DevNotesEnvKeys>} devNotes Dev-notes env vars.
  */
 
 /**
- * Environment variable names used by app configuration and adapter validation.
- *
- * Keep these names centralized so config parsing and adapter error messages cannot drift apart.
+ * Central environment variable names used by config parsing and adapter validation.
  *
  * @type {Readonly<EnvKeys>}
  */
