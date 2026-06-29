@@ -9,9 +9,22 @@ services:
       - app_node_modules:/app/node_modules # keep container-side dependencies separate from host filesystem
       - app_data:/data # persistent storage for SQLite DB
     environment:
+      # Runtime
       NODE_ENV: development
-      DB_PATH: /data/pilltracker.sqlite
-      SQLITE_JOURNAL_MODE: wal
+
+      # App - Main SQLite persistence
+      APP_DB_PATH: /data/pilltracker.sqlite
+      APP_SQLITE_JOURNAL_MODE: wal
+
+      # DevNotes
+      DEV_NOTES_ENABLE: "true" #                        # opt, default: "false"
+      # DEV_NOTES_ENABLE_IN_MEMORY: "true"              # opt, default: "true"
+      # DEV_NOTES_IN_MEMORY_PATH: ":memory:"            # opt, default: :memory:
+      # DEV_NOTES_IN_MEMORY_JOURNAL_MODE: "memory"      # opt, default: memory
+      # DEV_NOTES_ENABLE_PERSISTENT: "true"             # opt, default: "true"
+      DEV_NOTES_DB_PATH: /data/devnotes/devnotes.sqlite
+      # DEV_NOTES_PERSISTENT_JOURNAL_MODE: "wal"        # opt, default: APP_SQLITE_JOURNAL_MODE
+
     command: npm run dev # replace with `npm start` for production
 
 volumes:

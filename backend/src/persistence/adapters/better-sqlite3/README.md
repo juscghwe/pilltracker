@@ -161,7 +161,9 @@ An unhealthy result includes:
     },
     error: {
         name: string,
-        message: string,
+        code: error.code ?? "UNKNOWN_ERROR",
+        message: error.message,
+        details: error.details ?? null,
     },
 }
 ```

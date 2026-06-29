@@ -297,6 +297,7 @@ After:
 - `INTAKE_LOGS.status = taken`
 - `NOTIFICATIONS.acknowledged_at != null`
 - `INTAKE_LOGS.taken_time != null`
+
 </details>
 
 ---
@@ -502,6 +503,7 @@ Dependencies:
 
 - `AUTH_CREDENTIALS`
 - `USERS`
+
 </details>
 
 <details> 
@@ -528,6 +530,7 @@ Dependencies:
 
 - `MEDICATIONS`
 - `USERS`
+
 </details>
 
 <details>
@@ -555,6 +558,7 @@ Dependencies:
 - `SCHEDULE_RULES`
 - `MEAL_PROFILES`
 - `MEDICATIONS`
+
 </details>
 
 <details>
@@ -583,6 +587,7 @@ Dependencies:
 - `INTAKE_LOGS`
 - `SCHEDULE_RULES`
 - `MEDICATIONS`
+
 </details>
 
 <details>
@@ -610,6 +615,7 @@ Dependencies:
 - `INVENTORY`
 - `INTAKE_LOGS`
 - `MEDICATIONS`
+
 </details>
 
 <details>
@@ -637,6 +643,7 @@ Dependencies:
 - `NOTIFICATIONS`
 - `INTAKE_LOGS`
 - `MEDICATIONS`
+
 </details>
 
 <details>
@@ -665,6 +672,7 @@ Dependencies:
 - SQLite database file
 - Mounted backup directory
 - External encryption tool/library
+
 </details>
 
 ---
