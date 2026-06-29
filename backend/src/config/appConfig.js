@@ -1,49 +1,3 @@
-/** @typedef {"development" | "test" | "production"} RuntimeEnvironment */
-
-/** @typedef {"delete" | "truncate" | "persist" | "memory" | "wal" | "off"} SqliteJournalMode */
-
-/**
- * @typedef {object} AppPersistenceSqliteConfig
- * @property {SqliteJournalMode | null} requestedJournalMode Requested SQLite journal mode.
- */
-
-/**
- * @typedef {object} AppPersistenceConfig
- * @property {string | null} path Main application database path.
- * @property {Readonly<AppPersistenceSqliteConfig>} sqlite Main application SQLite configuration.
- */
-
-/**
- * @typedef {object} AppRuntimeConfig
- * @property {Readonly<AppPersistenceConfig>} persistence Main application persistence
- *   configuration.
- */
-
-/**
- * @typedef {object} DevNotesStorageConfig
- * @property {boolean} enabled Whether this dev-notes storage target is enabled.
- * @property {string | null} databasePath SQLite database path for this storage target.
- * @property {SqliteJournalMode | null} journalMode Requested SQLite journal mode for this storage
- *   target.
- */
-
-/**
- * @typedef {object} DevNotesConfig
- * @property {boolean} enabled Whether dev-notes routes may be mounted.
- * @property {Readonly<{
- *   temp: Readonly<DevNotesStorageConfig>;
- *   persistent: Readonly<DevNotesStorageConfig>;
- * }>} storage
- *   Dev-notes storage target configuration.
- */
-
-/**
- * @typedef {object} AppConfig
- * @property {RuntimeEnvironment} environment App runtime environment.
- * @property {Readonly<AppRuntimeConfig>} app Main application configuration.
- * @property {Readonly<DevNotesConfig>} devNotes Dev-notes configuration.
- */
-
 import { envKeys } from "./envKeys.js";
 import {
   InvalidEnvironmentVariableError,
@@ -65,14 +19,14 @@ export const environmentKeys = envKeys;
 /**
  * Runtime environments accepted by app-level configuration.
  *
- * @type {Set<RuntimeEnvironment>}
+ * @type {Set<import("./types.js").RuntimeEnvironment>}
  */
 export const validEnvironments = new Set(["development", "test", "production"]);
 
 /**
  * SQLite journal modes accepted by persistence configuration.
  *
- * @type {Set<SqliteJournalMode>}
+ * @type {Set<import("./types.js").SqliteJournalMode>}
  */
 export const validSqliteJournalModes = new Set([
   "delete",
@@ -143,7 +97,7 @@ function readOptionalString(name) {
  * Defaults are applied here because dev-notes route mounting and storage availability are runtime
  * configuration decisions.
  *
- * @returns {Readonly<DevNotesConfig>} Dev-notes configuration
+ * @returns {Readonly<import("./types.js").DevNotesConfig>} Dev-notes configuration
  * @see Module README, section "DevNotesConfig"
  */
 
@@ -172,7 +126,7 @@ function getDevNotesConfig() {
 /**
  * Application configuration resolved from environment variables.
  *
- * @type {Readonly<AppConfig>}
+ * @type {Readonly<import("./types.js").AppConfig>}
  * @see Module README, section "appConfig"
  */
 export const appConfig = Object.freeze({

@@ -204,7 +204,7 @@ function listDevNotes() {
     )
     .all();
 
-  rows.map((row) =>
+  return rows.map((row) =>
     Object.freeze({
       id: row.id,
       text: row.text,
