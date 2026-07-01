@@ -176,7 +176,7 @@ const getHealth = createSqliteHealthReporter({
 });
 
 /**
- * Lists dev-notes stored in the dev-notes SQLite file database.
+ * Lists dev-notes stored in the dev-notes SQLite file database. (GET /dev-notes)
  *
  * This adapter owns the SQL mapping from its internal table layout to the public dev-note shape.
  *
@@ -215,7 +215,121 @@ function listDevNotes() {
 }
 
 /**
- * Creates a dev-note in the dev-notes SQLite file database.
+ * Gets one dev-note by id from the dev-notes SQLite file database. (GET)
+ *
+ * This adapter owns the SQL mapping from its internal table layout to the public dev-note shape.
+ * The lookup is intentionally id-only. Text search belongs to `searchDevNotesByText` because it can
+ * return multiple rows.
+ *
+ * @param {import("../../types.js").GetDevNoteByIdInput} input Lookup input.
+ * @returns {import("../../types.js").DevNote | null} Matching dev-note, or null when no row exists.
+ * @throws {MissingEnvironmentVariableError} When required adapter configuration is missing.
+ * @throws {InvalidEnvironmentVariableError} When configured adapter values are invalid.
+ * @throws {SqliteJournalModeMismatchError} When SQLite reports an unexpected active journal mode.
+ * @throws {Error} When SQLite cannot execute the query.
+ * @see Module README, section "dev-notes CRUD".
+ */
+function getDevNoteById(input) {
+  const database = getConnection();
+  const id = Number(input.id);
+
+  if (!Number.isInteger(id) || id < 1) {
+    return null;
+  }
+
+  const row = database
+    .prepare(
+      `
+        SELECT
+          id,
+          text,
+          created_at AS createdAt,
+          updated_at AS updatedAt
+        FROM dev_notes
+        WHERE id = @id
+      `,
+    )
+    .get({
+      id,
+    });
+
+  if (!row) {
+    return null;
+  }
+
+  return Object.freeze({
+    id: row.id,
+    text: row.text,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  });
+}
+
+/**
+ * Escapes special SQLite LIKE wildcard characters in a user-provided search fragment.
+ *
+ * SQLite LIKE treats `%` as any-length wildcard and `_` as single-character wildcard. Escaping them
+ * keeps user input literal while still allowing this adapter to add its own surrounding `%...%`
+ * contains-search pattern.
+ *
+ * @param {string} value Raw search fragment.
+ * @returns {string} LIKE-safe search fragment.
+ */
+function escapeSqlLikePattern(value) {
+  return value.replace(/[\\%_]/g, "\\$&");
+}
+
+/**
+ * Searches dev-notes by partial text in the dev-notes SQLite file database. (GET)
+ *
+ * This is a filtered list operation, not a single-resource lookup. It returns every dev-note whose
+ * text contains the provided search fragment, case-insensitively.
+ *
+ * @param {import("../../types.js").SearchDevNotesByTextInput} input Search input.
+ * @returns {import("../../types.js").DevNote[]} Matching dev-notes ordered by id.
+ * @throws {MissingEnvironmentVariableError} When required adapter configuration is missing.
+ * @throws {InvalidEnvironmentVariableError} When configured adapter values are invalid.
+ * @throws {SqliteJournalModeMismatchError} When SQLite reports an unexpected active journal mode.
+ * @throws {Error} When SQLite cannot execute the query.
+ * @see Module README, section "dev-notes CRUD".
+ */
+function getDevNotesByText(input) {
+  const database = getConnection();
+  const text = input.text.trim();
+
+  if (text === "") {
+    return [];
+  }
+
+  const rows = database
+    .prepare(
+      `
+        SELECT
+          id,
+          text,
+          created_at AS createdAt,
+          updated_at AS updatedAt
+        FROM dev_notes
+        WHERE text COLLATE NOCASE LIKE @textPattern ESCAPE char(92)
+        ORDER BY id ASC
+      `,
+    )
+    .all({
+      textPattern: `%${escapeSqlLikePattern(text)}%`,
+    });
+
+  return rows.map((row) =>
+    Object.freeze({
+      id: row.id,
+      text: row.text,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
+    }),
+  );
+}
+
+/**
+ * Creates a dev-note in the dev-notes SQLite file database. (POST)
  *
  * This adapter owns the SQL mapping from the public create payload to its internal table layout.
  *
@@ -262,6 +376,180 @@ function createDevNote(input) {
 }
 
 /**
+ * Replaces dev-note in the dev-notes SQLite file database. (PUT)
+ *
+ * This adapter owns the SQL mapping from the public create payload to its internal table layout.
+ *
+ * @param {import("../../types.js").ReplaceDevNoteInput} input Replace payload.
+ * @returns {import("../../types.js").DevNote} Replaced dev-note.
+ * @throws {MissingEnvironmentVariableError} When required adapter configuration is missing.
+ * @throws {InvalidEnvironmentVariableError} When configured adapter values are invalid.
+ * @throws {SqliteJournalModeMismatchError} When SQLite reports an unexpected active journal mode.
+ * @throws {Error} When SQLite cannot execute the insert.
+ * @see Module README, section "dev-notes CRUD".
+ */
+function replaceDevNote(input) {
+  const now = new Date().toISOString();
+  const database = getConnection();
+  const id = Number(input.id);
+  const text = input.text.trim();
+
+  if (!Number.isInteger(id) || id < 1) {
+    // TODO: throw object id not available, probably better in route or seam
+    return null;
+  }
+
+  if (text === "") {
+    // TODO: throw object text cannot be empty, probably better in route or seam
+    return null;
+  }
+
+  const update = database.prepare(
+    // TODO: can replace be used instead? should i add a upsert placeholder for true PUT?
+    `
+      UPDATE dev_notes
+      SET
+        text = @text,
+        created_at = @createdAt,
+        updated_at = @updatedAt
+      WHERE id = @id
+      RETURNING
+        id,
+        text,
+        created_at AS createdAt,
+        updated_at AS updatedAt
+    `,
+  );
+
+  const result = update.run({
+    id: id,
+    text: text,
+    createdAt: now,
+    updatedAt: now,
+  });
+
+  return Object.freeze({
+    id: result.id,
+    text: result.text,
+    createdAt: result.createdAt,
+    updatedAt: result.updatedAt,
+  });
+}
+
+/**
+ * Updates dev-note in the dev-notes SQLite file database. (PATCH)
+ *
+ * This adapter owns the SQL mapping from the public create payload to its internal table layout.
+ *
+ * @param {import("../../types.js").UpdateDevNoteInput} input Update payload.
+ * @returns {import("../../types.js").DevNote} Updated dev-note.
+ * @throws {MissingEnvironmentVariableError} When required adapter configuration is missing.
+ * @throws {InvalidEnvironmentVariableError} When configured adapter values are invalid.
+ * @throws {SqliteJournalModeMismatchError} When SQLite reports an unexpected active journal mode.
+ * @throws {Error} When SQLite cannot execute the insert.
+ * @see Module README, section "dev-notes CRUD".
+ */
+function updateDevNote(input) {
+  const now = new Date().toISOString();
+  const database = getConnection();
+  const id = Number(input.id);
+  const text = input.text.trim();
+
+  if (!Number.isInteger(id) || id < 1) {
+    return null;
+  }
+
+  if (text === "") {
+    return null;
+  }
+
+  const update = database.prepare(
+    `
+      UPDATE dev_notes
+      SET
+        text = @text,
+        updated_at = @updatedAt
+      WHERE id = @id
+      RETURNING
+        id,
+        text,
+        created_at AS createdAt,
+        updated_at AS updatedAt
+    `,
+  );
+
+  const result = update.run({
+    id: id,
+    text: text,
+    updatedAt: now,
+  });
+
+  return Object.freeze({
+    id: result.id,
+    text: result.text,
+    createdAt: result.createdAt,
+    updatedAt: result.updatedAt,
+  });
+}
+
+/**
+ * Deletes dev-note in the dev-notes SQLite file database. (DELETE)
+ *
+ * This adapter owns the SQL mapping from the public delete payload to its internal table layout.
+ *
+ * @param {import("../../types.js").DeleteDevNoteInput} input Delete payload.
+ * @returns {import("../../types.js").DevNote} Deleted dev-note.
+ * @throws {MissingEnvironmentVariableError} When required adapter configuration is missing.
+ * @throws {InvalidEnvironmentVariableError} When configured adapter values are invalid.
+ * @throws {SqliteJournalModeMismatchError} When SQLite reports an unexpected active journal mode.
+ * @throws {Error} When SQLite cannot execute the insert.
+ * @see Module README, section "dev-notes CRUD".
+ */
+function deleteDevNote(input) {
+  const database = getConnection();
+  const id = Number(input.id);
+
+  if (!Number.isInteger(id) || id < 1) {
+    return null;
+  }
+
+  const remove = database.prepare(
+    `
+      DELETE FROM dev_notes
+      WHERE id = @id
+      RETURNING
+        id,
+        text,
+        created_at AS createdAt,
+        updated_at AS updatedAt
+    `,
+  );
+
+  const result = remove.run({
+    id: id,
+  });
+
+  return Object.freeze({
+    id: result.id,
+    text: result.text,
+    createdAt: result.createdAt,
+    updatedAt: result.updatedAt,
+  });
+}
+
+// probably should be seam
+function metadataDevNote(input) {
+  void input;
+  return null;
+}
+
+// probably should be seam, make it dynamic metadata query maybe
+function optionsDevNotes(input) {
+  void input;
+  return null;
+}
+
+/**
  * SQLite file implementation of the persistent dev-notes storage adapter.
  *
  * This adapter stores disposable dev-notes data in a separate SQLite database file. It must not be
@@ -276,5 +564,12 @@ export const devNotesSqliteFileAdapter = {
   getConnection,
   getHealth,
   listDevNotes,
+  getDevNoteById,
+  getDevNotesByText,
   createDevNote,
+  replaceDevNote,
+  updateDevNote,
+  deleteDevNote,
+  metadataDevNote,
+  optionsDevNotes,
 };

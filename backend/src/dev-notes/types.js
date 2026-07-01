@@ -21,6 +21,10 @@
  * @property {() => DevNote[]} listDevNotes Lists dev-notes from this storage adapter.
  * @property {(input: CreateDevNoteInput) => DevNote} createDevNote Creates a dev-note in this
  *   storage adapter.
+ * @property {(input: GetDevNoteByIdInput) => DevNote | null} getDevNoteById Gets one dev-note by
+ *   id.
+ * @property {(input: SearchDevNotesByTextInput) => DevNote[]} searchDevNotesByText Searches
+ *   dev-notes by text fragment.
  */
 
 /**
@@ -42,6 +46,32 @@
  * @property {boolean} ok Whether the operation succeeded.
  * @property {string} status Machine-readable operation status.
  * @property {DevNote} [note] Created dev-note.
+ * @property {string} [message] Human-readable failure message.
+ */
+
+/**
+ * @typedef {object} GetDevNoteByIdInput
+ * @property {number | string} id Dev-note id.
+ */
+
+/**
+ * @typedef {object} SearchDevNotesByTextInput
+ * @property {string} text Text fragment to search for.
+ */
+
+/**
+ * @typedef {object} DevNotesGetResult
+ * @property {boolean} ok Whether the operation succeeded.
+ * @property {string} status Machine-readable operation status.
+ * @property {DevNote | null} [note] Found dev-note, or null when no note matched.
+ * @property {string} [message] Human-readable failure message.
+ */
+
+/**
+ * @typedef {object} DevNotesSearchResult
+ * @property {boolean} ok Whether the operation succeeded.
+ * @property {string} status Machine-readable operation status.
+ * @property {DevNote[]} [notes] Matching dev-notes.
  * @property {string} [message] Human-readable failure message.
  */
 
