@@ -1,6 +1,6 @@
 import { appConfig } from "../config/appConfig.js";
-import { devNotesSqliteFileAdapter } from "./sqlite-file/index.js";
-import { devNotesSqliteMemoryAdapter } from "./sqlite-memory/index.js";
+import { devNotesSqliteFileAdapter } from "./adapters/sqlite-file/index.js";
+import { devNotesSqliteMemoryAdapter } from "./adapters/sqlite-memory/index.js";
 
 /**
  * Dev-notes storage kinds accepted by the dev-notes facade.
