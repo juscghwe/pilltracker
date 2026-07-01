@@ -51,7 +51,7 @@ function returnCodes(res, message) {
   }
 }
 
-// TODO: add health, head and options
+// TODO: add head and options
 
 /**
  * Lists all dev notes from the selected storage target. OR Searches dev notes by text from the
