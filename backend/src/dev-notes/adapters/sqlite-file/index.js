@@ -293,7 +293,7 @@ function escapeSqlLikePattern(value) {
  * @throws {Error} When SQLite cannot execute the query.
  * @see Module README, section "dev-notes CRUD".
  */
-function getDevNotesByText(input) {
+function searchDevNotesByText(input) {
   const database = getConnection();
   const text = input.text.trim();
 
@@ -346,39 +346,53 @@ function createDevNote(input) {
   const database = getConnection();
   const text = input.text.trim();
 
+  if (text === "") {
+    return null;
+  }
+
   const insertDevNote = database.prepare(
     `
       INSERT INTO dev_notes (
-        text,
-        created_at,
-        updated_at
-      )
-      VALUES (
-        @text,
-        @createdAt,
-        @updatedAt
-      )
+          text,
+          created_at,
+          updated_at
+        )
+        VALUES (
+          @text,
+          @createdAt,
+          @updatedAt
+        )
+        RETURNING
+          id,
+          text,
+          created_at AS createdAt,
+          updated_at AS updatedAt
     `,
   );
 
-  const result = insertDevNote.run({
+  const row = insertDevNote.get({
     text: text,
     createdAt: now,
     updatedAt: now,
   });
 
+  if (!row) {
+    return null;
+  }
+
   return Object.freeze({
-    id: Number(result.lastInsertRowid),
-    text: text,
-    createdAt: now,
-    updatedAt: now,
+    id: row.id,
+    text: row.text,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
   });
 }
 
 /**
  * Replaces dev-note in the dev-notes SQLite file database. (PUT)
  *
- * This adapter owns the SQL mapping from the public create payload to its internal table layout.
+ * This adapter owns the SQL mapping from the public replacement payload to its internal table
+ * layout.
  *
  * @param {import("../../types.js").ReplaceDevNoteInput} input Replace payload.
  * @returns {import("../../types.js").DevNote} Replaced dev-note.
@@ -410,7 +424,6 @@ function replaceDevNote(input) {
       UPDATE dev_notes
       SET
         text = @text,
-        created_at = @createdAt,
         updated_at = @updatedAt
       WHERE id = @id
       RETURNING
@@ -421,25 +434,28 @@ function replaceDevNote(input) {
     `,
   );
 
-  const result = update.run({
+  const row = update.get({
     id: id,
     text: text,
-    createdAt: now,
     updatedAt: now,
   });
 
+  if (!row) {
+    return null;
+  }
+
   return Object.freeze({
-    id: result.id,
-    text: result.text,
-    createdAt: result.createdAt,
-    updatedAt: result.updatedAt,
+    id: row.id,
+    text: row.text,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
   });
 }
 
 /**
  * Updates dev-note in the dev-notes SQLite file database. (PATCH)
  *
- * This adapter owns the SQL mapping from the public create payload to its internal table layout.
+ * This adapter owns the SQL mapping from the public update payload to its internal table layout.
  *
  * @param {import("../../types.js").UpdateDevNoteInput} input Update payload.
  * @returns {import("../../types.js").DevNote} Updated dev-note.
@@ -478,17 +494,21 @@ function updateDevNote(input) {
     `,
   );
 
-  const result = update.run({
+  const row = update.get({
     id: id,
     text: text,
     updatedAt: now,
   });
 
+  if (!row) {
+    return null;
+  }
+
   return Object.freeze({
-    id: result.id,
-    text: result.text,
-    createdAt: result.createdAt,
-    updatedAt: result.updatedAt,
+    id: row.id,
+    text: row.text,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
   });
 }
 
@@ -525,15 +545,17 @@ function deleteDevNote(input) {
     `,
   );
 
-  const result = remove.run({
+  const row = remove.get({
     id: id,
   });
-
+  if (!row) {
+    return null;
+  }
   return Object.freeze({
-    id: result.id,
-    text: result.text,
-    createdAt: result.createdAt,
-    updatedAt: result.updatedAt,
+    id: row.id,
+    text: row.text,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
   });
 }
 
@@ -565,7 +587,7 @@ export const devNotesSqliteFileAdapter = {
   getHealth,
   listDevNotes,
   getDevNoteById,
-  getDevNotesByText,
+  searchDevNotesByText,
   createDevNote,
   replaceDevNote,
   updateDevNote,

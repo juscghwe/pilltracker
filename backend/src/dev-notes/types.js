@@ -25,6 +25,9 @@
  *   id.
  * @property {(input: SearchDevNotesByTextInput) => DevNote[]} searchDevNotesByText Searches
  *   dev-notes by text fragment.
+ * @property {(input: ReplaceDevNoteInput) => DevNote | null} replaceDevNote Replaces one dev-note.
+ * @property {(input: UpdateDevNoteInput) => DevNote | null} updateDevNote Updates one dev-note.
+ * @property {(input: DeleteDevNoteInput) => DevNote | null} deleteDevNote Deletes one dev-note.
  */
 
 /**
@@ -73,6 +76,23 @@
  * @property {string} status Machine-readable operation status.
  * @property {DevNote[]} [notes] Matching dev-notes.
  * @property {string} [message] Human-readable failure message.
+ */
+
+/**
+ * @typedef {object} ReplaceDevNoteInput
+ * @property {number | string} id Dev-note id.
+ * @property {string} text Replacement dev-note text.
+ */
+
+/**
+ * @typedef {object} UpdateDevNoteInput
+ * @property {number | string} id Dev-note id.
+ * @property {string} text Updated dev-note text.
+ */
+
+/**
+ * @typedef {object} DeleteDevNoteInput
+ * @property {number | string} id Dev-note id.
  */
 
 export {};
