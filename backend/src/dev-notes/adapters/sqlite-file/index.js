@@ -286,7 +286,8 @@ function escapeSqlLikePattern(value) {
  * text contains the provided search fragment, case-insensitively.
  *
  * @param {import("../../types.js").SearchDevNotesByTextInput} input Search input.
- * @returns {import("../../types.js").DevNote[]} Matching dev-notes ordered by id.
+ * @returns {import("../../types.js").DevNote[] | null} Matching dev-notes ordered by id. Or null
+ *   when input cannot produce valid dev-notes.
  * @throws {MissingEnvironmentVariableError} When required adapter configuration is missing.
  * @throws {InvalidEnvironmentVariableError} When configured adapter values are invalid.
  * @throws {SqliteJournalModeMismatchError} When SQLite reports an unexpected active journal mode.
@@ -334,7 +335,8 @@ function searchDevNotesByText(input) {
  * This adapter owns the SQL mapping from the public create payload to its internal table layout.
  *
  * @param {import("../../types.js").CreateDevNoteInput} input Create payload.
- * @returns {import("../../types.js").DevNote} Created dev-note.
+ * @returns {import("../../types.js").DevNote | null} Created dev-note. Or null when input cannot
+ *   produce a valid dev-note.
  * @throws {MissingEnvironmentVariableError} When required adapter configuration is missing.
  * @throws {InvalidEnvironmentVariableError} When configured adapter values are invalid.
  * @throws {SqliteJournalModeMismatchError} When SQLite reports an unexpected active journal mode.
@@ -395,7 +397,8 @@ function createDevNote(input) {
  * layout.
  *
  * @param {import("../../types.js").ReplaceDevNoteInput} input Replace payload.
- * @returns {import("../../types.js").DevNote} Replaced dev-note.
+ * @returns {import("../../types.js").DevNote | null} Replaced dev-note. Or null when input cannot
+ *   produce a valid dev-note.
  * @throws {MissingEnvironmentVariableError} When required adapter configuration is missing.
  * @throws {InvalidEnvironmentVariableError} When configured adapter values are invalid.
  * @throws {SqliteJournalModeMismatchError} When SQLite reports an unexpected active journal mode.
@@ -409,12 +412,10 @@ function replaceDevNote(input) {
   const text = input.text.trim();
 
   if (!Number.isInteger(id) || id < 1) {
-    // TODO: throw object id not available, probably better in route or seam
     return null;
   }
 
   if (text === "") {
-    // TODO: throw object text cannot be empty, probably better in route or seam
     return null;
   }
 
@@ -458,7 +459,8 @@ function replaceDevNote(input) {
  * This adapter owns the SQL mapping from the public update payload to its internal table layout.
  *
  * @param {import("../../types.js").UpdateDevNoteInput} input Update payload.
- * @returns {import("../../types.js").DevNote} Updated dev-note.
+ * @returns {import("../../types.js").DevNote | null} Updated dev-note. Or null when input cannot
+ *   produce a valid dev-note.
  * @throws {MissingEnvironmentVariableError} When required adapter configuration is missing.
  * @throws {InvalidEnvironmentVariableError} When configured adapter values are invalid.
  * @throws {SqliteJournalModeMismatchError} When SQLite reports an unexpected active journal mode.
@@ -518,7 +520,8 @@ function updateDevNote(input) {
  * This adapter owns the SQL mapping from the public delete payload to its internal table layout.
  *
  * @param {import("../../types.js").DeleteDevNoteInput} input Delete payload.
- * @returns {import("../../types.js").DevNote} Deleted dev-note.
+ * @returns {import("../../types.js").DevNote | null} Deleted dev-note. Or null when input cannot
+ *   return a valid dev-note.
  * @throws {MissingEnvironmentVariableError} When required adapter configuration is missing.
  * @throws {InvalidEnvironmentVariableError} When configured adapter values are invalid.
  * @throws {SqliteJournalModeMismatchError} When SQLite reports an unexpected active journal mode.
