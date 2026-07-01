@@ -81,6 +81,7 @@ export function listDevNotes(input) {
  *
  * @param {object} input List input.
  * @param {string} input.storageKind Requested storage kind.
+ * @param {number | string} input.id Dev-note id.
  * @returns {import("./types.js").DevNotesGetResult} List result.
  * @see Dev-notes README, section "storage facade".
  */
@@ -111,6 +112,7 @@ export function getDevNoteById(input) {
  *
  * @param {object} input List input.
  * @param {string} input.storageKind Requested storage kind.
+ * @param {string} input.text Dev-note text.
  * @returns {import("./types.js").DevNotesSearchResult} List result.
  * @see Dev-notes README, section "storage facade".
  */

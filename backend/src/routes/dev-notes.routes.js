@@ -1,92 +1,82 @@
 import { Router } from "express";
+import {
+  listDevNotes,
+  getDevNoteById,
+  searchDevNotesByText,
+  createDevNote,
+  replaceDevNote,
+  updateDevNote,
+  deleteDevNote,
+} from "../dev-notes/index.js";
 
 const devNotesRouter = Router();
 
-// TODO: refactor into adapter and load from appConfig
-/**
- * Storage targets accepted by dev-notes routes.
- *
- * @type {Readonly<
- *   Record<
- *     import("../dev-notes/types.js").DevNotesStorageKind,
- *     import("../dev-notes/types.js").DevNotesRouteStorageTarget
- *   >
- * >}
- */
-const devNotesStorageTargets = Object.freeze({
-  persistent: Object.freeze({
-    kind: "persistent",
-    adapterPath: "persistent",
-  }),
+function returnCodes(res, message) {
+  switch (message.status) {
+    case "ok":
+    case "replaced":
+    case "updated":
+    case "deleted":
+      res.status(200).json(message);
+      break;
 
-  temp: Object.freeze({
-    kind: "temp",
-    adapterPath: "temp",
-  }),
-});
+    case "created":
+      res.status(201).json(message);
+      break;
 
-/**
- * Resolves a route storage value to a known dev-notes storage target.
- *
- * @param {string} storage Raw route storage parameter.
- * @returns {import("../dev-notes/types.js").DevNotesRouteStorageTarget | null} Matching storage
- *   target, or null when unsupported.
- */
-function resolveDevNotesStorageTarget(storage) {
-  return devNotesStorageTargets[storage] ?? null;
-}
+    case "no-content": // TODO: not yet implemented in dev-notes CRUD
+      res.status(204).end();
+      break;
 
-/**
- * Validates and stores the dev-notes storage target for later route handlers.
- *
- * @param {import("express").Request} _req Express request.
- * @param {import("express").Response} res Express response.
- * @param {import("express").NextFunction} next Express next callback.
- * @param {string} storage Raw `:storage` route parameter.
- * @returns {void}
- */
-function resolveDevNotesStorageParam(_req, res, next, storage) {
-  const storageTarget = resolveDevNotesStorageTarget(storage);
+    case "invalid-request":
+      res.status(400).json(message);
+      break;
 
-  if (!storageTarget) {
-    res.status(404).json({
-      error: "Unknown dev-notes storage target",
-      storage,
-      allowedValues: Object.keys(devNotesStorageTargets),
-    });
-    return;
+    case "not-found":
+    case "unknown-storage":
+    case "storage-disabled":
+      res.status(404).json(message);
+      break;
+
+    case "operation-failed":
+      res.status(500).json(message);
+      break;
+
+    default:
+      res.status(500).json({
+        ok: false,
+        status: "unknown-result-status",
+        message: `Unhandled result status: ${message.status}`,
+      });
   }
-
-  res.locals.devNotesStorageTarget = storageTarget;
-  next();
 }
 
-/**
- * Returns the resolved dev-notes storage target for the current response.
- *
- * @param {import("express").Response} res Express response.
- * @returns {DevNotesStorageTarget} Resolved dev-notes storage target.
- */
-function getDevNotesStorageTarget(res) {
-  return res.locals.devNotesStorageTarget;
-}
-
-devNotesRouter.param("storage", resolveDevNotesStorageParam);
+// TODO: add health, head and options
 
 /**
- * Lists all dev notes from the selected storage target.
+ * Lists all dev notes from the selected storage target. OR Searches dev notes by text from the
+ * selected storage target.
  *
  * @example
  *   `GET /api/dev-notes/:storage`;
+ *
+ * @example
+ *   `GET /api/dev-notes/:storage?text=search`;
  */
-devNotesRouter.get("/:storage", (_req, res) => {
-  const storageTarget = getDevNotesStorageTarget(res);
+devNotesRouter.get("/:storage", (req, res) => {
+  const storageKind = req.params.storage ?? null;
+  const textQuery = req.query.text ?? null;
+  let message;
 
-  res.status(501).json({
-    message: "List dev notes is not implemented yet",
-    storage: storageTarget.kind,
-    adapterPath: storageTarget.adapterPath,
-  });
+  if (typeof textQuery === "string") {
+    // GET /:storage?text=search
+    message = searchDevNotesByText({ storageKind: storageKind, text: textQuery });
+  } else {
+    // GET /:storage
+    message = listDevNotes({ storageKind });
+  }
+
+  return returnCodes(res, message);
 });
 
 /**
@@ -96,14 +86,12 @@ devNotesRouter.get("/:storage", (_req, res) => {
  *   `GET /api/dev-notes/:storage/:id`;
  */
 devNotesRouter.get("/:storage/:id", (req, res) => {
-  const storageTarget = getDevNotesStorageTarget(res);
+  const storageKind = req.params.storage ?? null;
+  const idQuery = req.params.id;
 
-  res.status(501).json({
-    message: "Read dev note is not implemented yet",
-    storage: storageTarget.kind,
-    adapterPath: storageTarget.adapterPath,
-    id: req.params.id,
-  });
+  const message = getDevNoteById({ storageKind: storageKind, id: idQuery });
+
+  return returnCodes(res, message);
 });
 
 /**
@@ -112,14 +100,13 @@ devNotesRouter.get("/:storage/:id", (req, res) => {
  * @example
  *   `POST /api/dev-notes/:storage`;
  */
-devNotesRouter.post("/:storage", (_req, res) => {
-  const storageTarget = getDevNotesStorageTarget(res);
+devNotesRouter.post("/:storage", (req, res) => {
+  const storageKind = req.params.storage ?? null;
+  const textQuery = req.query.text ?? null;
 
-  res.status(501).json({
-    message: "Create dev note is not implemented yet",
-    storage: storageTarget.kind,
-    adapterPath: storageTarget.adapterPath,
-  });
+  const message = createDevNote({ storageKind: storageKind, text: textQuery });
+
+  return returnCodes(res, message);
 });
 
 /**
@@ -129,14 +116,13 @@ devNotesRouter.post("/:storage", (_req, res) => {
  *   `PUT /api/dev-notes/:storage/:id`;
  */
 devNotesRouter.put("/:storage/:id", (req, res) => {
-  const storageTarget = getDevNotesStorageTarget(res);
+  const storageKind = req.params.storage ?? null;
+  const idQuery = req.params.id ?? null;
+  const textQuery = req.query.text ?? null;
 
-  res.status(501).json({
-    message: "Replace dev note is not implemented yet",
-    storage: storageTarget.kind,
-    adapterPath: storageTarget.adapterPath,
-    id: req.params.id,
-  });
+  const message = replaceDevNote({ storageKind: storageKind, id: idQuery, text: textQuery });
+
+  return returnCodes(res, message);
 });
 
 /**
@@ -146,14 +132,13 @@ devNotesRouter.put("/:storage/:id", (req, res) => {
  *   `PATCH /api/dev-notes/:storage/:id`;
  */
 devNotesRouter.patch("/:storage/:id", (req, res) => {
-  const storageTarget = getDevNotesStorageTarget(res);
+  const storageKind = req.params.storage ?? null;
+  const idQuery = req.params.id ?? null;
+  const textQuery = req.query.text ?? null;
 
-  res.status(501).json({
-    message: "Update dev note is not implemented yet",
-    storage: storageTarget.kind,
-    adapterPath: storageTarget.adapterPath,
-    id: req.params.id,
-  });
+  const message = updateDevNote({ storageKind: storageKind, id: idQuery, text: textQuery });
+
+  return returnCodes(res, message);
 });
 
 /**
@@ -163,14 +148,12 @@ devNotesRouter.patch("/:storage/:id", (req, res) => {
  *   `DELETE /api/dev-notes/:storage/:id`;
  */
 devNotesRouter.delete("/:storage/:id", (req, res) => {
-  const storageTarget = getDevNotesStorageTarget(res);
+  const storageKind = req.params.storage ?? null;
+  const idQuery = req.params.id ?? null;
 
-  res.status(501).json({
-    message: "Delete dev note is not implemented yet",
-    storage: storageTarget.kind,
-    adapterPath: storageTarget.adapterPath,
-    id: req.params.id,
-  });
+  const message = deleteDevNote({ storageKind: storageKind, id: idQuery });
+
+  return returnCodes(res, message);
 });
 
 export default devNotesRouter;

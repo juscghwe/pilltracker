@@ -9,6 +9,20 @@
 /** @typedef {"temp" | "persistent"} DevNotesStorageKind */
 
 /**
+ * @typedef {"ok"
+ *   | "created"
+ *   | "replaced"
+ *   | "updated"
+ *   | "deleted"
+ *   | "not-found"
+ *   | "invalid-request"
+ *   | "operation-failed"
+ *   | "unknown-storage"
+ *   | "storage-disabled"} statusReturns
+ *   Machine-readable operation status.
+ */
+
+/**
  * @typedef {object} CreateDevNoteInput
  * @property {string} text Dev-note text.
  */
@@ -66,17 +80,7 @@
 /**
  * @typedef {object} DevNotesListResult
  * @property {boolean} ok Whether the operation succeeded.
- * @property {"ok"
- *   | "created"
- *   | "replaced"
- *   | "updated"
- *   | "deleted"
- *   | "not-found"
- *   | "invalid-request"
- *   | "operation-failed"
- *   | "unknown-storage"
- *   | "storage-disabled"} status
- *   Machine-readable operation status.
+ * @property {statusReturns} status Machine-readable operation status.
  * @property {DevNote[]} [notes] Listed dev-notes.
  * @property {string} [message] Human-readable failure message.
  */
@@ -84,17 +88,7 @@
 /**
  * @typedef {object} DevNotesBaseResult
  * @property {boolean} ok Whether the operation succeeded.
- * @property {"ok"
- *   | "created"
- *   | "replaced"
- *   | "updated"
- *   | "deleted"
- *   | "not-found"
- *   | "invalid-request"
- *   | "operation-failed"
- *   | "unknown-storage"
- *   | "storage-disabled"} status
- *   Machine-readable operation status.
+ * @property {statusReturns} status Machine-readable operation status.
  * @property {DevNote} [note] Created dev-note.
  * @property {string} [message] Human-readable failure message.
  */
@@ -140,17 +134,7 @@
 /**
  * @typedef {object} DevNotesGetResult
  * @property {boolean} ok Whether the operation succeeded.
- * @property {"ok"
- *   | "created"
- *   | "replaced"
- *   | "updated"
- *   | "deleted"
- *   | "not-found"
- *   | "invalid-request"
- *   | "operation-failed"
- *   | "unknown-storage"
- *   | "storage-disabled"} status
- *   Machine-readable operation status.
+ * @property {statusReturns} status Machine-readable operation status.
  * @property {DevNote | null} [note] Found dev-note, or null when no note matched.
  * @property {string} [message] Human-readable failure message.
  */
@@ -158,17 +142,7 @@
 /**
  * @typedef {object} DevNotesSearchResult
  * @property {boolean} ok Whether the operation succeeded.
- * @property {"ok"
- *   | "created"
- *   | "replaced"
- *   | "updated"
- *   | "deleted"
- *   | "not-found"
- *   | "invalid-request"
- *   | "operation-failed"
- *   | "unknown-storage"
- *   | "storage-disabled"} status
- *   Machine-readable operation status.
+ * @property {statusReturns} status Machine-readable operation status.
  * @property {DevNote[]} [notes] Matching dev-notes.
  * @property {string} [message] Human-readable failure message.
  */
