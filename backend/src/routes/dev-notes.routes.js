@@ -51,7 +51,17 @@ function returnCodes(res, message) {
   }
 }
 
-// TODO: add head and options
+// TODO: add head
+
+devNotesRouter.options("/:storage", (_req, res) => {
+  res.set("Allow", "GET, POST, OPTIONS");
+  return res.status(204).end();
+});
+
+devNotesRouter.options("/:storage/:id", (_req, res) => {
+  res.set("Allow", "GET, HEAD, PUT, PATCH, DELETE, OPTIONS");
+  return res.status(204).end();
+});
 
 /**
  * Lists all dev notes from the selected storage target. OR Searches dev notes by text from the
@@ -65,7 +75,7 @@ function returnCodes(res, message) {
  */
 devNotesRouter.get("/:storage", (req, res) => {
   const storageKind = req.params.storage ?? null;
-  const textQuery = req.query.text ?? null;
+  const textQuery = req.body.text ?? null;
   let message;
 
   if (typeof textQuery === "string") {
@@ -102,7 +112,7 @@ devNotesRouter.get("/:storage/:id", (req, res) => {
  */
 devNotesRouter.post("/:storage", (req, res) => {
   const storageKind = req.params.storage ?? null;
-  const textQuery = req.query.text ?? null;
+  const textQuery = req.body.text ?? null;
 
   const message = createDevNote({ storageKind: storageKind, text: textQuery });
 
@@ -118,7 +128,7 @@ devNotesRouter.post("/:storage", (req, res) => {
 devNotesRouter.put("/:storage/:id", (req, res) => {
   const storageKind = req.params.storage ?? null;
   const idQuery = req.params.id ?? null;
-  const textQuery = req.query.text ?? null;
+  const textQuery = req.body.text ?? null;
 
   const message = replaceDevNote({ storageKind: storageKind, id: idQuery, text: textQuery });
 
@@ -134,7 +144,7 @@ devNotesRouter.put("/:storage/:id", (req, res) => {
 devNotesRouter.patch("/:storage/:id", (req, res) => {
   const storageKind = req.params.storage ?? null;
   const idQuery = req.params.id ?? null;
-  const textQuery = req.query.text ?? null;
+  const textQuery = req.body.text ?? null;
 
   const message = updateDevNote({ storageKind: storageKind, id: idQuery, text: textQuery });
 
