@@ -559,18 +559,6 @@ function deleteDevNote(input) {
   });
 }
 
-// probably should be seam
-function metadataDevNote(input) {
-  void input;
-  return null;
-}
-
-// probably should be seam, make it dynamic metadata query maybe
-function optionsDevNotes(input) {
-  void input;
-  return null;
-}
-
 /**
  * SQLite file implementation of the persistent dev-notes storage adapter.
  *
@@ -592,6 +580,4 @@ export const devNotesSqliteFileAdapter = {
   replaceDevNote,
   updateDevNote,
   deleteDevNote,
-  metadataDevNote,
-  optionsDevNotes,
 };
