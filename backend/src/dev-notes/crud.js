@@ -1,4 +1,5 @@
 import { resolveStorageTarget } from "./connection.js";
+import { readRequiredDevNoteId, readRequiredDevNoteText } from "./validation.js";
 
 /**
  * Helper: Gets a dev-note and validates it.
@@ -10,21 +11,19 @@ import { resolveStorageTarget } from "./connection.js";
  * @param {void} functionName Requested function to retrieve the dev-note.
  * @param {import(".types.js").DevNotesCreateResult}
  */
-function getNote(input, functionName) {
-  const note = functionName(input);
-
+function singleNoteResult(note, successStatus = "ok") {
   if (!note) {
     return Object.freeze({
       ok: false,
       status: "not-found",
-      message: `Dev-note not found for ${input.id} or ${input.text}`,
+      message: "Dev-note not found.",
     });
   }
 
   return Object.freeze({
     ok: true,
-    status: "ok",
-    note: note,
+    status: successStatus,
+    note,
   });
 }
 
@@ -38,21 +37,19 @@ function getNote(input, functionName) {
  * @param {void} functionName Requested function to retrieve the dev-note.
  * @returns {import("./types.js").DevNotesListResult}
  */
-function getNotes(input, functionName) {
-  const notes = functionName(input);
-
-  if (!notes || notes.length === 0) {
-    return Object.freeze({
-      ok: false,
-      status: "not-found",
-      message: `Dev-note not found for ${input.id} or ${input.text}`,
-    });
-  }
-
+function listResult(notes) {
   return Object.freeze({
     ok: true,
     status: "ok",
-    notes: notes,
+    notes,
+  });
+}
+
+function operationFailedResult(message) {
+  return Object.freeze({
+    ok: false,
+    status: "operation-failed",
+    message,
   });
 }
 
@@ -71,7 +68,9 @@ export function listDevNotes(input) {
     return resolvedStorage;
   }
 
-  return getNotes({}, resolvedStorage.storageTarget.adapter.listDevNotes);
+  const notes = resolvedStorage.storageTarget.adapter.listDevNotes();
+
+  return listResult(notes);
 }
 
 /**
@@ -83,14 +82,13 @@ export function listDevNotes(input) {
  * @see Dev-notes README, section "storage facade".
  */
 export function getDevNoteById(input) {
-  const id = Number(input.id);
-  if (!id || !Number.isInteger(id) || id < 1) {
-    return Object.freeze({
-      ok: false,
-      status: "invalid-request",
-      message: `Invalid dev-note id: ${id ?? "undefined request.id"}`,
-    });
+  const idResult = readRequiredDevNoteId(input);
+
+  if (!idResult.ok) {
+    return idResult;
   }
+
+  const id = idResult.value;
 
   const resolvedStorage = resolveStorageTarget(input.storageKind);
 
@@ -98,7 +96,11 @@ export function getDevNoteById(input) {
     return resolvedStorage;
   }
 
-  return getNote({ id: id }, resolvedStorage.storageTarget.adapter.getDevNoteById);
+  const note = resolvedStorage.storageTarget.adapter.getDevNoteById({
+    id: id,
+  });
+
+  return singleNoteResult(note);
 }
 
 /**
@@ -110,13 +112,10 @@ export function getDevNoteById(input) {
  * @see Dev-notes README, section "storage facade".
  */
 export function searchDevNotesByText(input) {
-  const text = String(input.text ?? "").trim();
-  if (text === "") {
-    return Object.freeze({
-      ok: false,
-      status: "invalid-request",
-      message: `Invalid dev-note text: ${text ?? "undefined request.text"}`,
-    });
+  const textResult = readRequiredDevNoteText(input);
+
+  if (!textResult.ok) {
+    return textResult;
   }
 
   const resolvedStorage = resolveStorageTarget(input.storageKind);
@@ -125,7 +124,11 @@ export function searchDevNotesByText(input) {
     return resolvedStorage;
   }
 
-  return getNotes({ text: text }, resolvedStorage.storageTarget.adapter.searchDevNotesByText);
+  const notes = resolvedStorage.storageTarget.adapter.searchDevNotesByText({
+    text: textResult.value,
+  });
+
+  return listResult(notes);
 }
 
 /**
@@ -138,13 +141,10 @@ export function searchDevNotesByText(input) {
  * @see Dev-notes README, section "storage facade".
  */
 export function createDevNote(input) {
-  const text = String(input.text ?? "").trim();
-  if (!text || text === "") {
-    return Object.freeze({
-      ok: false,
-      status: "invalid-request",
-      message: `Invalid dev-note text: ${text ?? "undefined request.text"}`,
-    });
+  const textResult = readRequiredDevNoteText(input);
+
+  if (!textResult.ok) {
+    return textResult;
   }
 
   const resolvedStorage = resolveStorageTarget(input.storageKind);
@@ -153,7 +153,15 @@ export function createDevNote(input) {
     return resolvedStorage;
   }
 
-  return getNote({ text: text }, resolvedStorage.storageTarget.adapter.createDevNote);
+  const note = resolvedStorage.storageTarget.adapter.createDevNote({
+    text: textResult.value,
+  });
+
+  if (!note) {
+    return operationFailedResult("Dev-note could not be created.");
+  }
+
+  return singleNoteResult(note, "created");
 }
 
 /**
@@ -167,22 +175,16 @@ export function createDevNote(input) {
  * @see Dev-notes README, section "storage facade".
  */
 export function replaceDevNote(input) {
-  const id = Number(input.id);
-  if (!input.id || !Number.isInteger(id) || id < 1) {
-    return Object.freeze({
-      ok: false,
-      status: "invalid-request",
-      message: `Invalid dev-note id: ${id ?? "undefined request.id"}`,
-    });
+  const idResult = readRequiredDevNoteId(input);
+
+  if (!idResult.ok) {
+    return idResult;
   }
 
-  const text = String(input.text ?? "").trim();
-  if (text === "") {
-    return Object.freeze({
-      ok: false,
-      status: "invalid-request",
-      message: `Invalid dev-note text: ${text ?? "undefined request.text"}`,
-    });
+  const textResult = readRequiredDevNoteText(input);
+
+  if (!textResult.ok) {
+    return textResult;
   }
 
   const resolvedStorage = resolveStorageTarget(input.storageKind);
@@ -191,7 +193,12 @@ export function replaceDevNote(input) {
     return resolvedStorage;
   }
 
-  return getNote({ id: id }, resolvedStorage.storageTarget.adapter.replaceDevNote);
+  const note = resolvedStorage.storageTarget.adapter.replaceDevNote({
+    id: idResult.value,
+    text: textResult.value,
+  });
+
+  return singleNoteResult(note, "replaced");
 }
 
 /**
@@ -205,22 +212,16 @@ export function replaceDevNote(input) {
  * @see Dev-notes README, section "storage facade".
  */
 export function updateDevNote(input) {
-  const id = Number(input.id);
-  if (!id || !Number.isInteger(id) || id < 1) {
-    return Object.freeze({
-      ok: false,
-      status: "invalid-request",
-      message: `Invalid dev-note id: ${id ? id : "undefined request.id"}`,
-    });
+  const idResult = readRequiredDevNoteId(input);
+
+  if (!idResult.ok) {
+    return idResult;
   }
 
-  const text = String(input.text ?? "").trim();
-  if (!text || input.text === "") {
-    return Object.freeze({
-      ok: false,
-      status: "invalid-request",
-      message: `Invalid dev-note text: ${text ? text : "undefined request.text"}`,
-    });
+  const textResult = readRequiredDevNoteText(input);
+
+  if (!textResult.ok) {
+    return textResult;
   }
 
   const resolvedStorage = resolveStorageTarget(input.storageKind);
@@ -229,7 +230,12 @@ export function updateDevNote(input) {
     return resolvedStorage;
   }
 
-  return getNote({ id: id }, resolvedStorage.storageTarget.adapter.updateDevNote);
+  const note = resolvedStorage.storageTarget.adapter.updateDevNote({
+    id: idResult.value,
+    text: textResult.value,
+  });
+
+  return singleNoteResult(note, "updated");
 }
 
 /**
@@ -243,13 +249,10 @@ export function updateDevNote(input) {
  * @see Dev-notes README, section "storage facade".
  */
 export function deleteDevNote(input) {
-  const id = Number(input.id);
-  if (!id || !Number.isInteger(id) || id < 1) {
-    return Object.freeze({
-      ok: false,
-      status: "invalid-request",
-      message: `Invalid dev-note id: ${id ? id : "undefined request.id"}`,
-    });
+  const idResult = readRequiredDevNoteId(input);
+
+  if (!idResult.ok) {
+    return idResult;
   }
 
   const resolvedStorage = resolveStorageTarget(input.storageKind);
@@ -258,7 +261,11 @@ export function deleteDevNote(input) {
     return resolvedStorage;
   }
 
-  return getNote({ id: id }, resolvedStorage.storageTarget.adapter.deleteDevNote);
+  const note = resolvedStorage.storageTarget.adapter.deleteDevNote({
+    id: idResult.value,
+  });
+
+  return singleNoteResult(note, "deleted");
 }
 
 // HEAD
