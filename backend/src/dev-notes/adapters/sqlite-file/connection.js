@@ -1,9 +1,3 @@
-/**
- * @typedef {object} DevNotesSqliteFilePersistenceConfig
- * @property {string} databasePath SQLite database path for persistent dev-notes storage.
- * @property {string} requestedJournalMode Requested SQLite journal mode.
- */
-
 import { readFileSync } from "node:fs";
 
 import { appConfig, validSqliteJournalModes, environmentKeys } from "../../../config/appConfig.js";
@@ -37,7 +31,8 @@ const schemaSql = readFileSync(new URL("./schema.sql", import.meta.url), "utf8")
  * This adapter owns validation for the persistent dev-notes database path because the value is
  * optional at app-config level but required when this concrete adapter is used.
  *
- * @returns {DevNotesSqliteFilePersistenceConfig} Validated persistence configuration.
+ * @returns {import("../../types.js").DevNotesSqliteFilePersistenceConfig} Validated persistence
+ *   configuration.
  * @throws {MissingEnvironmentVariableError} When `DEV_NOTES_DB_PATH` is missing or neither
  *   `DEV_NOTES_PERSISTENT_JOURNAL_MODE` nor `APP_SQLITE_JOURNAL_MODE` is configured.
  * @throws {InvalidEnvironmentVariableError} When `DEV_NOTES_PERSISTENT_JOURNAL_MODE` is not
@@ -84,7 +79,8 @@ function getPersistenceConfig() {
  * behavior.
  *
  * @param {import("better-sqlite3").Database} connection SQLite connection.
- * @param {DevNotesSqliteFilePersistenceConfig} persistenceConfig Validated adapter configuration.
+ * @param {import("../../types.js").DevNotesSqliteFilePersistenceConfig} persistenceConfig
+ *   PersistenceConfig Validated adapter configuration.
  * @returns {void}
  * @throws {SqliteJournalModeMismatchError} When the active SQLite journal mode differs from the
  *   requested mode.
@@ -108,7 +104,8 @@ function assertJournalMode(connection, persistenceConfig) {
  * The connection is opened lazily and cached by this concrete adapter. Shared SQLite helpers
  * create/configure connections, but this adapter owns the connection lifecycle for its database.
  *
- * @param {DevNotesSqliteFilePersistenceConfig} persistenceConfig Validated adapter configuration.
+ * @param {import("../../types.js").DevNotesSqliteFilePersistenceConfig} persistenceConfig
+ *   PersistenceConfig Validated adapter configuration.
  * @returns {import("better-sqlite3").Database} Active SQLite connection.
  * @throws {SqliteJournalModeMismatchError} When the active SQLite journal mode differs from the
  *   requested mode.

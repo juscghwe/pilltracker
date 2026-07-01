@@ -2,14 +2,13 @@ import { resolveStorageTarget } from "./connection.js";
 import { readRequiredDevNoteId, readRequiredDevNoteText } from "./validation.js";
 
 /**
- * Helper: Gets a dev-note and validates it.
+ * Creates a single-dev-note facade result.
  *
  * @private
- * @param {object} input Get input.
- * @param {?number || null} input.id Requested id.
- * @param {?string || ""} input.text Requested text.
- * @param {void} functionName Requested function to retrieve the dev-note.
- * @param {import(".types.js").DevNotesCreateResult}
+ * @param {import("./types.js").DevNote | null} note Dev-note returned by the storage adapter.
+ * @param {string} [successStatus="ok"] Success status to expose when a note exists. Default is
+ *   `"ok"`
+ * @returns {import("./types.js").DevNotesSingleResult} Single-note facade result.
  */
 function singleNoteResult(note, successStatus = "ok") {
   if (!note) {
@@ -28,14 +27,11 @@ function singleNoteResult(note, successStatus = "ok") {
 }
 
 /**
- * Helper: Gets a dev-notes and validates it.
+ * Creates a list-dev-notes facade result.
  *
  * @private
- * @param {object} input Get input.
- * @param {?number || null} input.id Requested id.
- * @param {?string || ""} input.text Requested text.
- * @param {void} functionName Requested function to retrieve the dev-note.
- * @returns {import("./types.js").DevNotesListResult}
+ * @param {import("./types.js").DevNote[]} notes Dev-notes returned by the storage adapter.
+ * @returns {import("./types.js").DevNotesListResult} List facade result.
  */
 function listResult(notes) {
   return Object.freeze({
@@ -45,6 +41,13 @@ function listResult(notes) {
   });
 }
 
+/**
+ * Creates an operation-failed facade result.
+ *
+ * @private
+ * @param {string} message Human-readable failure message.
+ * @returns {import("./types.js").DevNotesBaseResult} Failure result.
+ */
 function operationFailedResult(message) {
   return Object.freeze({
     ok: false,
@@ -78,7 +81,7 @@ export function listDevNotes(input) {
  *
  * @param {object} input List input.
  * @param {string} input.storageKind Requested storage kind.
- * @returns {import("./types.js").DevNotesCreateResult} List result.
+ * @returns {import("./types.js").DevNotesGetResult} List result.
  * @see Dev-notes README, section "storage facade".
  */
 export function getDevNoteById(input) {
@@ -108,7 +111,7 @@ export function getDevNoteById(input) {
  *
  * @param {object} input List input.
  * @param {string} input.storageKind Requested storage kind.
- * @returns {import("./types.js").DevNotesListResult} List result.
+ * @returns {import("./types.js").DevNotesSearchResult} List result.
  * @see Dev-notes README, section "storage facade".
  */
 export function searchDevNotesByText(input) {
@@ -171,7 +174,7 @@ export function createDevNote(input) {
  * @param {string} input.storageKind Requested storage kind.
  * @param {number | string} input.id Dev-note id.
  * @param {string} input.text Dev-note text.
- * @returns {import("./types.js").DevNotesCreateResult} Replacement result.
+ * @returns {import("./types.js").DevNotesReplaceResult} Replacement result.
  * @see Dev-notes README, section "storage facade".
  */
 export function replaceDevNote(input) {
@@ -208,7 +211,7 @@ export function replaceDevNote(input) {
  * @param {string} input.storageKind Requested storage kind.
  * @param {number | string} input.id Dev-note id.
  * @param {string} input.text Dev-note text.
- * @returns {import("./types.js").DevNotesCreateResult} Updated result.
+ * @returns {import("./types.js").DevNotesUpdateResult} Updated result.
  * @see Dev-notes README, section "storage facade".
  */
 export function updateDevNote(input) {
@@ -239,13 +242,12 @@ export function updateDevNote(input) {
 }
 
 /**
- * Deletes a dev-note in the requested storage target. (PUT)
+ * Deletes a dev-note in the requested storage target. (DELETE)
  *
  * @param {object} input Delete input.
  * @param {string} input.storageKind Requested storage kind.
  * @param {number | string} input.id Dev-note id.
- * @param {string} input.text Dev-note text.
- * @returns {import("./types.js").DevNotesCreateResult} Deleted object.
+ * @returns {import("./types.js").DevNotesDeleteResult} Delete result.
  * @see Dev-notes README, section "storage facade".
  */
 export function deleteDevNote(input) {

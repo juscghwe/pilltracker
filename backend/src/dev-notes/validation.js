@@ -1,3 +1,10 @@
+/**
+ * Creates a structured invalid-request result.
+ *
+ * @param {string} message Human-readable validation failure message.
+ * @param {import("./types.js").DevNotesValidationDetails} details Validation failure details.
+ * @returns {import("./types.js").DevNotesInvalidRequestResult} Invalid request result.
+ */
 function invalidRequest(message, details = {}) {
   return Object.freeze({
     ok: false,
@@ -7,6 +14,12 @@ function invalidRequest(message, details = {}) {
   });
 }
 
+/**
+ * Reads and validates a required dev-note id from an input object.
+ *
+ * @param {object} input Input object.
+ * @returns {import("./types.js").DevNoteIdValidationResult} Validation result.
+ */
 export function readRequiredDevNoteId(input) {
   if (!Object.hasOwn(input, "id")) {
     return invalidRequest("Missing dev-note id.", {
@@ -48,6 +61,12 @@ export function readRequiredDevNoteId(input) {
   });
 }
 
+/**
+ * Reads and validates a required dev-note text value from an input object.
+ *
+ * @param {object} input Input object.
+ * @returns {import("./types.js").DevNoteTextValidationResult} Validation result.
+ */
 export function readRequiredDevNoteText(input) {
   if (!Object.hasOwn(input, "text")) {
     return invalidRequest("Missing dev-note text.", {

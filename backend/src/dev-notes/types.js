@@ -64,15 +64,38 @@
  */
 
 /**
- * @typedef {object} DevNotesRouteStorageTarget
- * @property {DevNotesStorageKind} kind Public route storage kind.
- * @property {string} adapterPath Concrete adapter path/key used by the dev-notes data layer.
+ * @typedef {object} DevNotesListResult
+ * @property {boolean} ok Whether the operation succeeded.
+ * @property {"ok"
+ *   | "created"
+ *   | "replaced"
+ *   | "updated"
+ *   | "deleted"
+ *   | "not-found"
+ *   | "invalid-request"
+ *   | "operation-failed"
+ *   | "unknown-storage"
+ *   | "storage-disabled"} status
+ *   Machine-readable operation status.
+ * @property {DevNote[]} [notes] Listed dev-notes.
+ * @property {string} [message] Human-readable failure message.
  */
 
 /**
  * @typedef {object} DevNotesBaseResult
  * @property {boolean} ok Whether the operation succeeded.
- * @property {string} status Machine-readable operation status.
+ * @property {"ok"
+ *   | "created"
+ *   | "replaced"
+ *   | "updated"
+ *   | "deleted"
+ *   | "not-found"
+ *   | "invalid-request"
+ *   | "operation-failed"
+ *   | "unknown-storage"
+ *   | "storage-disabled"} status
+ *   Machine-readable operation status.
+ * @property {DevNote} [note] Created dev-note.
  * @property {string} [message] Human-readable failure message.
  */
 
@@ -111,21 +134,43 @@
  * @property {string} field Invalid field name.
  * @property {DevNotesValidationReason} reason Machine-readable validation reason.
  * @property {string} [actualType] Actual JavaScript type when validation failed because of type.
- * @property {*} [actualValue] Actual value when validation failed because of value.
+ * @property {any} [actualValue] Actual value when validation failed because of value.
  */
 
 /**
- * @typedef {object} DevNotesInvalidRequestResult
- * @property {false} ok Whether the operation succeeded.
- * @property {"invalid-request"} status Machine-readable operation status.
- * @property {string} message Human-readable validation failure message.
- * @property {Readonly<DevNotesValidationDetails>} details Validation failure details.
+ * @typedef {object} DevNotesGetResult
+ * @property {boolean} ok Whether the operation succeeded.
+ * @property {"ok"
+ *   | "created"
+ *   | "replaced"
+ *   | "updated"
+ *   | "deleted"
+ *   | "not-found"
+ *   | "invalid-request"
+ *   | "operation-failed"
+ *   | "unknown-storage"
+ *   | "storage-disabled"} status
+ *   Machine-readable operation status.
+ * @property {DevNote | null} [note] Found dev-note, or null when no note matched.
+ * @property {string} [message] Human-readable failure message.
  */
 
 /**
- * @typedef {object} DevNoteIdValidationSuccessResult
- * @property {true} ok Whether validation succeeded.
- * @property {number} value Normalized positive integer dev-note id.
+ * @typedef {object} DevNotesSearchResult
+ * @property {boolean} ok Whether the operation succeeded.
+ * @property {"ok"
+ *   | "created"
+ *   | "replaced"
+ *   | "updated"
+ *   | "deleted"
+ *   | "not-found"
+ *   | "invalid-request"
+ *   | "operation-failed"
+ *   | "unknown-storage"
+ *   | "storage-disabled"} status
+ *   Machine-readable operation status.
+ * @property {DevNote[]} [notes] Matching dev-notes.
+ * @property {string} [message] Human-readable failure message.
  */
 
 /**

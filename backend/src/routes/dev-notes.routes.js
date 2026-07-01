@@ -1,11 +1,3 @@
-/** @typedef {"persistent" | "temp"} DevNotesStorageKind */
-
-/**
- * @typedef {object} DevNotesStorageTarget
- * @property {DevNotesStorageKind} kind Public route storage kind.
- * @property {string} adapterPath Concrete adapter path/key used by the dev-notes data layer.
- */
-
 import { Router } from "express";
 
 const devNotesRouter = Router();
@@ -14,7 +6,12 @@ const devNotesRouter = Router();
 /**
  * Storage targets accepted by dev-notes routes.
  *
- * @type {Readonly<Record<DevNotesStorageKind, DevNotesStorageTarget>>}
+ * @type {Readonly<
+ *   Record<
+ *     import("../dev-notes/types.js").DevNotesStorageKind,
+ *     import("../dev-notes/types.js").DevNotesRouteStorageTarget
+ *   >
+ * >}
  */
 const devNotesStorageTargets = Object.freeze({
   persistent: Object.freeze({
@@ -32,7 +29,8 @@ const devNotesStorageTargets = Object.freeze({
  * Resolves a route storage value to a known dev-notes storage target.
  *
  * @param {string} storage Raw route storage parameter.
- * @returns {DevNotesStorageTarget | null} Matching storage target, or null when unsupported.
+ * @returns {import("../dev-notes/types.js").DevNotesRouteStorageTarget | null} Matching storage
+ *   target, or null when unsupported.
  */
 function resolveDevNotesStorageTarget(storage) {
   return devNotesStorageTargets[storage] ?? null;

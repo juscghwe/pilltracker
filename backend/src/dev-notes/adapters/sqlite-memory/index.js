@@ -1,9 +1,3 @@
-/**
- * @typedef {object} DevNotesSqliteMemoryPersistenceConfig
- * @property {string} databasePath SQLite in-memory database path.
- * @property {string} requestedJournalMode Requested SQLite journal mode.
- */
-
 import { readFileSync } from "node:fs";
 
 import { appConfig, validSqliteJournalModes, environmentKeys } from "../../../config/appConfig.js";
@@ -53,7 +47,8 @@ function warnIfTempStorageIsFileBacked(databasePath) {
  * The temp adapter defaults to SQLite `:memory:` storage. If a file path is configured instead, the
  * adapter still starts but logs a warning because data may survive backend restarts.
  *
- * @returns {DevNotesSqliteMemoryPersistenceConfig} Validated temp persistence configuration.
+ * @returns {import("../../types.js").DevNotesSqliteMemoryPersistenceConfig} Validated temp
+ *   persistence configuration.
  * @throws {MissingEnvironmentVariableError} When `DEV_NOTES_IN_MEMORY_PATH` or
  *   `DEV_NOTES_IN_MEMORY_JOURNAL_MODE` is missing.
  * @throws {InvalidEnvironmentVariableError} When `DEV_NOTES_IN_MEMORY_JOURNAL_MODE` is not
@@ -124,7 +119,8 @@ function assertJournalMode(connection, persistenceConfig) {
  * The connection is opened lazily and cached by this concrete adapter. For SQLite `:memory:`, the
  * cached connection is the lifetime of the database, not only a performance optimization.
  *
- * @param {DevNotesSqliteMemoryPersistenceConfig} persistenceConfig Validated adapter configuration.
+ * @param {import("../../types.js").DevNotesSqliteMemoryPersistenceConfig} persistenceConfig
+ *   Validated adapter configuration.
  * @returns {import("better-sqlite3").Database} Active SQLite connection.
  * @throws {SqliteJournalModeMismatchError} When the active SQLite journal mode differs from the
  *   requested mode.
