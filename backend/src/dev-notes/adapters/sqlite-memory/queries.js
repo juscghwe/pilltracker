@@ -87,8 +87,7 @@ export function getDevNoteById(input) {
  * text contains the provided search fragment, case-insensitively.
  *
  * @param {import("../../types.js").SearchDevNotesByTextInput} input Search input.
- * @returns {import("../../types.js").DevNote[] | null} Matching dev-notes ordered by id. Or null
- *   when input cannot produce valid dev-notes.
+ * @returns {import("../../types.js").DevNote[]} Matching dev-notes ordered by id.
  * @throws {MissingEnvironmentVariableError} When required adapter configuration is missing.
  * @throws {InvalidEnvironmentVariableError} When configured adapter values are invalid.
  * @throws {SqliteJournalModeMismatchError} When SQLite reports an unexpected active journal mode.
@@ -180,7 +179,7 @@ export function createDevNote(input) {
 }
 
 /**
- * Replaces dev-note in the dev-notes SQLite memory database. (PUT)
+ * Replaces a dev-note in the dev-notes SQLite memory database. (PUT)
  *
  * This adapter owns the SQL mapping from the public replacement payload to its internal table
  * layout.
@@ -191,7 +190,7 @@ export function createDevNote(input) {
  * @throws {MissingEnvironmentVariableError} When required adapter configuration is missing.
  * @throws {InvalidEnvironmentVariableError} When configured adapter values are invalid.
  * @throws {SqliteJournalModeMismatchError} When SQLite reports an unexpected active journal mode.
- * @throws {Error} When SQLite cannot execute the insert.
+ * @throws {Error} When SQLite cannot execute the replacement update.
  * @see Module README, section "dev-notes CRUD".
  */
 export function replaceDevNote(input) {
@@ -238,7 +237,7 @@ export function replaceDevNote(input) {
 }
 
 /**
- * Updates dev-note in the dev-notes SQLite memory database. (PATCH)
+ * Updates a dev-note in the dev-notes SQLite memory database. (PATCH)
  *
  * This adapter owns the SQL mapping from the public update payload to its internal table layout.
  *
@@ -248,7 +247,7 @@ export function replaceDevNote(input) {
  * @throws {MissingEnvironmentVariableError} When required adapter configuration is missing.
  * @throws {InvalidEnvironmentVariableError} When configured adapter values are invalid.
  * @throws {SqliteJournalModeMismatchError} When SQLite reports an unexpected active journal mode.
- * @throws {Error} When SQLite cannot execute the insert.
+ * @throws {Error} When SQLite cannot execute the update.
  * @see Module README, section "dev-notes CRUD".
  */
 export function updateDevNote(input) {
@@ -294,7 +293,7 @@ export function updateDevNote(input) {
 }
 
 /**
- * Deletes dev-note in the dev-notes SQLite memory database. (DELETE)
+ * Deletes a dev-note in the dev-notes SQLite memory database. (DELETE)
  *
  * This adapter owns the SQL mapping from the public delete payload to its internal table layout.
  *
@@ -304,7 +303,7 @@ export function updateDevNote(input) {
  * @throws {MissingEnvironmentVariableError} When required adapter configuration is missing.
  * @throws {InvalidEnvironmentVariableError} When configured adapter values are invalid.
  * @throws {SqliteJournalModeMismatchError} When SQLite reports an unexpected active journal mode.
- * @throws {Error} When SQLite cannot execute the insert.
+ * @throws {Error} When SQLite cannot execute the delete.
  * @see Module README, section "dev-notes CRUD".
  */
 export function deleteDevNote(input) {

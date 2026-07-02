@@ -10,9 +10,9 @@ import {
 } from "./queries.js";
 
 /**
- * SQLite memory implementation of the persistent dev-notes storage adapter.
+ * SQLite memory implementation of the temporary dev-notes storage adapter.
  *
- * This adapter stores disposable dev-notes data in a separate SQLite database memory. It must not
+ * This adapter stores disposable dev-notes data in a SQLite memory database by default. It must not
  * be used for medication-domain persistence and should be accessed through the dev-notes storage
  * facade instead of imported directly by routes.
  *

@@ -6,7 +6,7 @@ import { storageTargets } from "./connection.js";
  *
  * @param {import("./types.js").DevNotesStorageKind} storageKind Storage kind.
  * @param {import("./types.js").DevNotesStorageTarget} storageTarget Storage target.
- * @returns {Readonly<object>} Storage health result.
+ * @returns {Readonly<import("./types.js").DevNotesStorageHealth>} Storage health result.
  */
 function getStorageTargetHealth(storageKind, storageTarget) {
   if (!storageTarget.config.enabled) {
@@ -30,7 +30,8 @@ function getStorageTargetHealth(storageKind, storageTarget) {
 /**
  * Reduces storage health entries to one dev-notes subsystem status.
  *
- * @param {Readonly<object[]>} storageHealth Storage health entries.
+ * @param {Readonly<import("./types.js").DevNotesStorageHealth[]>} storageHealth Storage health
+ *   entries.
  * @returns {"healthy" | "unhealthy" | "disabled"} Dev-notes subsystem status.
  */
 function resolveDevNotesHealthStatus(storageHealth) {
@@ -56,7 +57,7 @@ function resolveDevNotesHealthStatus(storageHealth) {
 /**
  * Returns full dev-notes subsystem health.
  *
- * @returns {Readonly<object>} Dev-notes health result.
+ * @returns {Readonly<import("./types.js").DevNotesHealthResult>} Dev-notes health result.
  */
 export function getDevNotesHealth() {
   const storage = Object.entries(storageTargets).map(([storageKind, storageTarget]) =>
@@ -75,7 +76,8 @@ export function getDevNotesHealth() {
 /**
  * Returns condensed dev-notes health for backend-wide summary output.
  *
- * @returns {Readonly<object>} Partial dev-notes health result.
+ * @returns {Readonly<import("./types.js").DevNotesPartialHealthResult>} Partial dev-notes health
+ *   result.
  */
 export function getDevNotesHealthPartial() {
   const health = getDevNotesHealth();

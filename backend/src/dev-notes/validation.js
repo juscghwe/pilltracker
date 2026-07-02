@@ -1,5 +1,5 @@
 /**
- * Creates a structured invalid-request result.
+ * Creates a structured invalid-request validation result.
  *
  * @param {string} message Human-readable validation failure message.
  * @param {import("./types.js").DevNotesValidationDetails} details Validation failure details.
