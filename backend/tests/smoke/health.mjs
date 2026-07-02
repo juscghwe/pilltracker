@@ -27,7 +27,7 @@ const endpoints = [
       body.service === "pilltracker-api" &&
       body.checks.runtime.status === "healthy" &&
       body.checks.persistence.status === "healthy" &&
-      body.cheks.devNotes.status === "healthy",
+      body.checks.devNotes.status === "healthy",
   },
   {
     name: "Dev-notes subsystem health",

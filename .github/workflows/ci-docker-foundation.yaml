@@ -1,6 +1,7 @@
 name: Docker Foundation CI
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - main
