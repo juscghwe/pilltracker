@@ -2,11 +2,11 @@ import { resolveStorageTarget } from "./connection.js";
 import { readRequiredDevNoteId, readRequiredDevNoteText } from "./validation.js";
 
 export function optionsStorageOnly() {
-  return ("Allow", "GET, POST, OPTIONS");
+  return { Allow: "GET, POST, OPTIONS" };
 }
 
 export function optionsStorageAndId() {
-  return ("Allow", "GET, HEAD, PUT, PATCH, DELETE, OPTIONS");
+  return { Allow: "GET, HEAD, PUT, PATCH, DELETE, OPTIONS" };
 }
 
 /**
