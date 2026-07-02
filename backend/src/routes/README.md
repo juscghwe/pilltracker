@@ -154,16 +154,17 @@ below `/api/dev-notes` only when dev-notes is enabled.
 
 Current public endpoints:
 
-| Endpoint                      | Method    | Success status | Failure status      | Purpose                                    |
-| ----------------------------- | --------- | -------------- | ------------------- | ------------------------------------------ |
-| `/api/dev-notes/:storage`     | `GET`     | `200`          | `400`, `404`, `500` | List dev-notes or search by text.          |
-| `/api/dev-notes/:storage/:id` | `GET`     | `200`          | `400`, `404`, `500` | Read one dev-note by id.                   |
-| `/api/dev-notes/:storage`     | `POST`    | `201`          | `400`, `404`, `500` | Create one dev-note.                       |
-| `/api/dev-notes/:storage/:id` | `PUT`     | `200`          | `400`, `404`, `500` | Replace one existing dev-note.             |
-| `/api/dev-notes/:storage/:id` | `PATCH`   | `200`          | `400`, `404`, `500` | Update one existing dev-note.              |
-| `/api/dev-notes/:storage/:id` | `DELETE`  | `200`          | `400`, `404`, `500` | Delete one existing dev-note.              |
-| `/api/dev-notes/:storage`     | `OPTIONS` | `204`          | none currently      | Collection route capability metadata.      |
-| `/api/dev-notes/:storage/:id` | `OPTIONS` | `204`          | none currently      | Single-resource route capability metadata. |
+| Endpoint                              | Method    | Success status | Failure status      | Purpose                                    |
+| ------------------------------------- | --------- | -------------- | ------------------- | ------------------------------------------ |
+| `/api/dev-notes/:storage`             | `GET`     | `200`          | `400`, `404`, `500` | List dev-notes.                            |
+| `/api/dev-notes/:storage?text=search` | `GET`     | `200`          | `400`, `404`, `500` | Search dev-notes by text.                  |
+| `/api/dev-notes/:storage/:id`         | `GET`     | `200`          | `400`, `404`, `500` | Read one dev-note by id.                   |
+| `/api/dev-notes/:storage`             | `POST`    | `201`          | `400`, `404`, `500` | Create one dev-note.                       |
+| `/api/dev-notes/:storage/:id`         | `PUT`     | `200`          | `400`, `404`, `500` | Replace one existing dev-note.             |
+| `/api/dev-notes/:storage/:id`         | `PATCH`   | `200`          | `400`, `404`, `500` | Update one existing dev-note.              |
+| `/api/dev-notes/:storage/:id`         | `DELETE`  | `200`          | `400`, `404`, `500` | Delete one existing dev-note.              |
+| `/api/dev-notes/:storage`             | `OPTIONS` | `204`          | none currently      | Collection route capability metadata.      |
+| `/api/dev-notes/:storage/:id`         | `OPTIONS` | `204`          | none currently      | Single-resource route capability metadata. |
 
 The dev-notes API contract is documented in the [dev-notes README](../dev-notes/README.md).
 
