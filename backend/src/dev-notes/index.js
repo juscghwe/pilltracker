@@ -6,6 +6,8 @@ import {
   replaceDevNote,
   updateDevNote,
   deleteDevNote,
+  optionsStorageOnly,
+  optionsStorageAndId,
 } from "./crud.js";
 
 export {
@@ -16,4 +18,6 @@ export {
   replaceDevNote,
   updateDevNote,
   deleteDevNote,
+  optionsStorageOnly,
+  optionsStorageAndId,
 };

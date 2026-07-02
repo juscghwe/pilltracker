@@ -7,6 +7,8 @@ import {
   replaceDevNote,
   updateDevNote,
   deleteDevNote,
+  optionsStorageOnly,
+  optionsStorageAndId,
 } from "../dev-notes/index.js";
 
 const devNotesRouter = Router();
@@ -54,12 +56,12 @@ function returnCodes(res, message) {
 // TODO: add head
 
 devNotesRouter.options("/:storage", (_req, res) => {
-  res.set("Allow", "GET, POST, OPTIONS");
+  res.set(optionsStorageOnly());
   return res.status(204).end();
 });
 
 devNotesRouter.options("/:storage/:id", (_req, res) => {
-  res.set("Allow", "GET, HEAD, PUT, PATCH, DELETE, OPTIONS");
+  res.set(optionsStorageAndId());
   return res.status(204).end();
 });
 
