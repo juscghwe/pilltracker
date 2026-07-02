@@ -27,10 +27,15 @@ The root API router is mounted below `/api` by the backend app.
 
 Current mounted route groups:
 
-| Mount path   | Router           | Purpose                          |
-| ------------ | ---------------- | -------------------------------- |
-| `/health`    | `healthRouter`   | Backend health endpoints         |
-| `/dev-notes` | `devNotesRouter` | CRUD proof slice and experiments |
+Current mounted route groups:
+
+| Mount path   | Router           | Purpose                          | Mount condition                        |
+| ------------ | ---------------- | -------------------------------- | -------------------------------------- |
+| `/health`    | `healthRouter`   | Backend health endpoints         | Always mounted                         |
+| `/dev-notes` | `devNotesRouter` | CRUD proof slice and experiments | Mounted only when dev-notes is enabled |
+
+`/dev-notes` is an opt-in development route group. It is mounted only when
+`appConfig.devNotes.enabled` is true.
 
 ### Health routes
 
@@ -42,12 +47,12 @@ The health router exposes backend health information over HTTP.
 
 Current public endpoints:
 
-| Endpoint                  | Method | Success status | Failure status | Purpose                                  |
-| ------------------------- | ------ | -------------- | -------------- | ---------------------------------------- |
-| `/api/health`             | `GET`  | `200`          | `503`          | Backend readiness summary                |
-| `/api/health/runtime`     | `GET`  | `200`          | none currently | Backend process / runtime reachability   |
-| `/api/health/persistence` | `GET`  | `200`          | `503`          | Persistence readiness                    |
-| `/api/health/dev-notes`   | `GET`  | `200`          | `503`          | Both Dev-Notes implementations readiness |
+| Endpoint                  | Method | Success status | Failure status       | Purpose                                |
+| ------------------------- | ------ | -------------- | -------------------- | -------------------------------------- |
+| `/api/health`             | `GET`  | `200`          | `503`                | Backend readiness summary              |
+| `/api/health/runtime`     | `GET`  | `200`          | none currently       | Backend process / runtime reachability |
+| `/api/health/persistence` | `GET`  | `200`          | `503`                | Persistence readiness                  |
+| `/api/health/dev-notes`   | `GET`  | `200`          | `503` when unhealthy | Dev-notes subsystem readiness          |
 
 #### `GET /api/health`
 
@@ -88,8 +93,6 @@ healthy -> 200
 unhealthy -> 503
 ```
 
----
-
 The response includes a route-level timestamp.
 
 The persistence health shape is documented in the [health module README](../health/README.md).
@@ -116,10 +119,11 @@ This route calls the dev-notes health subsystem and maps the result to HTTP stat
 
 ```txt
 healthy -> 200
+disabled  -> 200
 unhealthy -> 503
 ```
 
----
+`disabled` is not treated as a route failure because dev-notes is an optional subsystem.
 
 The response includes a route-level timestamp.
 
@@ -138,6 +142,30 @@ GET /api/health/dev-notes?details=full
 ```
 
 Any other details value is treated as the default reduced response.
+
+### Dev-notes routes
+
+```js
+import devNotesRouter from "./dev-notes.routes.js";
+```
+
+The dev-notes router exposes the development CRUD proof slice over HTTP. This route group is mounted
+below `/api/dev-notes` only when dev-notes is enabled.
+
+Current public endpoints:
+
+| Endpoint                      | Method    | Success status | Failure status      | Purpose                                    |
+| ----------------------------- | --------- | -------------- | ------------------- | ------------------------------------------ |
+| `/api/dev-notes/:storage`     | `GET`     | `200`          | `400`, `404`, `500` | List dev-notes or search by text.          |
+| `/api/dev-notes/:storage/:id` | `GET`     | `200`          | `400`, `404`, `500` | Read one dev-note by id.                   |
+| `/api/dev-notes/:storage`     | `POST`    | `201`          | `400`, `404`, `500` | Create one dev-note.                       |
+| `/api/dev-notes/:storage/:id` | `PUT`     | `200`          | `400`, `404`, `500` | Replace one existing dev-note.             |
+| `/api/dev-notes/:storage/:id` | `PATCH`   | `200`          | `400`, `404`, `500` | Update one existing dev-note.              |
+| `/api/dev-notes/:storage/:id` | `DELETE`  | `200`          | `400`, `404`, `500` | Delete one existing dev-note.              |
+| `/api/dev-notes/:storage`     | `OPTIONS` | `204`          | none currently      | Collection route capability metadata.      |
+| `/api/dev-notes/:storage/:id` | `OPTIONS` | `204`          | none currently      | Single-resource route capability metadata. |
+
+The dev-notes API contract is documented in the [dev-notes README](../dev-notes/README.md).
 
 ## Route ownership rules
 
@@ -158,6 +186,8 @@ Routes should not:
 Health behavior belongs to the health module.
 
 Concrete persistence behavior belongs to the active persistence adapter.
+
+Dev-notes storage behavior belongs to the dev-notes module and its storage adapters.
 
 Frontend display behavior belongs to the frontend.
 
