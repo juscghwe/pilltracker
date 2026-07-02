@@ -9,6 +9,7 @@ import {
   optionsStorageOnly,
   optionsStorageAndId,
 } from "./crud.js";
+import { getDevNotesHealth, getDevNotesHealthPartial } from "./health.js";
 
 export {
   listDevNotes,
@@ -20,4 +21,6 @@ export {
   deleteDevNote,
   optionsStorageOnly,
   optionsStorageAndId,
+  getDevNotesHealth,
+  getDevNotesHealthPartial,
 };

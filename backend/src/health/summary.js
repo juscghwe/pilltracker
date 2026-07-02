@@ -18,9 +18,10 @@
  *   Subsystem health checks.
  */
 
+import { appConfig } from "../config/appConfig.js";
 import { getRuntimeHealth } from "./runtime.js";
 import { getPersistenceHealthPartial } from "./persistence.js";
-import { appConfig } from "../config/appConfig.js";
+import { getBackendDevNotesHealthPartial } from "./dev-notes.js";
 
 /**
  * Builds the backend-wide health summary.
@@ -31,8 +32,12 @@ import { appConfig } from "../config/appConfig.js";
 export function getHealthSummary() {
   const runtimeHealth = getRuntimeHealth();
   const persistenceHealth = getPersistenceHealthPartial();
+  const devNotesHealth = getBackendDevNotesHealthPartial();
+
   const overallHealth =
-    runtimeHealth.status === "healthy" && persistenceHealth.status === "healthy"
+    runtimeHealth.status === "healthy" &&
+    persistenceHealth.status === "healthy" &&
+    devNotesHealth.status !== "unhealthy"
       ? "healthy"
       : "unhealthy";
 
@@ -44,6 +49,10 @@ export function getHealthSummary() {
       runtime: {
         status: runtimeHealth.status,
         uptimeSeconds: runtimeHealth.uptimeSeconds,
+        devNotes: {
+          status: devNotesHealth.status,
+          enabled: devNotesHealth.enabled,
+        },
       },
       persistence: {
         status: persistenceHealth.status,
