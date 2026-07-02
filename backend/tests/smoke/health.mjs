@@ -26,7 +26,19 @@ const endpoints = [
       body.status === "healthy" &&
       body.service === "pilltracker-api" &&
       body.checks.runtime.status === "healthy" &&
-      body.checks.persistence.status === "healthy",
+      body.checks.persistence.status === "healthy" &&
+      body.cheks.devNotes.status === "healthy",
+  },
+  {
+    name: "Dev-notes subsystem health",
+    path: "/api/health/dev-notes",
+    expectedStatus: 200,
+    validateBody: (body) =>
+      body.status === "healthy" &&
+      typeof body.enabled === "boolean" &&
+      typeof body.storage.storageKind === "string" &&
+      typeof body.storage.status === "string" &&
+      typeof body.storage.enabled === "boolean",
   },
 ];
 
