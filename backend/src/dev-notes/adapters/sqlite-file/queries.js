@@ -303,7 +303,7 @@ export function updateDevNote(input) {
  * @throws {MissingEnvironmentVariableError} When required adapter configuration is missing.
  * @throws {InvalidEnvironmentVariableError} When configured adapter values are invalid.
  * @throws {SqliteJournalModeMismatchError} When SQLite reports an unexpected active journal mode.
- * @throws {Error} When SQLite cannot execute the update.
+ * @throws {Error} When SQLite cannot execute the delete.
  * @see Module README, section "dev-notes CRUD".
  */
 export function deleteDevNote(input) {

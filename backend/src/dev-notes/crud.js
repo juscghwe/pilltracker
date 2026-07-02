@@ -5,8 +5,9 @@ export function optionsStorageOnly() {
   return { Allow: "GET, POST, OPTIONS" };
 }
 
+// TODO: Initiate HEAD
 export function optionsStorageAndId() {
-  return { Allow: "GET, HEAD, PUT, PATCH, DELETE, OPTIONS" };
+  return { Allow: "GET, PUT, PATCH, DELETE, OPTIONS" };
 }
 
 /**

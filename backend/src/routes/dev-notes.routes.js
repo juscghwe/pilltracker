@@ -53,7 +53,7 @@ function returnCodes(res, message) {
   }
 }
 
-// TODO: add head
+// TODO: add HEAD
 
 devNotesRouter.options("/:storage", (_req, res) => {
   res.set(optionsStorageOnly());
@@ -77,7 +77,7 @@ devNotesRouter.options("/:storage/:id", (_req, res) => {
  */
 devNotesRouter.get("/:storage", (req, res) => {
   const storageKind = req.params.storage ?? null;
-  const textQuery = req.body.text ?? null;
+  const textQuery = req.query.text ?? null;
   let message;
 
   if (typeof textQuery === "string") {
