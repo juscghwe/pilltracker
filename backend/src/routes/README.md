@@ -27,9 +27,10 @@ The root API router is mounted below `/api` by the backend app.
 
 Current mounted route groups:
 
-| Mount path | Router         | Purpose                  |
-| ---------- | -------------- | ------------------------ |
-| `/health`  | `healthRouter` | Backend health endpoints |
+| Mount path   | Router           | Purpose                          |
+| ------------ | ---------------- | -------------------------------- |
+| `/health`    | `healthRouter`   | Backend health endpoints         |
+| `/dev-notes` | `devNotesRouter` | CRUD proof slice and experiments |
 
 ### Health routes
 
@@ -41,11 +42,12 @@ The health router exposes backend health information over HTTP.
 
 Current public endpoints:
 
-| Endpoint                  | Method | Success status | Failure status | Purpose                                |
-| ------------------------- | ------ | -------------- | -------------- | -------------------------------------- |
-| `/api/health`             | `GET`  | `200`          | `503`          | Backend readiness summary              |
-| `/api/health/runtime`     | `GET`  | `200`          | none currently | Backend process / runtime reachability |
-| `/api/health/persistence` | `GET`  | `200`          | `503`          | Persistence readiness                  |
+| Endpoint                  | Method | Success status | Failure status | Purpose                                  |
+| ------------------------- | ------ | -------------- | -------------- | ---------------------------------------- |
+| `/api/health`             | `GET`  | `200`          | `503`          | Backend readiness summary                |
+| `/api/health/runtime`     | `GET`  | `200`          | none currently | Backend process / runtime reachability   |
+| `/api/health/persistence` | `GET`  | `200`          | `503`          | Persistence readiness                    |
+| `/api/health/dev-notes`   | `GET`  | `200`          | `503`          | Both Dev-Notes implementations readiness |
 
 #### `GET /api/health`
 
@@ -102,6 +104,37 @@ Example:
 
 ```html
 GET /api/health/persistence?details=full
+```
+
+Any other details value is treated as the default reduced response.
+
+#### `GET /api/health/dev-notes`
+
+Returns dev-notes readiness.
+
+This route calls the dev-notes health subsystem and maps the result to HTTP status:
+
+```txt
+healthy -> 200
+unhealthy -> 503
+```
+
+---
+
+The response includes a route-level timestamp.
+
+The dev-notes health shape is documented in the [health module README](../health/README.md).
+
+##### Query parameters
+
+| Query parameter | Value  | Behavior                                           |
+| --------------- | ------ | -------------------------------------------------- |
+| `details`       | `full` | Returns the full dev-notes subsystem health result |
+
+Example:
+
+```html
+GET /api/health/dev-notes?details=full
 ```
 
 Any other details value is treated as the default reduced response.
