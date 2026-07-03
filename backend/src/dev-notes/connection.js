@@ -60,9 +60,8 @@ export const storageTargets = Object.freeze({
  */
 export function resolveStorageTarget(storageKind) {
   const storageKindString = String(storageKind).trim();
-  const storageTarget = storageTargets[storageKindString];
 
-  if (!storageTarget) {
+  if (!Object.hasOwn(storageTargets, storageKindString)) {
     return Object.freeze({
       ok: false,
       status: "unknown-storage",
@@ -70,17 +69,23 @@ export function resolveStorageTarget(storageKind) {
     });
   }
 
+  const knownStorageKind = /** @type {import("./types.js").DevNotesStorageKind} */ (
+    storageKindString
+  );
+
+  const storageTarget = storageTargets[knownStorageKind];
+
   if (!storageTarget.config.enabled) {
     return Object.freeze({
       ok: false,
       status: "storage-disabled",
-      message: `Dev-notes storage target is disabled: ${storageKindString}`,
+      message: `Dev-notes storage target is disabled: ${knownStorageKind}`,
     });
   }
 
   return Object.freeze({
     ok: true,
-    storageKind: storageKindString,
+    storageKind: knownStorageKind,
     storageTarget,
   });
 }

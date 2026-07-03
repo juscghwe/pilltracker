@@ -8,7 +8,8 @@
  * @typedef {object} SqliteFileAdapter
  * @property {() => import("better-sqlite3").Database} getConnection Returns the active SQLite file
  *   connection.
- * @property {() => Readonly<object>} getHealth Returns SQLite health for the file adapter.
+ * @property {() => Readonly<import("../../../sqlite/health.js").SqliteHealthResult>} getHealth
+ *   Returns SQLite health for the file adapter.
  */
 
 import { appConfig, validSqliteJournalModes, environmentKeys } from "../../../config/appConfig.js";
@@ -154,7 +155,7 @@ function getConnection() {
  * so configuration and connection failures are represented as unhealthy adapter results instead of
  * escaping the health endpoint.
  *
- * @type {() => Readonly<object>}
+ * @type {() => Readonly<import("../../../sqlite/health.js").SqliteHealthResult>}
  * @see Module README, section "health reporting".
  */
 const getHealth = createSqliteHealthReporter({

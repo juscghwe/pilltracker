@@ -22,6 +22,8 @@
  * @property {string} sqliteVersion SQLite version reported by the database engine.
  */
 
+/** @typedef {() => Readonly<SqliteHealthResult>} SqliteHealthReporter */
+
 /**
  * @typedef {object} CreateSqliteHealthReporterInput
  * @property {string} adapterId Stable adapter identifier.
@@ -36,8 +38,53 @@
 /**
  * @callback GetSqliteHealth
  * @param {import("better-sqlite3").Database} connection SQLite connection.
- * @returns {Readonly<HealthySqliteHealth | UnhealthySqliteHealth>} SQLite health result.
+ * @returns {() => Readonly<SqliteHealthResult>} SQLite health reporter.
  */
+
+/** @typedef {"healthy" | "unhealthy"} SqliteHealthStatus */
+
+/**
+ * @typedef {object} SqliteEngineInfo
+ * @property {"sqlite"} reportedFamily Reported database family.
+ * @property {string} version SQLite version.
+ * @property {"database_query"} source Source of the engine metadata.
+ */
+
+/**
+ * @typedef {object} SqliteRequestedJournalModeInfo
+ * @property {string | null} requested Requested SQLite journal mode.
+ * @property {string | null} active Active SQLite journal mode, when a connection is available.
+ * @property {boolean} isConfigured Whether a journal mode was configured.
+ * @property {boolean} isValid Whether the configured journal mode is valid.
+ */
+
+/**
+ * @typedef {object} SqliteHealthErrorInfo
+ * @property {string} name Error name.
+ * @property {string} code Stable machine-readable error code.
+ * @property {string} message Error message.
+ * @property {object | null} details Structured error details, when available.
+ */
+
+/**
+ * @typedef {object} HealthySqliteHealth
+ * @property {"healthy" | "unhealthy"} status SQLite health status.
+ * @property {Readonly<SqliteEngineInfo>} engine SQLite engine metadata.
+ * @property {Readonly<SqliteAdapterInfo>} adapter Adapter metadata.
+ * @property {Readonly<SqliteRequestedJournalModeInfo>} journalMode Journal mode metadata.
+ * @property {Readonly<SqlitePathInfo>} path Path metadata.
+ */
+
+/**
+ * @typedef {object} UnhealthySqliteHealth
+ * @property {"unhealthy"} status SQLite health status.
+ * @property {Readonly<SqliteAdapterInfo>} adapter Adapter metadata.
+ * @property {Readonly<SqliteRequestedJournalModeInfo>} journalMode Journal mode metadata.
+ * @property {Readonly<SqlitePathInfo>} path Path metadata.
+ * @property {Readonly<SqliteHealthErrorInfo>} error Error metadata.
+ */
+
+/** @typedef {HealthySqliteHealth | UnhealthySqliteHealth} SqliteHealthResult */
 
 import { getActiveSqliteJournalMode } from "./connection.js";
 
@@ -94,15 +141,17 @@ function createRequestedJournalModeInfo(input) {
  * @returns {readonly<SqliteHealthProbe>} SQLite proof query result.
  */
 function runSqliteHealthProbe(connection) {
-  const probe = connection
-    .prepare(
-      `
+  const probe = /** @type {SqliteHealthProbe} */ (
+    connection
+      .prepare(
+        `
         SELECT 
             1 AS ok,
             sqlite_version() AS sqliteVersion
       `,
-    )
-    .get();
+      )
+      .get()
+  );
   return Object.freeze(probe);
 }
 
@@ -132,7 +181,7 @@ function createRequestedJournalModeInfoWithoutConnection(input) {
  * SQLite proof query, and formats a health result.
  *
  * @param {CreateSqliteHealthReporterInput} input Health reporter configuration.
- * @returns {() => Readonly<HealthySqliteHealth | UnhealthySqliteHealth>} SQLite health reporter.
+ * @returns {SqliteHealthReporter} SQLite health reporter.
  */
 export function createSqliteHealthReporter(input) {
   const adapter = createAdapterInfo(input.adapterId, input.sourceModule);
