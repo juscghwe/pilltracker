@@ -1,6 +1,6 @@
 import { getConnection } from "./connection.js";
-import { escapeSqlLikePattern } from "./like.js";
-import { rowToDevNote, rowsToDevNotes } from "./mappers.js";
+import { escapeSqlLikePattern } from "../sqlite-file/like.js";
+import { rowToDevNote, rowsToDevNotes } from "../sqlite-file/mappers.js";
 
 /**
  * Lists dev-notes stored in the dev-notes SQLite memory database. (GET /dev-notes)
@@ -17,9 +17,10 @@ import { rowToDevNote, rowsToDevNotes } from "./mappers.js";
 export function listDevNotes() {
   const database = getConnection();
 
-  const rows = database
-    .prepare(
-      `
+  const rows = /** @type {import("../sqlite-file/mappers.js").DevNoteRow[]} */ (
+    database
+      .prepare(
+        `
         SELECT
           id,
           text_temp AS text,
@@ -28,8 +29,9 @@ export function listDevNotes() {
         FROM dev_notes_temp
         ORDER BY id ASC
     `,
-    )
-    .all();
+      )
+      .all()
+  );
 
   return rowsToDevNotes(rows);
 }
@@ -57,9 +59,10 @@ export function getDevNoteById(input) {
     return null;
   }
 
-  const row = database
-    .prepare(
-      `
+  const row = /** @type {import("../sqlite-file/mappers.js").DevNoteRow | undefined} */ (
+    database
+      .prepare(
+        `
         SELECT
           id,
           text_temp AS text,
@@ -68,10 +71,11 @@ export function getDevNoteById(input) {
         FROM dev_notes_temp
         WHERE id = @id
       `,
-    )
-    .get({
-      id,
-    });
+      )
+      .get({
+        id,
+      })
+  );
 
   if (!row) {
     return null;
@@ -102,9 +106,10 @@ export function searchDevNotesByText(input) {
     return [];
   }
 
-  const rows = database
-    .prepare(
-      `
+  const rows = /** @type {import("../sqlite-file/mappers.js").DevNoteRow[]} */ (
+    database
+      .prepare(
+        `
         SELECT
           id,
           text_temp AS text,
@@ -114,10 +119,11 @@ export function searchDevNotesByText(input) {
         WHERE text_temp COLLATE NOCASE LIKE @textPattern ESCAPE char(92)
         ORDER BY id ASC
       `,
-    )
-    .all({
-      textPattern: `%${escapeSqlLikePattern(text)}%`,
-    });
+      )
+      .all({
+        textPattern: `%${escapeSqlLikePattern(text)}%`,
+      })
+  );
 
   return rowsToDevNotes(rows);
 }
@@ -145,9 +151,10 @@ export function createDevNote(input) {
     return null;
   }
 
-  const row = database
-    .prepare(
-      `
+  const row = /** @type {import("../sqlite-file/mappers.js").DevNoteRow | undefined} */ (
+    database
+      .prepare(
+        `
       INSERT INTO dev_notes_temp (
           text_temp,
           created_at,
@@ -164,12 +171,13 @@ export function createDevNote(input) {
           created_at AS createdAt,
           updated_at AS updatedAt
     `,
-    )
-    .get({
-      text_temp: text,
-      createdAt: now,
-      updatedAt: now,
-    });
+      )
+      .get({
+        text_temp: text,
+        createdAt: now,
+        updatedAt: now,
+      })
+  );
 
   if (!row) {
     return null;
@@ -207,10 +215,11 @@ export function replaceDevNote(input) {
     return null;
   }
 
-  const row = database
-    .prepare(
-      // TODO: can replace be used instead? should i add a upsert placeholder for true PUT?
-      `
+  const row = /** @type {import("../sqlite-file/mappers.js").DevNoteRow | undefined} */ (
+    database
+      .prepare(
+        // TODO: can replace be used instead? should i add a upsert placeholder for true PUT?
+        `
       UPDATE dev_notes_temp
       SET
         text_temp = @text,
@@ -222,12 +231,13 @@ export function replaceDevNote(input) {
         created_at AS createdAt,
         updated_at AS updatedAt
     `,
-    )
-    .get({
-      id: id,
-      text: text,
-      updatedAt: now,
-    });
+      )
+      .get({
+        id: id,
+        text: text,
+        updatedAt: now,
+      })
+  );
 
   if (!row) {
     return null;
@@ -264,9 +274,10 @@ export function updateDevNote(input) {
     return null;
   }
 
-  const row = database
-    .prepare(
-      `
+  const row = /** @type {import("../sqlite-file/mappers.js").DevNoteRow | undefined} */ (
+    database
+      .prepare(
+        `
       UPDATE dev_notes_temp
       SET
         text_temp = @text,
@@ -278,12 +289,13 @@ export function updateDevNote(input) {
         created_at AS createdAt,
         updated_at AS updatedAt
     `,
-    )
-    .get({
-      id: id,
-      text: text,
-      updatedAt: now,
-    });
+      )
+      .get({
+        id: id,
+        text: text,
+        updatedAt: now,
+      })
+  );
 
   if (!row) {
     return null;
@@ -314,9 +326,10 @@ export function deleteDevNote(input) {
     return null;
   }
 
-  const row = database
-    .prepare(
-      `
+  const row = /** @type {import("../sqlite-file/mappers.js").DevNoteRow | undefined} */ (
+    database
+      .prepare(
+        `
       DELETE FROM dev_notes_temp
       WHERE id = @id
       RETURNING
@@ -325,10 +338,11 @@ export function deleteDevNote(input) {
         created_at AS createdAt,
         updated_at AS updatedAt
     `,
-    )
-    .get({
-      id: id,
-    });
+      )
+      .get({
+        id: id,
+      })
+  );
 
   if (!row) {
     return null;

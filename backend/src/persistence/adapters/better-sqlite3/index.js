@@ -22,7 +22,9 @@ import {
   openConfiguredSqliteConnection,
 } from "../../../sqlite/connection.js";
 import { createSqliteHealthReporter } from "../../../sqlite/health.js";
-let db;
+
+/** @type {import("better-sqlite3").Database | null} */
+let db = null;
 
 const adapterId = "better-sqlite3";
 const moduleName = "sqlite-file adapter persistency";

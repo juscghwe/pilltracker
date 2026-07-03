@@ -60,7 +60,15 @@ function resolveDevNotesHealthStatus(storageHealth) {
  * @returns {Readonly<import("./types.js").DevNotesHealthResult>} Dev-notes health result.
  */
 export function getDevNotesHealth() {
-  const storage = Object.entries(storageTargets).map(([storageKind, storageTarget]) =>
+  const storageEntries =
+    /**
+     * @type {[
+     *   import("./types.js").DevNotesStorageKind,
+     *   import("./types.js").DevNotesStorageTarget,
+     * ][]}
+     */ (Object.entries(storageTargets));
+
+  const storage = storageEntries.map(([storageKind, storageTarget]) =>
     getStorageTargetHealth(storageKind, storageTarget),
   );
 

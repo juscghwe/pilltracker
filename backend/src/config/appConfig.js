@@ -11,7 +11,7 @@ const moduleName = "backend config appConfig";
  *
  * Keep these names centralized so config parsing and adapter error messages cannot drift apart.
  *
- * @type {Readonly<EnvKeys>}
+ * @type {Readonly<import("./envKeys.js").EnvKeys>}
  * @see backend/src/config/envKeys.js
  */
 export const environmentKeys = envKeys;
@@ -37,6 +37,13 @@ export const validSqliteJournalModes = new Set([
   "off",
 ]);
 
+/**
+ * Reads a required environment variable.
+ *
+ * @param {string} name Environment variable name.
+ * @returns {string} Environment variable value.
+ * @throws {MissingEnvironmentVariableError} When the variable is missing or empty.
+ */
 function readRequiredString(name) {
   const rawValue = process.env[name];
 
@@ -49,30 +56,72 @@ function readRequiredString(name) {
   return rawValue;
 }
 
+/**
+ * Reads a required enum-like environment variable.
+ *
+ * @template {string} T
+ * @param {string} name Environment variable name.
+ * @param {ReadonlySet<T>} allowedValues Allowed values.
+ * @returns {T} Validated environment variable value.
+ * @throws {MissingEnvironmentVariableError} When the variable is missing or empty.
+ * @throws {InvalidEnvironmentVariableError} When the value is not allowed.
+ */
 function readRequiredEnum(name, allowedValues) {
   const rawValue = readRequiredString(name);
 
-  if (!allowedValues.has(rawValue)) {
+  if (!allowedValues.has(/** @type {T} */ (rawValue))) {
     throw new InvalidEnvironmentVariableError(name, rawValue, allowedValues, {
       moduleName: moduleName,
     });
   }
 
-  return rawValue;
+  return /** @type {T} */ (rawValue);
 }
 
+/**
+ * Reads an optional enum-like environment variable.
+ *
+ * @template {string} T
+ * @param {string} name Environment variable name.
+ * @param {ReadonlySet<T>} allowedValues Allowed values.
+ * @returns {T | null} Validated environment variable value, or null when unset.
+ * @throws {InvalidEnvironmentVariableError} When the value is not allowed.
+ */
+function readOptionalEnum(name, allowedValues) {
+  const rawValue = readOptionalString(name);
+
+  if (rawValue === null) {
+    return null;
+  }
+
+  if (!allowedValues.has(/** @type {T} */ (rawValue))) {
+    throw new InvalidEnvironmentVariableError(name, rawValue, allowedValues, {
+      moduleName: moduleName,
+    });
+  }
+
+  return /** @type {T} */ (rawValue);
+}
+
+/**
+ * Reads an optional boolean-like environment variable.
+ *
+ * @param {string} name Environment variable name.
+ * @returns {boolean | null} Parsed boolean, or null when unset.
+ * @throws {InvalidEnvironmentVariableError} When the value is not boolean-like.
+ */
 function readOptionalBoolean(name) {
-  const rawValue = process.env[name];
+  const rawValue = process.env[name]?.trim().toLowerCase();
 
   if (rawValue === undefined || rawValue === "") {
     return null;
   }
 
-  if (rawValue === true || rawValue === "true" || rawValue === 1) {
+  if (rawValue === "true" || rawValue === "1") {
     return true;
   }
 
-  if (rawValue === false || rawValue === "false" || rawValue === 0) {
+  if (rawValue === "false" || rawValue === "0") {
     return false;
   }
 
@@ -81,6 +130,12 @@ function readOptionalBoolean(name) {
   });
 }
 
+/**
+ * Reads an optional environment variable string.
+ *
+ * @param {string} name Environment variable name.
+ * @returns {string | null} Environment variable value, or null when unset.
+ */
 function readOptionalString(name) {
   const rawValue = process.env[name];
 
@@ -109,15 +164,19 @@ function getDevNotesConfig() {
       temp: Object.freeze({
         enabled: readOptionalBoolean(envKeys.devNotes.storage.temp.enabled) ?? true,
         databasePath: readOptionalString(envKeys.devNotes.storage.temp.databasePath) ?? ":memory:",
-        journalMode: readOptionalString(envKeys.devNotes.storage.temp.journalMode) ?? "memory",
+        journalMode:
+          readOptionalEnum(envKeys.devNotes.storage.temp.journalMode, validSqliteJournalModes) ??
+          "memory",
       }),
 
       persistent: Object.freeze({
         enabled: readOptionalBoolean(envKeys.devNotes.storage.persistent.enabled) ?? true,
         databasePath: readOptionalString(envKeys.devNotes.storage.persistent.databasePath),
         journalMode:
-          readOptionalString(envKeys.devNotes.storage.persistent.journalMode) ??
-          readOptionalString(envKeys.app.persistence.sqliteJournalMode),
+          readOptionalEnum(
+            envKeys.devNotes.storage.persistent.journalMode,
+            validSqliteJournalModes,
+          ) ?? readOptionalEnum(envKeys.app.persistence.sqliteJournalMode, validSqliteJournalModes),
       }),
     }),
   };
@@ -136,7 +195,10 @@ export const appConfig = Object.freeze({
     persistence: Object.freeze({
       path: readOptionalString(envKeys.app.persistence.databasePath),
       sqlite: Object.freeze({
-        requestedJournalMode: readOptionalString(envKeys.app.persistence.sqliteJournalMode),
+        requestedJournalMode: readOptionalEnum(
+          envKeys.app.persistence.sqliteJournalMode,
+          validSqliteJournalModes,
+        ),
       }),
     }),
   }),

@@ -13,7 +13,8 @@ import {
 import { createSqliteHealthReporter } from "../../../sqlite/health.js";
 import { seedDevNotes } from "./seed-dev.js";
 
-let db;
+/** @type {import("better-sqlite3").Database | null} */
+let db = null;
 
 const adapterId = "better-sqlite3";
 const moduleName = "dev-notes sqlite-file adapter";
@@ -160,7 +161,8 @@ export function getConnection() {
  * so configuration and connection failures are represented as unhealthy adapter results instead of
  * escaping the health endpoint.
  *
- * @type {() => Readonly<object>}
+ * @property {() => Readonly<DevNotesAdapterHealth>} getHealth Returns health for this storage
+ *   adapter.
  * @see Module README, section "health reporting".
  */
 export const getHealth = createSqliteHealthReporter({

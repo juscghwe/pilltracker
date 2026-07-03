@@ -25,7 +25,23 @@
  *   | "storage-disabled"} DevNotesResultStatus
  */
 
+/** @typedef {"ok" | "created" | "replaced" | "updated" | "deleted"} DevNotesSuccessStatus */
+
 /** @typedef {"healthy" | "unhealthy" | "disabled"} DevNotesHealthStatus */
+
+/**
+ * Health result returned by one concrete dev-notes storage adapter.
+ *
+ * Concrete adapters may include additional diagnostic fields, but every adapter health result must
+ * expose a dev-notes health status.
+ *
+ * @typedef {object} DevNotesAdapterHealth
+ * @property {DevNotesHealthStatus} status Adapter health status.
+ * @property {boolean} [connected] Whether the adapter currently has an active connection.
+ * @property {string} [databasePath] Adapter database path, when applicable.
+ * @property {string} [journalMode] Active or requested SQLite journal mode, when applicable.
+ * @property {string} [message] Human-readable health detail, when applicable.
+ */
 
 /**
  * @typedef {object} CreateDevNoteInput
@@ -65,7 +81,8 @@
  * @typedef {object} DevNotesStorageConfig
  * @property {boolean} enabled Whether this storage target is enabled.
  * @property {string | null} databasePath SQLite database path or `null` when not configured.
- * @property {string | null} journalMode Requested SQLite journal mode or `null` when not configured.
+ * @property {string | null} journalMode Requested SQLite journal mode or `null` when not
+ *   configured.
  */
 
 /**
@@ -74,7 +91,8 @@
  * @typedef {object} DevNotesStorageAdapter
  * @property {() => import("better-sqlite3").Database} getConnection Returns the active dev-notes
  *   SQLite connection.
- * @property {() => Readonly<object>} getHealth Returns health for this storage adapter.
+ * @property {() => Readonly<DevNotesAdapterHealth>} getHealth Returns health for this storage
+ *   adapter.
  * @property {() => DevNote[]} listDevNotes Lists dev-notes from this storage adapter.
  * @property {(input: CreateDevNoteInput) => DevNote | null} createDevNote Creates a dev-note in
  *   this storage adapter.
@@ -218,7 +236,8 @@
  * @typedef {object} DevNotesPartialHealthResult
  * @property {DevNotesHealthStatus} status Dev-notes subsystem health status.
  * @property {boolean} enabled Whether the dev-notes subsystem is enabled.
- * @property {ReadonlyArray<Readonly<DevNotesPartialStorageHealth>>} storage Condensed storage health entries.
+ * @property {ReadonlyArray<Readonly<DevNotesPartialStorageHealth>>} storage Condensed storage
+ *   health entries.
  */
 
 export {};

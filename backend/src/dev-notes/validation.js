@@ -5,7 +5,7 @@
  * @param {import("./types.js").DevNotesValidationDetails} details Validation failure details.
  * @returns {import("./types.js").DevNotesInvalidRequestResult} Invalid request result.
  */
-function invalidRequest(message, details = {}) {
+function invalidRequest(message, details) {
   return Object.freeze({
     ok: false,
     status: "invalid-request",
@@ -17,7 +17,7 @@ function invalidRequest(message, details = {}) {
 /**
  * Reads and validates a required dev-note id from an input object.
  *
- * @param {object} input Input object.
+ * @param {Partial<import("./types.js").GetDevNoteByIdInput>} input Input object.
  * @returns {import("./types.js").DevNoteIdValidationResult} Validation result.
  */
 export function readRequiredDevNoteId(input) {
@@ -64,7 +64,7 @@ export function readRequiredDevNoteId(input) {
 /**
  * Reads and validates a required dev-note text value from an input object.
  *
- * @param {object} input Input object.
+ * @param {Partial<import("./types.js").CreateDevNoteInput>} input Input object.
  * @returns {import("./types.js").DevNoteTextValidationResult} Validation result.
  */
 export function readRequiredDevNoteText(input) {

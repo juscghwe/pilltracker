@@ -15,8 +15,8 @@ export function optionsStorageAndId() {
  *
  * @private
  * @param {import("./types.js").DevNote | null} note Dev-note returned by the storage adapter.
- * @param {string} [successStatus="ok"] Success status to expose when a note exists. Default is
- *   `"ok"`
+ * @param {import("./types.js").DevNotesSuccessStatus} [successStatus="ok"] Success status to expose
+ *   when a note exists. Default is `"ok"`
  * @returns {import("./types.js").DevNotesSingleResult} Single-note facade result.
  */
 function singleNoteResult(note, successStatus = "ok") {

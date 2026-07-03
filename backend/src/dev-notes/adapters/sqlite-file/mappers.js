@@ -1,11 +1,17 @@
 /**
- * Maps a SQLite dev-note row to the public dev-note shape.
+ * SQLite row shape selected by dev-notes adapter queries.
  *
- * @param {object} row SQLite row.
- * @param {number} row.id Dev-note id.
- * @param {string} row.text Dev-note text.
- * @param {string} row.createdAt Creation timestamp.
- * @param {string} row.updatedAt Update timestamp.
+ * @typedef {object} DevNoteRow
+ * @property {number} id Dev-note id.
+ * @property {string} text Dev-note text.
+ * @property {string} createdAt ISO creation timestamp.
+ * @property {string} updatedAt ISO update timestamp.
+ */
+
+/**
+ * Maps one SQLite dev-note row to the public dev-note shape.
+ *
+ * @param {DevNoteRow} row SQLite row.
  * @returns {import("../../types.js").DevNote} Public dev-note.
  */
 export function rowToDevNote(row) {
@@ -20,7 +26,7 @@ export function rowToDevNote(row) {
 /**
  * Maps SQLite dev-note rows to public dev-note shapes.
  *
- * @param {object[]} rows SQLite rows.
+ * @param {ReadonlyArray<DevNoteRow>} rows SQLite rows.
  * @returns {import("../../types.js").DevNote[]} Public dev-notes.
  */
 export function rowsToDevNotes(rows) {

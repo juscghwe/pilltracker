@@ -1,4 +1,11 @@
 /**
+ * Row returned by the dev-notes seed count query.
+ *
+ * @typedef {object} DevNotesCountRow
+ * @property {number} count Existing dev-note count.
+ */
+
+/**
  * Inserts demo dev-notes for manual development.
  *
  * Modes:
@@ -13,20 +20,24 @@
  * @returns {void}
  */
 export function seedDevNotes(connection, { count = 10, mode = "when-empty" } = {}) {
-  const existing = connection
-    .prepare(
-      `
+  const existing = /** @type {DevNotesCountRow | undefined} */ (
+    connection
+      .prepare(
+        `
         SELECT COUNT(*) AS count
         FROM dev_notes_temp
       `,
-    )
-    .get();
+      )
+      .get()
+  );
 
-  if (mode === "when-empty" && existing.count > 0) {
+  const existingCount = existing?.count ?? 0;
+
+  if (mode === "when-empty" && existingCount > 0) {
     return;
   }
 
-  if (mode === "maintain-minimum" && existing.count >= count) {
+  if (mode === "maintain-minimum" && existingCount >= count) {
     return;
   }
 
@@ -47,7 +58,7 @@ export function seedDevNotes(connection, { count = 10, mode = "when-empty" } = {
 
   const insertMany = connection.transaction(() => {
     const now = new Date().toISOString();
-    const firstIndex = mode === "maintain-minimum" ? existing.count + 1 : 1;
+    const firstIndex = mode === "maintain-minimum" ? existingCount + 1 : 1;
 
     for (let index = firstIndex; index <= count; index += 1) {
       insertNote.run({
