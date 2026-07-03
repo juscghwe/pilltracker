@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "typecheck",
+      "type": "shell",
+      "command": "npm run typecheck",
+      "group": "test",
+      "problemMatcher": "$tsc",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      }
+    },
+    {
+      "label": "lint",
+      "type": "shell",
+      "command": "npm run repo:lint",
+      "group": "test",
+      "problemMatcher": "$eslint-stylish",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      }
+    }
+  ]
+}
