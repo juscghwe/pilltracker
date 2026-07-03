@@ -200,11 +200,10 @@ Future adapter health should add schema checks:
 
 The current dev-notes contract intentionally leaves the following work open:
 
-| Area                 | Status                                                                                                                |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `REST` returns       | Not correctly implemented yet. See [MDN_ docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/). |
-| `HEAD` routes        | Not implemented yet.                                                                                                  |
-| Health aggregation   | Planned through dev-notes health getters and backend health aggregation.                                              |
-| Schema health checks | Planned for concrete SQLite adapter health.                                                                           |
-| Tests                | Planned after README, typedefs, and JSDoc are stable.                                                                 |
-| CI                   | Planned after the first dev-notes test slice exists.                                                                  |
+| Area                   | Status                                                                                                                                                                          |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| HTTP response contract | Define and verify response status, headers, body shape, and no-body behavior per method. See [MDN_ docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/). |
+| `HEAD` routes          | Not implemented yet.                                                                                                                                                            |
+| Schema health checks   | Planned for concrete SQLite adapter health.                                                                                                                                     |
+| Tests                  | Planned after README, typedefs, and JSDoc are stable.                                                                                                                           |
+| CI                     | Planned after the first dev-notes test slice exists.                                                                                                                            |
