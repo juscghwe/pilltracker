@@ -54,17 +54,17 @@ Base path when mounted:
 
 `/api/dev-notes`
 
-| Method  | Path                    | Input                                       | Success                            | Notes                                                        |
-| ------- | ----------------------- | ------------------------------------------- | ---------------------------------- | ------------------------------------------------------------ |
-| GET     | `/:storage`             | route param `storage`                       | `200` with `{ ok, status, notes }` | Lists all notes. Empty list is success.                      |
-| GET     | `/:storage?text=search` | route param `storage`, query `text`         | `200` with `{ ok, status, notes }` | Filtered collection search. Empty result is success.         |
-| GET     | `/:storage/:id`         | route params `storage`, `id`                | `200` with `{ ok, status, note }`  | Returns `404` when id is valid but row does not exist.       |
-| POST    | `/:storage`             | JSON body `{ "text": "..." }`               | `201` with `{ ok, status, note }`  | Creates one note.                                            |
-| PUT     | `/:storage/:id`         | route params, JSON body `{ "text": "..." }` | `200` with `{ ok, status, note }`  | Replaces existing note. No upsert.                           |
-| PATCH   | `/:storage/:id`         | route params, JSON body `{ "text": "..." }` | `200` with `{ ok, status, note }`  | Updates existing note. Currently same mutable fields as PUT. |
-| DELETE  | `/:storage/:id`         | route params `storage`, `id`                | `200` with `{ ok, status, note }`  | Returns deleted note.                                        |
-| OPTIONS | `/:storage`             | none                                        | `204` with `Allow`                 | Route capability metadata.                                   |
-| OPTIONS | `/:storage/:id`         | none                                        | `204` with `Allow`                 | Route capability metadata.                                   |
+| Method    | Path                    | Input                                       | Success                            | Notes                                                          |
+| --------- | ----------------------- | ------------------------------------------- | ---------------------------------- | -------------------------------------------------------------- |
+| `GET`     | `/:storage`             | route param `storage`                       | `200` with `{ ok, status, notes }` | Lists all notes. Empty list is success.                        |
+| `GET`     | `/:storage?text=search` | route param `storage`, query `text`         | `200` with `{ ok, status, notes }` | Filtered collection search. Empty result is success.           |
+| `GET`     | `/:storage/:id`         | route params `storage`, `id`                | `200` with `{ ok, status, note }`  | Returns `404` when id is valid but row does not exist.         |
+| `POST`    | `/:storage`             | JSON body `{ "text": "..." }`               | `201` with `{ ok, status, note }`  | Creates one note.                                              |
+| `PUT`     | `/:storage/:id`         | route params, JSON body `{ "text": "..." }` | `200` with `{ ok, status, note }`  | Replaces existing note. No upsert.                             |
+| `PATCH`   | `/:storage/:id`         | route params, JSON body `{ "text": "..." }` | `200` with `{ ok, status, note }`  | Updates existing note. Currently same mutable fields as `PUT`. |
+| `DELETE`  | `/:storage/:id`         | route params `storage`, `id`                | `200` with `{ ok, status, note }`  | Returns deleted note.                                          |
+| `OPTIONS` | `/:storage`             | none                                        | `204` with `Allow`                 | Route capability metadata.                                     |
+| `OPTIONS` | `/:storage/:id`         | none                                        | `204` with `Allow`                 | Route capability metadata.                                     |
 
 `HEAD` is intentionally not part of the current contract yet.
 
