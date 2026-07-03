@@ -9,7 +9,14 @@
     "frontend:dev": "vite frontend --host 0.0.0.0 --port 5173",
     "frontend:build": "vite build frontend",
     "frontend:preview": "vite preview frontend --host 0.0.0.0 --port 4173",
+    "dev": "npm run backend:dev",
+    "start": "npm run backend:start",
+    "compose:up": "docker compose up -d app",
+    "compose:down": "docker compose down --remove-orphans",
+    "compose:reset": "docker compose down --volumes --remove-orphans",
+    "compose:logs": "docker compose logs -f app",
     "test:backend:smoke": "node backend/tests/smoke/health.mjs",
+    "test:backend:smoke:compose": "docker compose up -d app && npm run test:backend:smoke",
     "test:frontend:build": "npm run frontend:build",
     "repo:format": "prettier . --write",
     "repo:format:check": "prettier . --check",
@@ -17,9 +24,7 @@
     "typecheck": "tsc --project jsconfig.json --noEmit",
     "check": "node scripts/check.mjs",
     "fix": "node scripts/fix.mjs",
-    "precommit": "node scripts/pre-commit.mjs",
-    "dev": "npm run backend:dev",
-    "start": "npm run backend:start"
+    "precommit": "node scripts/pre-commit.mjs"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",
