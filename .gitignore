@@ -20,5 +20,8 @@ frontend/dist/
 # IDE files
 .DS_Store
 Thumbs.db
-.vscode/
+.vscode/*
 .idea/
+!.vscode/
+!.vscode/settings.example.json
+!.vscode/task.example.json

@@ -22,5 +22,5 @@
     }
   },
   "runArgs": ["--network=host"],
-  "postCreateCommand": "git config core.hooksPath .githooks && chmod +x .githooks/pre-commit"
+  "postCreateCommand": "bash .devcontainer/post-create.sh"
 }
