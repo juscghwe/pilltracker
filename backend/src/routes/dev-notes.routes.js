@@ -1,3 +1,11 @@
+/**
+ * Dev-notes route result response.
+ *
+ * @typedef {import("../dev-notes/types.js").DevNotesSingleResult
+ *   | import("../dev-notes/types.js").DevNotesListResult
+ *   | import("../dev-notes/types.js").DevNotesInvalidRequestResult} DevNotesRouteResult
+ */
+
 import { Router } from "express";
 import {
   listDevNotes,
@@ -13,6 +21,13 @@ import {
 
 const devNotesRouter = Router();
 
+/**
+ * Sends a dev-notes route result with the matching HTTP status code.
+ *
+ * @param {import("express").Response} res Express response.
+ * @param {DevNotesRouteResult} message Dev-notes result message.
+ * @returns {void}
+ */
 function returnCodes(res, message) {
   switch (message.status) {
     case "ok":
@@ -24,10 +39,6 @@ function returnCodes(res, message) {
 
     case "created":
       res.status(201).json(message);
-      break;
-
-    case "no-content": // TODO: not yet implemented in dev-notes CRUD
-      res.status(204).end();
       break;
 
     case "invalid-request":
@@ -45,11 +56,7 @@ function returnCodes(res, message) {
       break;
 
     default:
-      res.status(500).json({
-        ok: false,
-        status: "unknown-result-status",
-        message: `Unhandled result status: ${message.status}`,
-      });
+      throw new Error("Unhandled dev-notes result status.");
   }
 }
 

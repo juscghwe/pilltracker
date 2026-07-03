@@ -32,15 +32,11 @@
 /**
  * Health result returned by one concrete dev-notes storage adapter.
  *
- * Concrete adapters may include additional diagnostic fields, but every adapter health result must
- * expose a dev-notes health status.
+ * Dev-notes storage adapters currently use the shared SQLite health reporter, so adapter health
+ * uses the SQLite adapter health shape directly. The feature-level dev-notes health wrapper can
+ * still add storage-kind and enabled/disabled metadata above this result.
  *
- * @typedef {object} DevNotesAdapterHealth
- * @property {DevNotesHealthStatus} status Adapter health status.
- * @property {boolean} [connected] Whether the adapter currently has an active connection.
- * @property {string} [databasePath] Adapter database path, when applicable.
- * @property {string} [journalMode] Active or requested SQLite journal mode, when applicable.
- * @property {string} [message] Human-readable health detail, when applicable.
+ * @typedef {import("../sqlite/health.js").SqliteHealthResult} DevNotesAdapterHealth
  */
 
 /**

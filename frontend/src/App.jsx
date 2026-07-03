@@ -1,9 +1,49 @@
 /**
- * @typedef {object} HealthState
- * @property {"loading" | "connected" | "error"} status
- * @property {object | null} data
- * @property {string | null} error
+ * Backend health summary returned by `/api/health`.
+ *
+ * @typedef {object} BackendHealthSummary
+ * @property {"healthy" | "unhealthy"} status Overall backend health status.
+ * @property {string} service Backend service identifier.
+ * @property {object} checks Backend subsystem health checks.
+ * @property {object} checks.runtime Runtime health summary.
+ * @property {"healthy" | "unhealthy"} checks.runtime.status Runtime health status.
+ * @property {number} checks.runtime.uptimeSeconds Runtime uptime in seconds.
+ * @property {object} checks.persistence Persistence health summary.
+ * @property {"healthy" | "unhealthy"} checks.persistence.status Persistence health status.
+ * @property {object} checks.persistence.path Persistence path summary.
+ * @property {boolean} checks.persistence.path.isConfigured Whether the persistence path is
+ *   configured.
+ * @property {string} timestamp Response timestamp.
  */
+
+/**
+ * Frontend state while the backend health request is loading.
+ *
+ * @typedef {object} LoadingHealthState
+ * @property {"loading"} status Frontend health request status.
+ * @property {null} data Backend health data.
+ * @property {null} error Backend health request error message.
+ */
+
+/**
+ * Frontend state after the backend health request succeeds.
+ *
+ * @typedef {object} ConnectedHealthState
+ * @property {"connected"} status Frontend health request status.
+ * @property {BackendHealthSummary} data Backend health data.
+ * @property {null} error Backend health request error message.
+ */
+
+/**
+ * Frontend state after the backend health request fails.
+ *
+ * @typedef {object} ErrorHealthState
+ * @property {"error"} status Frontend health request status.
+ * @property {null} data Backend health data.
+ * @property {string} error Backend health request error message.
+ */
+
+/** @typedef {LoadingHealthState | ConnectedHealthState | ErrorHealthState} HealthState */
 
 import { useEffect, useState } from "react";
 
@@ -18,6 +58,13 @@ const initialHealthState = {
   error: null,
 };
 
+/**
+ * Displays a successful backend health response.
+ *
+ * @param {object} props Component props.
+ * @param {BackendHealthSummary} props.data Backend health summary.
+ * @returns {import("react").JSX.Element} Rendered backend health status.
+ */
 function ConnectedHealthStatus({ data }) {
   const backendIsHealthy = data.status === "healthy";
 
@@ -54,7 +101,7 @@ function ConnectedHealthStatus({ data }) {
 /**
  * Root frontend application component.
  *
- * @returns {import("react").JSX.Element}
+ * @returns {import("react").JSX.Element} Rendered application shell.
  */
 function App() {
   const [health, setHealth] = useState(initialHealthState);
@@ -77,8 +124,10 @@ function App() {
           setHealth({ status: "connected", data, error: null });
         }
       } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+
         if (!ignoreResult) {
-          setHealth({ status: "error", data: null, error: error.message });
+          setHealth({ status: "error", data: null, error: message });
         }
       }
     }
@@ -100,6 +149,13 @@ function App() {
   );
 }
 
+/**
+ * Displays the current backend health request state.
+ *
+ * @param {object} props Component props.
+ * @param {HealthState} props.health Current frontend health state.
+ * @returns {import("react").JSX.Element} Rendered health state.
+ */
 function HealthStatus({ health }) {
   switch (health.status) {
     case "loading":
@@ -117,12 +173,7 @@ function HealthStatus({ health }) {
       return <ConnectedHealthStatus data={health.data} />;
 
     default:
-      return (
-        <div className="status-error" role="status">
-          <h2>Unknown health status</h2>
-          <p>{health.status}</p>
-        </div>
-      );
+      throw new Error("Unhandled frontend health state.");
   }
 }
 

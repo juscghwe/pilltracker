@@ -37,8 +37,7 @@
 
 /**
  * @callback GetSqliteHealth
- * @param {import("better-sqlite3").Database} connection SQLite connection.
- * @returns {() => Readonly<SqliteHealthResult>} SQLite health reporter.
+ * @returns {Readonly<SqliteHealthResult>} SQLite health result.
  */
 
 /** @typedef {"healthy" | "unhealthy"} SqliteHealthStatus */
@@ -93,7 +92,7 @@ import { getActiveSqliteJournalMode } from "./connection.js";
  *
  * @param {string} adapterId Stable adapter identifier.
  * @param {string} sourceModule Source module URL.
- * @returns {readonly<SqliteAdapterInfo>} Adapter health metadata.
+ * @returns {Readonly<SqliteAdapterInfo>} Adapter health metadata.
  */
 function createAdapterInfo(adapterId, sourceModule) {
   return Object.freeze({
@@ -106,7 +105,7 @@ function createAdapterInfo(adapterId, sourceModule) {
  * Builds database path configuration metadata for SQLite health results.
  *
  * @param {string | null} databasePath Configured database path.
- * @returns {readonly<SqlitePathInfo>} Path configuration metadata.
+ * @returns {Readonly<SqlitePathInfo>} Path configuration metadata.
  */
 function createPathInfo(databasePath) {
   return Object.freeze({
@@ -132,13 +131,56 @@ function createRequestedJournalModeInfo(input) {
 }
 
 /**
+ * Builds SQLite engine metadata from a successful probe.
+ *
+ * @param {SqliteHealthProbe} probe SQLite proof query result.
+ * @returns {Readonly<SqliteEngineInfo>} SQLite engine metadata.
+ */
+function createSqliteEngineInfo(probe) {
+  return Object.freeze({
+    reportedFamily: "sqlite",
+    version: probe.sqliteVersion,
+    source: "database_query",
+  });
+}
+
+/**
+ * Normalizes an unknown thrown value into health-safe error metadata.
+ *
+ * @param {unknown} error Thrown value.
+ * @returns {Readonly<SqliteHealthErrorInfo>} Health-safe error metadata.
+ */
+function createSqliteHealthErrorInfo(error) {
+  if (error instanceof Error) {
+    const structuredError = /** @type {Error & { code?: string; details?: unknown }} */ (error);
+
+    return Object.freeze({
+      name: structuredError.name,
+      code: structuredError.code ?? "UNKNOWN_ERROR",
+      message: structuredError.message,
+      details:
+        typeof structuredError.details === "object" && structuredError.details !== null
+          ? structuredError.details
+          : null,
+    });
+  }
+
+  return Object.freeze({
+    name: "NonErrorThrown",
+    code: "UNKNOWN_ERROR",
+    message: String(error),
+    details: null,
+  });
+}
+
+/**
  * Runs a SQLite health proof query.
  *
  * The probe should verify that the connection can execute a query and report the SQLite engine
  * version.
  *
  * @param {import("better-sqlite3").Database} connection SQLite connection.
- * @returns {readonly<SqliteHealthProbe>} SQLite proof query result.
+ * @returns {Readonly<SqliteHealthProbe>} SQLite proof query result.
  */
 function runSqliteHealthProbe(connection) {
   const probe = /** @type {SqliteHealthProbe} */ (
@@ -187,18 +229,19 @@ export function createSqliteHealthReporter(input) {
   const adapter = createAdapterInfo(input.adapterId, input.sourceModule);
   const path = createPathInfo(input.databasePath);
 
-  return function getSqliteHealth() {
+  /**
+   * Returns the current SQLite health result.
+   *
+   * @returns {Readonly<SqliteHealthResult>} SQLite health result.
+   */
+  function getSqliteHealth() {
     try {
       const connection = input.getConnection();
       const probe = runSqliteHealthProbe(connection);
 
       return Object.freeze({
         status: probe.ok === 1 ? "healthy" : "unhealthy",
-        engine: {
-          reportedFamily: "sqlite",
-          version: probe.sqliteVersion,
-          source: "database_query",
-        },
+        engine: createSqliteEngineInfo(probe),
         adapter,
         journalMode: createRequestedJournalModeInfo({
           connection,
@@ -216,13 +259,10 @@ export function createSqliteHealthReporter(input) {
           requestedJournalMode: input.requestedJournalMode,
           validJournalModes: input.validJournalModes,
         }),
-        error: {
-          name: error.name,
-          code: error.code ?? "UNKNOWN_ERROR",
-          message: error.message,
-          details: error.details ?? null,
-        },
+        error: createSqliteHealthErrorInfo(error),
       });
     }
-  };
+  }
+
+  return getSqliteHealth;
 }

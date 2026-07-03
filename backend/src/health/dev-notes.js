@@ -1,11 +1,21 @@
+/**
+ * Backend health route options for dev-notes health.
+ *
+ * @typedef {object} BackendDevNotesHealthOptions
+ * @property {boolean} [includeDetails] Return full dev-notes health when true.
+ */
+
 import { getDevNotesHealth, getDevNotesHealthPartial } from "../dev-notes/index.js";
 
 /**
  * Returns dev-notes health for backend health routes.
  *
- * @param {object} [options] Health options.
- * @param {boolean} [options.includeDetails] Return full dev-notes health when true.
- * @returns {Readonly<object>} Dev-notes health result.
+ * @param {BackendDevNotesHealthOptions} [options] Health options.
+ * @returns {Readonly<
+ *   | import("../dev-notes/types.js").DevNotesHealthResult
+ *   | import("../dev-notes/types.js").DevNotesPartialHealthResult
+ * >}
+ *   Dev-notes health result.
  */
 export function getBackendDevNotesHealth(options = {}) {
   if (options.includeDetails) {
@@ -18,7 +28,8 @@ export function getBackendDevNotesHealth(options = {}) {
 /**
  * Returns condensed dev-notes health for backend-wide health summary.
  *
- * @returns {Readonly<object>} Partial dev-notes health result.
+ * @returns {Readonly<import("../dev-notes/types.js").DevNotesPartialHealthResult>} Partial
+ *   dev-notes health result.
  */
 export function getBackendDevNotesHealthPartial() {
   return getDevNotesHealthPartial();

@@ -9,7 +9,7 @@ import { getBackendDevNotesHealth } from "../health/dev-notes.js";
  * Express router exposing backend health endpoints.
  *
  * @type {import("express").Router}
- * @see ./README.md#health-routes
+ * @see README #health-routes
  */
 const healthRouter = Router();
 

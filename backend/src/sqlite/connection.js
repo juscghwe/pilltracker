@@ -61,9 +61,16 @@ export function applySqliteJournalMode(input) {
  *
  * @param {import("better-sqlite3").Database} connection SQLite connection.
  * @returns {string} Active SQLite journal mode.
+ * @throws {TypeError} When SQLite reports a non-string journal mode.
  */
 export function getActiveSqliteJournalMode(connection) {
-  return connection.pragma("journal_mode", { simple: true });
+  const journalMode = connection.pragma("journal_mode", { simple: true });
+
+  if (typeof journalMode !== "string") {
+    throw new TypeError("SQLite journal_mode PRAGMA returned a non-string value.");
+  }
+
+  return journalMode;
 }
 
 /**
