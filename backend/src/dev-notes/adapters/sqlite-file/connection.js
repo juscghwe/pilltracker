@@ -1,16 +1,4 @@
-/**
- * @typedef {object} SqliteFilePersistenceConfig
- * @property {string} databasePath SQLite database path for persistent storage.
- * @property {string} requestedJournalMode Requested SQLite journal mode.
- */
-
-/**
- * @typedef {object} SqliteFileAdapter
- * @property {() => import("better-sqlite3").Database} getConnection Returns the active SQLite file
- *   connection.
- * @property {() => Readonly<import("../../../sqlite/health.js").SqliteHealthResult>} getHealth
- *   Returns SQLite health for the file adapter.
- */
+import { readFileSync } from "node:fs";
 
 import { appConfig, validSqliteJournalModes, environmentKeys } from "../../../config/appConfig.js";
 import {
@@ -23,31 +11,39 @@ import {
   openConfiguredSqliteConnection,
 } from "../../../sqlite/connection.js";
 import { createSqliteHealthReporter } from "../../../sqlite/health.js";
+import { seedDevNotes } from "./seed-dev.js";
 
 /** @type {import("better-sqlite3").Database | null} */
 let db = null;
 
 const adapterId = "better-sqlite3";
-const moduleName = "sqlite-file adapter persistency";
+const moduleName = "dev-notes sqlite-file adapter";
 const sourceModule = import.meta.url;
-const configuredPersistence = appConfig.app.persistence;
-const persistenceEnvKeys = environmentKeys.app.persistence;
+const configuredPersistence = appConfig.devNotes.storage.persistent;
+const persistenceEnvKeys = environmentKeys.devNotes.storage.persistent;
+
+const minDevNoteEntries = 10;
+
+const schemaSql = readFileSync(new URL("./schema.sql", import.meta.url), "utf8");
 
 /**
- * Resolves and validates configuration required by the SQLite file adapter.
+ * Resolves and validates configuration required by the dev-notes SQLite file adapter.
  *
- * This adapter owns validation for the persistent database path because the value is optional at
- * app-config level but required when this concrete adapter is used.
+ * This adapter owns validation for the persistent dev-notes database path because the value is
+ * optional at app-config level but required when this concrete adapter is used.
  *
- * @returns {SqliteFilePersistenceConfig} Validated persistence configuration.
- * @throws {MissingEnvironmentVariableError} When `APP_DB_PATH` or `APP_SQLITE_JOURNAL_MODE` is
- *   missing.
- * @throws {InvalidEnvironmentVariableError} When `APP_SQLITE_JOURNAL_MODE` is not supported.
+ * @returns {import("../../types.js").DevNotesSqliteFilePersistenceConfig} Validated persistence
+ *   configuration.
+ * @throws {MissingEnvironmentVariableError} When `DEV_NOTES_DB_PATH` is missing or neither
+ *   `DEV_NOTES_PERSISTENT_JOURNAL_MODE` nor `APP_SQLITE_JOURNAL_MODE` is configured.
+ * @throws {InvalidEnvironmentVariableError} When `DEV_NOTES_PERSISTENT_JOURNAL_MODE` is not
+ *   supported.
  * @see Module README, section "sqlite-file adapter".
  */
 function getPersistenceConfig() {
-  const databasePath = configuredPersistence.path;
-  const requestedJournalMode = configuredPersistence.sqlite.requestedJournalMode;
+  const databasePath = configuredPersistence.databasePath;
+  const requestedJournalMode = configuredPersistence.journalMode;
+  const journalModeEnvName = `${persistenceEnvKeys.journalMode} or ${environmentKeys.app.persistence.sqliteJournalMode}`;
 
   if (!databasePath) {
     throw new MissingEnvironmentVariableError(persistenceEnvKeys.databasePath, {
@@ -56,14 +52,14 @@ function getPersistenceConfig() {
   }
 
   if (!requestedJournalMode) {
-    throw new MissingEnvironmentVariableError(persistenceEnvKeys.sqliteJournalMode, {
+    throw new MissingEnvironmentVariableError(journalModeEnvName, {
       moduleName,
     });
   }
 
   if (!validSqliteJournalModes.has(requestedJournalMode)) {
     throw new InvalidEnvironmentVariableError(
-      persistenceEnvKeys.sqliteJournalMode,
+      journalModeEnvName,
       requestedJournalMode,
       validSqliteJournalModes,
       { moduleName },
@@ -84,7 +80,8 @@ function getPersistenceConfig() {
  * behavior.
  *
  * @param {import("better-sqlite3").Database} connection SQLite connection.
- * @param {SqliteFilePersistenceConfig} persistenceConfig Validated adapter configuration.
+ * @param {import("../../types.js").DevNotesSqliteFilePersistenceConfig} persistenceConfig
+ *   PersistenceConfig Validated adapter configuration.
  * @returns {void}
  * @throws {SqliteJournalModeMismatchError} When the active SQLite journal mode differs from the
  *   requested mode.
@@ -103,12 +100,13 @@ function assertJournalMode(connection, persistenceConfig) {
 }
 
 /**
- * Opens and validates the cached SQLite file connection.
+ * Opens and validates the cached dev-notes SQLite file connection.
  *
  * The connection is opened lazily and cached by this concrete adapter. Shared SQLite helpers
  * create/configure connections, but this adapter owns the connection lifecycle for its database.
  *
- * @param {SqliteFilePersistenceConfig} persistenceConfig Validated adapter configuration.
+ * @param {import("../../types.js").DevNotesSqliteFilePersistenceConfig} persistenceConfig
+ *   PersistenceConfig Validated adapter configuration.
  * @returns {import("better-sqlite3").Database} Active SQLite connection.
  * @throws {SqliteJournalModeMismatchError} When the active SQLite journal mode differs from the
  *   requested mode.
@@ -121,6 +119,14 @@ function openConnection(persistenceConfig) {
       databasePath: persistenceConfig.databasePath,
       requestedJournalMode: persistenceConfig.requestedJournalMode,
     });
+
+    db.exec(schemaSql);
+
+    // Optional. Only use if you explicitly want demo rows.
+    seedDevNotes(db, {
+      count: minDevNoteEntries,
+      mode: "when-empty",
+    });
   }
 
   assertJournalMode(db, persistenceConfig);
@@ -129,7 +135,7 @@ function openConnection(persistenceConfig) {
 }
 
 /**
- * Returns the active SQLite file connection.
+ * Returns the active dev-notes SQLite file connection.
  *
  * This is the public connection entrypoint for the concrete adapter. It resolves adapter
  * configuration, opens the connection if needed, and verifies the active SQLite journal mode before
@@ -142,43 +148,28 @@ function openConnection(persistenceConfig) {
  * @throws {Error} When SQLite cannot open or configure the database connection.
  * @see Module README, section "public entrypoints".
  */
-function getConnection() {
+export function getConnection() {
   const persistenceConfig = getPersistenceConfig();
 
   return openConnection(persistenceConfig);
 }
 
 /**
- * Health reporter for the SQLite file adapter.
+ * Health reporter for the dev-notes SQLite file adapter.
  *
  * The reporter captures adapter metadata once and calls `getConnection` when health is requested,
  * so configuration and connection failures are represented as unhealthy adapter results instead of
  * escaping the health endpoint.
  *
- * @type {() => Readonly<import("../../../sqlite/health.js").SqliteHealthResult>}
+ * @property {() => Readonly<DevNotesAdapterHealth>} getHealth Returns health for this storage
+ *   adapter.
  * @see Module README, section "health reporting".
  */
-const getHealth = createSqliteHealthReporter({
+export const getHealth = createSqliteHealthReporter({
   adapterId,
   sourceModule: sourceModule,
-  databasePath: configuredPersistence.path,
-  requestedJournalMode: configuredPersistence.sqlite.requestedJournalMode,
+  databasePath: configuredPersistence.databasePath,
+  requestedJournalMode: configuredPersistence.journalMode,
   validJournalModes: validSqliteJournalModes,
   getConnection,
 });
-
-/**
- * SQLite file implementation of the persistent storage adapter.
- *
- * This adapter stores data in a separate SQLite database file. This is the concrete SQLite adapter.
- * Application consumers should import the active adapter from the persistence seam instead of
- * importing this module directly.
- *
- * @type {Readonly<SqliteFileAdapter>}
- * @see Module README, section "better-sqlite3 adapter".
- * @see Persistence seam README, section "Public entrypoints".
- */
-export const sqliteFileAdapter = {
-  getConnection,
-  getHealth,
-};

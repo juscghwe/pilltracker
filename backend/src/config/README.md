@@ -10,6 +10,25 @@ validate them.
 
 ## Public entrypoints
 
+- `environmentKeys`
+- `validEnvironments`
+- `validSqliteJournalModes`
+- `appConfig`
+
+### App runtime
+
+| Variable                            | Required | Default                   | Owner                           | Failure behavior                                                     |
+| ----------------------------------- | -------- | ------------------------- | ------------------------------- | -------------------------------------------------------------------- |
+| `APP_DB_PATH`                       | no       | `null`                    | persistence adapter             | unhealthy persistence                                                |
+| `APP_SQLITE_JOURNAL_MODE`           | no       | `null`                    | persistence adapter             | unhealthy persistence if invalid/unsupported                         |
+| `DEV_NOTES_ENABLE`                  | no       | `false`                   | config/routes                   | route group not mounted when false                                   |
+| `DEV_NOTES_ENABLE_IN_MEMORY`        | no       | `true`                    | dev-notes                       | temp storage disabled when false                                     |
+| `DEV_NOTES_IN_MEMORY_PATH`          | no       | `:memory:`                | dev-notes sqlite-memory adapter | unhealthy if invalid                                                 |
+| `DEV_NOTES_IN_MEMORY_JOURNAL_MODE`  | no       | `memory`                  | dev-notes sqlite-memory adapter | unhealthy if invalid                                                 |
+| `DEV_NOTES_ENABLE_PERSISTENT`       | no       | `true`                    | dev-notes                       | persistent storage disabled when false                               |
+| `DEV_NOTES_DB_PATH`                 | no       | `null`                    | dev-notes sqlite-file adapter   | persistent storage unhealthy/disabled-ish depending current contract |
+| `DEV_NOTES_PERSISTENT_JOURNAL_MODE` | no       | `APP_SQLITE_JOURNAL_MODE` | dev-notes sqlite-file adapter   | unhealthy if invalid                                                 |
+
 ### `validEnvironments`
 
 Allowed values for `NODE_ENV`.
@@ -53,21 +72,47 @@ import { appConfig } from "./appConfig.js";
 {
     environment: "development" | "test" | "production",
 
-    database: {
-        path: string | null,
+    app: {
+        persistence: {
+            path: string | null,
+
+            sqlite: {
+                requestedJournalMode:
+                    | "delete"
+                    | "truncate"
+                    | "persist"
+                    | "memory"
+                    | "wal"
+                    | "off"
+                    | null,
+            },
+        },
     },
 
-    sqlite: {
-        requestedJournalMode:
-            | "delete"
-            | "truncate"
-            | "persist"
-            | "memory"
-            | "wal"
-            | "off"
-            | null,
-    },
+    devNotes: DevNotesObj,
 }
+```
+
+With `DevNotesObj` shape:
+
+```js
+{
+    enabled: bool | false,
+
+    storage: {
+      temp: {
+        enabled: bool | true,
+        databasePath: string | ":memory:",
+        journalMode: string | "memory",
+      },
+
+      persistent: {
+        enabled: bool | true,
+        databasePath: string,
+        journalMode: string | APP_SQLITE_JOURNAL_MODE,
+      },
+    },
+},
 ```
 
 ## Runtime behavior
@@ -81,7 +126,7 @@ silently fall back to `development`.
 
 ### Persistence-level config
 
-`DB_PATH` and `SQLITE_JOURNAL_MODE` are persistence-level config.
+`APP_DB_PATH` and `APP_SQLITE_JOURNAL_MODE` are persistence-level config.
 
 They are intentionally allowed to be `null` in `appConfig` so the persistence layer can report
 missing or invalid persistence config through health checks instead of hiding backend runtime
@@ -96,11 +141,11 @@ when the app must still be able to report partial health.
 
 Current split:
 
-|                       | owner                | missing/invalid behavior |
-| --------------------- | -------------------- | ------------------------ |
-| `NODE_ENV`            | `config` module      | startup failure          |
-| `DB_PATH`             | `persistence` module | persistence unhealthy    |
-| `SQLITE_JOURNAL_MODE` | `persistence` module | persistence unhealthy    |
+|                           | owner                | missing/invalid behavior |
+| ------------------------- | -------------------- | ------------------------ |
+| `NODE_ENV`                | `config` module      | startup failure          |
+| `APP_DB_PATH`             | `persistence` module | persistence unhealthy    |
+| `APP_SQLITE_JOURNAL_MODE` | `persistence` module | persistence unhealthy    |
 
 ## Usage rules
 

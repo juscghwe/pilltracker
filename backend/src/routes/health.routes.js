@@ -3,12 +3,13 @@ import { Router } from "express";
 import { getHealthSummary } from "../health/summary.js";
 import { getRuntimeHealth } from "../health/runtime.js";
 import { getPersistenceHealth } from "../health/persistence.js";
+import { getBackendDevNotesHealth } from "../health/dev-notes.js";
 
 /**
  * Express router exposing backend health endpoints.
  *
  * @type {import("express").Router}
- * @see ./README.md#health-routes
+ * @see README #health-routes
  */
 const healthRouter = Router();
 
@@ -39,6 +40,19 @@ healthRouter.get("/persistence", (req, res) => {
   const health = getPersistenceHealth({ includeDetails });
 
   res.status(health.status === "healthy" ? 200 : 503).json({
+    ...health,
+    timestamp: new Date().toISOString(),
+  });
+});
+
+healthRouter.get("/dev-notes", (req, res) => {
+  const includeDetails = req.query.details === "full";
+
+  const health = getBackendDevNotesHealth({ includeDetails });
+
+  const httpStatus = health.status === "unhealthy" ? 503 : 200;
+
+  res.status(httpStatus).json({
     ...health,
     timestamp: new Date().toISOString(),
   });

@@ -2,6 +2,7 @@
  * @typedef {object} PersistenceHealthOptions
  * @property {boolean} [includeDetails] Return the full adapter health result when true.
  */
+
 /**
  * @typedef {object} ReducedPersistenceHealth
  * @property {"healthy" | "unhealthy"} status Persistence readiness status.
@@ -20,7 +21,8 @@ function getPersistenceAdapter() {
  * Returns persistence health for API responses.
  *
  * @param {PersistenceHealthOptions} [options]
- * @returns {ReducedPersistenceHealth | object} Persistence health result.
+ * @returns {ReducedPersistenceHealth | Readonly<import("../sqlite/health.js").SqliteHealthResult>}
+ *   Persistence health result.
  * @see Module README, section "persistence-health"
  */
 export function getPersistenceHealth(options = {}) {
@@ -33,7 +35,7 @@ export function getPersistenceHealth(options = {}) {
   return {
     status: fullHealth.status,
     adapter: fullHealth.adapter,
-    engine: fullHealth.engine,
+    engine: "engine" in fullHealth ? fullHealth.engine : undefined,
     path: {
       isConfigured: fullHealth.path.isConfigured,
     },
