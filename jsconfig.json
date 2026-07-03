@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2024",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "checkJs": true,
+    "allowJs": true,
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "maxNodeModuleJsDepth": 0,
+    "lib": ["ES2024", "DOM", "DOM.Iterable"],
+    "types": ["node", "vite/client"]
+  },
+  "include": [
+    "backend/**/*.js",
+    "backend/**/*.mjs",
+    "frontend/**/*.js",
+    "frontend/**/*.jsx",
+    "scripts/**/*.js",
+    "scripts/**/*.mjs",
+    "eslint.config.js"
+  ],
+  "exclude": ["node_modules", "dist", "build", "frontend/dist", "coverage"]
+}
