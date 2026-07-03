@@ -1,19 +1,7 @@
 /**
  * Backend health summary returned by `/api/health`.
  *
- * @typedef {object} BackendHealthSummary
- * @property {"healthy" | "unhealthy"} status Overall backend health status.
- * @property {string} service Backend service identifier.
- * @property {object} checks Backend subsystem health checks.
- * @property {object} checks.runtime Runtime health summary.
- * @property {"healthy" | "unhealthy"} checks.runtime.status Runtime health status.
- * @property {number} checks.runtime.uptimeSeconds Runtime uptime in seconds.
- * @property {object} checks.persistence Persistence health summary.
- * @property {"healthy" | "unhealthy"} checks.persistence.status Persistence health status.
- * @property {object} checks.persistence.path Persistence path summary.
- * @property {boolean} checks.persistence.path.isConfigured Whether the persistence path is
- *   configured.
- * @property {string} timestamp Response timestamp.
+ * @typedef {import("../../backend/src/health/summary.js").HealthSummary & { timestamp: string }} BackendHealthSummary
  */
 
 /**

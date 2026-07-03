@@ -60,6 +60,14 @@ function resolveDevNotesHealthStatus(storageHealth) {
  * @returns {Readonly<import("./types.js").DevNotesHealthResult>} Dev-notes health result.
  */
 export function getDevNotesHealth() {
+  if (!appConfig.devNotes.enabled) {
+    return Object.freeze({
+      status: "disabled",
+      enabled: false,
+      storage: Object.freeze([]),
+    });
+  }
+
   const storageEntries =
     /**
      * @type {[

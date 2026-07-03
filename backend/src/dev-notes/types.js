@@ -77,8 +77,8 @@
  * @typedef {object} DevNotesStorageConfig
  * @property {boolean} enabled Whether this storage target is enabled.
  * @property {string | null} databasePath SQLite database path or `null` when not configured.
- * @property {string | null} journalMode Requested SQLite journal mode or `null` when not
- *   configured.
+ * @property {import("../config/types.js").SqliteJournalMode | null} journalMode Requested SQLite
+ *   journal mode or `null` when not configured.
  */
 
 /**
@@ -187,7 +187,8 @@
  *
  * @typedef {object} DevNotesSqliteFilePersistenceConfig
  * @property {string} databasePath SQLite database path for persistent dev-notes storage.
- * @property {string} requestedJournalMode Requested SQLite journal mode.
+ * @property {import("../config/types.js").SqliteJournalMode} requestedJournalMode Requested SQLite
+ *   journal mode or `null` when not configured.
  */
 
 /**
@@ -195,7 +196,8 @@
  *
  * @typedef {object} DevNotesSqliteMemoryPersistenceConfig
  * @property {string} databasePath SQLite database path for temporary dev-notes storage.
- * @property {string} requestedJournalMode Requested SQLite journal mode.
+ * @property {import("../config/types.js").SqliteJournalMode} requestedJournalMode Requested SQLite
+ *   journal mode or `null` when not configured.
  */
 
 /**
