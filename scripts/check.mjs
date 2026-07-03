@@ -7,6 +7,11 @@ runCommands([
     args: ["run", "repo:format:check"],
   },
   {
+    name: "Run typechecks",
+    executable: "npm",
+    args: ["run", "typecheck"],
+  },
+  {
     name: "Run linting",
     executable: "npm",
     args: ["run", "repo:lint"],
