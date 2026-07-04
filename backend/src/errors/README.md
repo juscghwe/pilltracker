@@ -175,7 +175,7 @@ export class ExampleError extends AppError {
 
 Error behavior is currently covered indirectly through modules that throw or normalize these errors.
 
-When adding or changing error classes, check for synthax, integration, typing and linting:
+When adding or changing error classes, check for syntax, integration, typing and linting:
 
 ```bash
 npm run check

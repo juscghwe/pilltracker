@@ -1,3 +1,5 @@
+# Milestone 1 Frontend Target State
+
 ## Milestone 1 - View structure
 
 ```mermaid
