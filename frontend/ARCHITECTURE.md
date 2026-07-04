@@ -95,18 +95,19 @@ flowchart TD
 
 The normal data and control flow is:
 
-```txt
-user action
--> page/view
--> hook
--> service
--> api
--> backend
--> api
--> service
--> hook state update
--> page/view render
--> component render
+```mermaid
+flowchart TB
+  subgraph Request["Request / user action path"]
+    direction LR
+    A["user action"] --> B["page / view"] --> C["hook"] --> D["service"] --> E["api"] --> F["backend"]
+  end
+
+  subgraph Response["Response / render path"]
+    direction RL
+    G["backend response"] --> H["api response"] --> I["service result"] --> J["hook state update"] --> K["page / view render"] --> L["component render"]
+  end
+
+  F -. returns .-> G
 ```
 
 Not every action needs every layer. Simple actions may skip a service if no use-case orchestration
