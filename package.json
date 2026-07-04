@@ -27,6 +27,8 @@
     "precommit": "node scripts/pre-commit.mjs"
   },
   "dependencies": {
+    "@fontsource/roboto": "^5.2.10",
+    "@material/web": "^2.4.1",
     "better-sqlite3": "^12.11.1",
     "cors": "^2.8.6",
     "express": "^5.2.1",
