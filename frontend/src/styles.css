@@ -1,5 +1,5 @@
 :root {
-  font-family: Roboto, system-ui, sans-serif;
+  font-family: system-ui, Roboto, sans-serif;
   color: #f4f4f5;
   background: #18181b;
 }
@@ -15,4 +15,124 @@ input,
 textarea,
 select {
   font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid rgb(255 255 255 / 0.1);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.app-kicker {
+  margin: 0 0 0.25rem;
+  color: #a1a1aa;
+  font-size: 0.875rem;
+}
+
+.app-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.app-nav-link {
+  border-radius: 999px;
+  padding: 0.5rem 0.875rem;
+  color: #d4d4d8;
+  text-decoration: none;
+}
+
+.app-nav-link:hover {
+  background: rgb(255 255 255 / 0.08);
+}
+
+.app-nav-link.active {
+  background: rgb(255 255 255 / 0.14);
+  color: #ffffff;
+}
+
+.app-main {
+  padding: 2rem;
+}
+
+.page {
+  display: grid;
+  gap: 2rem;
+  max-width: 1100px;
+}
+
+.page-header {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+}
+
+.page-eyebrow {
+  margin: 0;
+  color: #a1a1aa;
+  font-weight: 500;
+}
+
+.page-description {
+  max-width: 70ch;
+  margin: 0;
+  color: #d4d4d8;
+  line-height: 1.6;
+}
+
+.section {
+  display: grid;
+  gap: 1rem;
+}
+
+.section-header h3 {
+  margin: 0;
+}
+
+.section-header p {
+  margin: 0.25rem 0 0;
+  color: #a1a1aa;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.app-card {
+  border-radius: 1.5rem;
+  padding: 1rem;
+  background: rgb(255 255 255 / 0.06);
+  border: 1px solid rgb(255 255 255 / 0.08);
+}
+
+.app-card h4 {
+  margin: 0 0 0.75rem;
+}
+
+.app-card p {
+  margin: 0;
+  color: #d4d4d8;
+  line-height: 1.5;
+}
+
+.app-card a {
+  color: inherit;
 }
