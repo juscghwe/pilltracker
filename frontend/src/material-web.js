@@ -16,6 +16,6 @@ import { styles as typescaleStyles } from "@material/web/typography/md-typescale
 
 const typescaleStyleSheet = typescaleStyles.styleSheet;
 
-if (typescaleStyleSheet) {
+if (typescaleStyleSheet && !document.adoptedStyleSheets.includes(typescaleStyleSheet)) {
   document.adoptedStyleSheets = [...document.adoptedStyleSheets, typescaleStyleSheet];
 }

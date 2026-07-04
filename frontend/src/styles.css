@@ -6,8 +6,13 @@
 
 body {
   margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
 }
 
-main {
-  padding: 2rem;
+button,
+input,
+textarea,
+select {
+  font: inherit;
 }
