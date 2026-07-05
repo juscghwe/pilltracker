@@ -5,10 +5,10 @@ import { BrowserRouter } from "react-router";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import "./styles.css";
+import "./icons.css";
 
 import AppRoutes from "./AppRoutes.jsx";
-import "./material-web.js";
-import "./styles.css";
 
 const rootElement = document.getElementById("root");
 
