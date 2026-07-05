@@ -45,7 +45,9 @@
 }
 
 .app-main {
-  padding: 2rem;
+  width: min(100% - 2rem, 1100px);
+  margin-inline: auto;
+  padding-block: 2rem;
 }
 
 .card-grid {

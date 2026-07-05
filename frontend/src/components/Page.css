@@ -1,7 +1,6 @@
 .page {
   display: grid;
   gap: 2rem;
-  max-width: 1100px;
 }
 
 .page-header {
