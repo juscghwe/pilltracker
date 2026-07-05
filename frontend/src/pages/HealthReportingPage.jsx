@@ -1,34 +1,28 @@
+import { Page, Section, Card } from "../components/index.js";
+
 function HealthReportingPage() {
   return (
-    <article className="page">
-      <header className="page-header">
-        <p className="page-eyebrow">Diagnostics</p>
-        <h2>Health Reporting</h2>
-        <p className="page-description">
-          Placeholder page for backend health reporting. This page will later show runtime,
-          persistence, and dev-notes health details.
-        </p>
-      </header>
-
-      <section className="section">
-        <header className="section-header">
-          <h3>Current purpose</h3>
-          <p>This page confirms that the /health route is working.</p>
-        </header>
-
+    <Page
+      eyebrow="Diagnostics"
+      title="Health Reporting"
+      description="Placeholder page for backend health reporting. This page will later show runtime,
+          persistence, and dev-notes health details."
+    >
+      <Section
+        title="Current purpose"
+        description="This page confirms that the /health route is working."
+      >
         <div className="card-grid">
-          <section className="app-card">
-            <h4>Summary</h4>
+          <Card title="Summary">
             <p>The compact health summary will be rendered here.</p>
-          </section>
+          </Card>
 
-          <section className="app-card">
-            <h4>Details</h4>
+          <Card title="Details">
             <p>Full health endpoint responses will be rendered here later.</p>
-          </section>
+          </Card>
         </div>
-      </section>
-    </article>
+      </Section>
+    </Page>
   );
 }
 

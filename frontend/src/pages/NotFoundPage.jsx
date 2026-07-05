@@ -1,25 +1,22 @@
 import { Link } from "react-router";
+import { Page, Section, Card } from "../components/index.js";
 
 function NotFoundPage() {
   return (
-    <article className="page">
-      <header className="page-header">
-        <p className="page-eyebrow">404</p>
-        <h2>Page not found</h2>
-        <p className="page-description">
-          This frontend route does not exist. Use the navigation or return to the landing page.
-        </p>
-      </header>
-
-      <section className="section">
-        <section className="app-card">
-          <h4>Back to safety</h4>
+    <Page
+      eyebrow="404"
+      title="Page not found"
+      description="This frontend route does not exist. Use the navigation or return to the landing page.
+        "
+    >
+      <Section>
+        <Card title="Back to safety">
           <p>
             <Link to="/">Open the landing page</Link>
           </p>
-        </section>
-      </section>
-    </article>
+        </Card>
+      </Section>
+    </Page>
   );
 }
 

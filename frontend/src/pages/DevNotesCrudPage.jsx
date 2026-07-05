@@ -1,34 +1,28 @@
+import { Page, Section, Card } from "../components/index.js";
+
 function DevNotesCrudPage() {
   return (
-    <article className="page">
-      <header className="page-header">
-        <p className="page-eyebrow">Development tool</p>
-        <h2>DevNotes CRUD</h2>
-        <p className="page-description">
-          Placeholder page for the dev-notes CRUD playground. This page will later exercise temp and
-          persistent storage through all supported dev-notes HTTP methods.
-        </p>
-      </header>
-
-      <section className="section">
-        <header className="section-header">
-          <h3>Current purpose</h3>
-          <p>This page confirms that the /dev-notes route is working.</p>
-        </header>
-
+    <Page
+      eyebrow="Development tool"
+      title="DevNotes CRUD"
+      description="Placeholder page for the dev-notes CRUD playground. This page will later exercise temp and
+          persistent storage through all supported dev-notes HTTP methods."
+    >
+      <Section
+        title="Current purpose"
+        description="This page confirms that the /dev-notes route is working."
+      >
         <div className="card-grid">
-          <section className="app-card">
-            <h4>Storage targets</h4>
+          <Card title="Storage targets">
             <p>Temp and persistent storage controls will be added here.</p>
-          </section>
+          </Card>
 
-          <section className="app-card">
-            <h4>Methods</h4>
+          <Card title="Methods">
             <p>GET, POST, PUT, PATCH, DELETE, OPTIONS and raw responses will be added later.</p>
-          </section>
+          </Card>
         </div>
-      </section>
-    </article>
+      </Section>
+    </Page>
   );
 }
 
