@@ -1,4 +1,6 @@
-import { Page, Section, Card, StatusCard, ButtonLink, Icon } from "../components/index.js";
+import { Page, Section, Card } from "../components/index.js";
+import LandingPageHealthOverview from "../views/landing-page/LandingPageHealthOverview.jsx";
+import LandingPageHealthCardDemo from "../views/landing-page/LandingPageHealthCardDemo.jsx";
 
 function LandingPage() {
   return (
@@ -22,33 +24,8 @@ function LandingPage() {
           </Card>
         </div>
       </Section>
-      <Section
-        title="Health Overview"
-        description="See Health section for extended health reports."
-      >
-        <div className="card-grid">
-          <StatusCard title="Overall Health" status="unknown" />
-          <StatusCard title="Frontend Health" status="unknown" />
-          <StatusCard title="Prod Backend Health" status="unknown" />
-          <StatusCard title="Dev-Notes Backend Health" status="unknown" />
-        </div>
-        <ButtonLink to="/health">
-          <span>To extended report</span>
-          <Icon name="arrow_forward" decorative />
-        </ButtonLink>
-      </Section>
-      <Section
-        title="Health Icons Demo"
-        description="All possible status icons for the health overview section."
-      >
-        <div className="card-grid card-grid-compact">
-          <StatusCard title="Healthy" status="healthy" />
-          <StatusCard title="Warning" status="warning" />
-          <StatusCard title="Error" status="error" />
-          <StatusCard title="Checking" status="checking" />
-          <StatusCard title="Unknown" status="unknown" />
-        </div>
-      </Section>
+      <LandingPageHealthOverview />
+      <LandingPageHealthCardDemo />
     </Page>
   );
 }
