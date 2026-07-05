@@ -10,7 +10,7 @@ function LandingPage() {
     >
       <Section
         title="Current Purpose"
-        description="This page confirms that routing, layout, Material Web setup, and HMR are working."
+        description="This page confirms that routing, layout, icon font setup and HMR are working."
       >
         <div className="card-grid">
           <Card title="Routing">
@@ -27,10 +27,10 @@ function LandingPage() {
         description="See Health section for extended health reports."
       >
         <div className="card-grid">
-          <StatusCard title="Overall Health" status="unknown"></StatusCard>
-          <StatusCard title="Frontend Health" status="unknown"></StatusCard>
-          <StatusCard title="Prod Backend Health" status="unknown"></StatusCard>
-          <StatusCard title="Dev-Notes Backend Health" status="unknown"></StatusCard>
+          <StatusCard title="Overall Health" status="unknown" />
+          <StatusCard title="Frontend Health" status="unknown" />
+          <StatusCard title="Prod Backend Health" status="unknown" />
+          <StatusCard title="Dev-Notes Backend Health" status="unknown" />
         </div>
       </Section>
       <Section
@@ -38,11 +38,11 @@ function LandingPage() {
         description="All possible status icons for the health overview section."
       >
         <div className="card-grid card-grid-compact">
-          <StatusCard title="Healthy" status="healthy"></StatusCard>
-          <StatusCard title="Warning" status="warning"></StatusCard>
-          <StatusCard title="Error" status="error"></StatusCard>
-          <StatusCard title="Checking" status="checking"></StatusCard>
-          <StatusCard title="Unknown" status="unknown"></StatusCard>
+          <StatusCard title="Healthy" status="healthy" />
+          <StatusCard title="Warning" status="warning" />
+          <StatusCard title="Error" status="error" />
+          <StatusCard title="Checking" status="checking" />
+          <StatusCard title="Unknown" status="unknown" />
         </div>
       </Section>
     </Page>

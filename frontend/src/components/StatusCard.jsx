@@ -1,4 +1,5 @@
-import { Card, StatusIcon } from "./index.js";
+import Card from "./Card.jsx";
+import StatusIcon from "./StatusIcon.jsx";
 
 /**
  * @typedef {object} StatusCardProps
@@ -17,7 +18,7 @@ import { Card, StatusIcon } from "./index.js";
 function StatusCard({ title, status, description, actions }) {
   return (
     <Card title={title} actions={actions}>
-      <StatusIcon status={status}></StatusIcon>
+      <StatusIcon status={status} />
       <p className="status-card-status">{status}</p>
       {description ? <p className="status-card-description">{description}</p> : null}
     </Card>

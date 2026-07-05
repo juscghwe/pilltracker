@@ -1,8 +1,6 @@
 import "./StatusIcon.css";
 import Icon from "./Icon.jsx";
 
-/** @typedef {"healthy" | "warning" | "error" | "checking" | "unknown"} StatusKind */
-
 /**
  * @typedef {object} StatusIconProps
  * @property {import("../domain/status.js").StatusKind} status Status kind.
