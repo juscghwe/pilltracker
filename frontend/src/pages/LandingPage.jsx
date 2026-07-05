@@ -1,6 +1,6 @@
 import { Page, Section, Card } from "../components/index.js";
 import LandingPageHealthOverview from "../views/landing-page/LandingPageHealthOverview.jsx";
-import LandingPageHealthCardDemo from "../views/landing-page/LandingPageHealthCardDemo.jsx";
+import LandingPageStatusCardDemo from "../views/landing-page/LandingPageStatusCardDemo.jsx";
 
 function LandingPage() {
   return (
@@ -25,7 +25,7 @@ function LandingPage() {
         </div>
       </Section>
       <LandingPageHealthOverview />
-      <LandingPageHealthCardDemo />
+      <LandingPageStatusCardDemo />
     </Page>
   );
 }

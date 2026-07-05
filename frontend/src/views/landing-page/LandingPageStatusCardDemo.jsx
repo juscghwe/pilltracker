@@ -1,6 +1,6 @@
 import { Section, StatusCard } from "../../components/index.js";
 
-function LandingPageHealthCardDemo() {
+function LandingPageStatusCardDemo() {
   return (
     <Section
       title="Health Icons Demo"
@@ -17,4 +17,4 @@ function LandingPageHealthCardDemo() {
   );
 }
 
-export default LandingPageHealthCardDemo;
+export default LandingPageStatusCardDemo;
