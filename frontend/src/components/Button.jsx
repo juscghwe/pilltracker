@@ -5,7 +5,8 @@ import "./Button.css";
  * @property {import("react").ReactNode} children Button label/content.
  * @property {boolean} [filled] Whether the button uses a filled background.
  * @property {import("../domain/button.js").ButtonTone} [tone] Visual tone of the button.
- * @property {() => void} [onClick] Optional click handler.
+ * @property {import("react").MouseEventHandler<HTMLButtonElement>} [onClick] Optional click
+ *   handler.
  * @property {import("../domain/button.js").ButtonType} [type] Native button type.
  * @property {boolean} [disabled] Whether the button is disabled.
  */
