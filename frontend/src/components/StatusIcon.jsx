@@ -1,10 +1,11 @@
+import "./StatusIcon.css";
 import Icon from "./Icon.jsx";
 
 /** @typedef {"healthy" | "warning" | "error" | "checking" | "unknown"} StatusKind */
 
 /**
  * @typedef {object} StatusIconProps
- * @property {StatusKind} status Status kind.
+ * @property {import("../domain/status.js").StatusKind} status Status kind.
  * @property {"outlined" | "rounded" | "sharp"} [family] Material Symbols family.
  */
 
@@ -22,7 +23,7 @@ const statusIconMap = {
     label: "Error",
   },
   checking: {
-    name: "sync",
+    name: "refresh",
     label: "Checking",
   },
   unknown: {

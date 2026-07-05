@@ -1,3 +1,5 @@
+import "./Section.css";
+
 /**
  * @typedef {object} SectionProps
  * @property {string} [title] Optional section title.

@@ -1,0 +1,28 @@
+.page {
+  display: grid;
+  gap: 2rem;
+  max-width: 1100px;
+}
+
+.page-header {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+}
+
+.page-eyebrow {
+  margin: 0;
+  color: #a1a1aa;
+  font-weight: 500;
+}
+
+.page-description {
+  max-width: 70ch;
+  margin: 0;
+  color: #d4d4d8;
+  line-height: 1.6;
+}

@@ -1,3 +1,5 @@
+import "./Card.css";
+
 /**
  * @typedef {object} CardProps
  * @property {string} [title] Optional card title.
