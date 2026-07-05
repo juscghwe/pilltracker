@@ -1,4 +1,4 @@
-import { Page, Section, Card, StatusCard } from "../components/index.js";
+import { Page, Section, Card, StatusCard, ButtonLink, Icon } from "../components/index.js";
 
 function LandingPage() {
   return (
@@ -32,6 +32,10 @@ function LandingPage() {
           <StatusCard title="Prod Backend Health" status="unknown" />
           <StatusCard title="Dev-Notes Backend Health" status="unknown" />
         </div>
+        <ButtonLink to="/health">
+          <span>To extended report</span>
+          <Icon name="arrow_forward" decorative />
+        </ButtonLink>
       </Section>
       <Section
         title="Health Icons Demo"

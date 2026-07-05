@@ -4,3 +4,5 @@ export { default as Section } from "./Section.jsx";
 export { default as StatusCard } from "./StatusCard.jsx";
 export { default as Icon } from "./Icon.jsx";
 export { default as StatusIcon } from "./StatusIcon.jsx";
+export { default as Button } from "./Button.jsx";
+export { default as ButtonLink } from "./ButtonLink.jsx";
