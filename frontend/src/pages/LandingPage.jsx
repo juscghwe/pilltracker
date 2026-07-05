@@ -5,8 +5,8 @@ function LandingPage() {
     <Page
       eyebrow="Milestone 1"
       title="Landing"
-      description="Placeholder page for the M1 frontend shell. This page will later show health status cards,
-          recent persistent dev-notes, and a quick append action."
+      description="Sandbox page for the M1 frontend shell. This page will later show health status cards,
+          recent persistent dev-notes and a quick append action."
     >
       <Section
         title="Health overview"

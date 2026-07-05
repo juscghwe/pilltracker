@@ -6,7 +6,7 @@ function HealthReportingPage() {
       eyebrow="Diagnostics"
       title="Health Reporting"
       description="Placeholder page for backend health reporting. This page will later show runtime,
-          persistence, and dev-notes health details."
+          persistence and dev-notes health details."
     >
       <Section
         title="Current purpose"
