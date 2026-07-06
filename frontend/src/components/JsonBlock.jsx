@@ -1,12 +1,14 @@
+import "./JsonBlock.css";
+
 /**
- * Render JSON/debug payloads without letting them eat the whole page.
+ * Displays a JSON-compatible value in a bounded, readable debug block.
  *
  * @param {object} props Component props.
  * @param {unknown} props.value Value to render as formatted JSON.
- * @param {string} [props.label] Accessible label for the JSON block.
+ * @param {string} [props.label] Optional visible block label.
  * @returns {import("react").JSX.Element} Rendered JSON block.
  */
-function JsonBlock({ value, label = "JSON response" }) {
+function JsonBlock({ value, label = "JSON" }) {
   return (
     <figure className="json-block">
       <figcaption>{label}</figcaption>
