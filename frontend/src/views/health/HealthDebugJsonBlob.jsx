@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { Section, Card, JsonBlock } from "../../components/index.js";
-import { fetchHealthSummary, fetchRuntimeHealth } from "../../api/healthApi.js";
+import { loadHealthDebugReport } from "../../services/healthService.js";
 
 /**
  * Initial health debug view state.
@@ -37,19 +37,19 @@ function HealthDebugJsonBlob() {
     let ignoreResult = false;
 
     /**
-     * Loads health endpoint responses.
+     * Loads health endpoint responses into component state.
      *
-     * @returns {Promise<void>} Resolves after health state has been updated.
+     * @returns {Promise<void>} Resolves after state has been updated.
      */
     async function loadHealth() {
       try {
-        const [summary, runtime] = await Promise.all([fetchHealthSummary(), fetchRuntimeHealth()]);
+        const report = await loadHealthDebugReport();
 
         if (!ignoreResult) {
           setHealth({
             status: "ready",
-            summary,
-            runtime,
+            summary: report.summary,
+            runtime: report.runtime,
             error: null,
           });
         }

@@ -26,4 +26,12 @@
 
 /** @typedef {LoadingHealthDebugState | ReadyHealthDebugState | ErrorHealthDebugState} HealthDebugState */
 
+/**
+ * Raw health debug report used while the frontend health models are still being stabilized.
+ *
+ * @typedef {object} HealthDebugReport
+ * @property {JsonHttpResult} summary Compact health summary response.
+ * @property {JsonHttpResult} runtime Runtime health response.
+ */
+
 export {};
