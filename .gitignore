@@ -36,4 +36,4 @@ Thumbs.db
 .idea/
 !.vscode/
 !.vscode/settings.example.json
-!.vscode/task.example.json
+!.vscode/tasks.example.json
