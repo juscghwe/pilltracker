@@ -1,0 +1,25 @@
+.text-block {
+  min-width: 0;
+  margin: 0;
+}
+
+.text-block figcaption {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.text-block pre {
+  max-height: 24rem;
+  max-width: 100%;
+  overflow: auto;
+  margin: 0;
+  padding: 1rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  white-space: pre;
+}
+
+.text-block code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}

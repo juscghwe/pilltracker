@@ -7,3 +7,4 @@ export { default as StatusIcon } from "./StatusIcon.jsx";
 export { default as Button } from "./Button.jsx";
 export { default as ButtonLink } from "./ButtonLink.jsx";
 export { default as JsonBlock } from "./JsonBlock.jsx";
+export { default as TextBlock } from "./TextBlock.jsx";
