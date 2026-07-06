@@ -27,18 +27,39 @@
  * @property {string[]} statements SQL statements to run sequentially.
  */
 
+import { dirname } from "node:path";
+import { mkdirSync } from "node:fs";
+
 import Database from "better-sqlite3";
+
+/**
+ * Ensures the parent directory for a file-backed SQLite database path exists.
+ *
+ * In-memory SQLite paths do not need filesystem preparation.
+ *
+ * @param {string} databasePath SQLite database path or `:memory:`.
+ * @returns {void}
+ */
+function ensureSqliteParentDirectory(databasePath) {
+  if (databasePath === ":memory:") {
+    return;
+  }
+
+  mkdirSync(dirname(databasePath), { recursive: true });
+}
 
 /**
  * Opens a SQLite connection.
  *
- * This function should only create the database connection. It should not validate app config,
- * apply journal mode, create schema, or cache the connection.
+ * File-backed SQLite databases have their parent directory created before opening. This function
+ * should not validate app config, apply journal mode, create schema, or cache the connection.
  *
  * @param {OpenSqliteConnectionInput} input SQLite connection input.
  * @returns {import("better-sqlite3").Database} SQLite connection.
  */
 export function openSqliteConnection(input) {
+  ensureSqliteParentDirectory(input.databasePath);
+
   return new Database(input.databasePath);
 }
 

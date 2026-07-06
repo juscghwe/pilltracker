@@ -30,6 +30,9 @@ function getStorageTargetHealth(storageKind, storageTarget) {
 /**
  * Reduces storage health entries to one dev-notes subsystem status.
  *
+ * Dev-notes is only healthy when every enabled storage target is healthy. A healthy temp storage
+ * target must not hide a broken persistent storage target.
+ *
  * @param {Readonly<import("./types.js").DevNotesStorageHealth[]>} storageHealth Storage health
  *   entries.
  * @returns {"healthy" | "unhealthy" | "disabled"} Dev-notes subsystem status.
@@ -45,9 +48,9 @@ function resolveDevNotesHealthStatus(storageHealth) {
     return "unhealthy";
   }
 
-  const hasHealthyStorage = enabledStorage.some((entry) => entry.status === "healthy");
+  const allEnabledStorageHealthy = enabledStorage.every((entry) => entry.status === "healthy");
 
-  if (hasHealthyStorage) {
+  if (allEnabledStorageHealthy) {
     return "healthy";
   }
 
