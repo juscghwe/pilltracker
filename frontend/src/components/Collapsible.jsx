@@ -4,14 +4,36 @@ import Icon from "./Icon.jsx";
 import "./Collapsible.css";
 
 /**
+ * @typedef {object} CollapsibleProps
+ * @property {string} title Visible collapsible title.
+ * @property {string} [subtitle] Optional collapsible subtitle.
+ * @property {string} [iconName] Optional Material Symbols icon name shown before the title.
+ * @property {boolean} [defaultOpen] Whether the collapsible starts expanded.
+ * @property {boolean} [keepMounted] Whether children stay mounted while collapsed.
+ * @property {import("react").ReactNode} children Collapsible body content.
+ */
+
+/**
  * Reusable collapsible content container.
  *
- * @param {import("./types.js").CollapsibleProps} props Component props.
+ * Children are unmounted while collapsed by default so expensive debug output does not stay mounted
+ * unnecessarily. Use `keepMounted` for forms or stateful child components that must preserve local
+ * state while collapsed.
+ *
+ * @param {CollapsibleProps} props Component props.
  * @returns {import("react").JSX.Element} Rendered collapsible container.
  */
-function Collapsible({ title, subtitle, iconName, defaultOpen = false, children }) {
+function Collapsible({
+  title,
+  subtitle,
+  iconName,
+  defaultOpen = false,
+  keepMounted = false,
+  children,
+}) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const contentId = useId();
+  const shouldRenderChildren = isOpen || keepMounted;
 
   /**
    * Toggles the collapsible body visibility.
@@ -47,9 +69,11 @@ function Collapsible({ title, subtitle, iconName, defaultOpen = false, children 
         />
       </button>
 
-      <div id={contentId} className="collapsible-content" hidden={!isOpen}>
-        {children}
-      </div>
+      {shouldRenderChildren ? (
+        <div id={contentId} className="collapsible-content" hidden={!isOpen}>
+          {children}
+        </div>
+      ) : null}
     </section>
   );
 }

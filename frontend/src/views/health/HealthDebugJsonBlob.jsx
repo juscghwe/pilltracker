@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Section, Card } from "../../components/index.js";
+import { Section, Card, Collapsible } from "../../components/index.js";
 import { loadHealthDebugReport } from "../../services/healthService.js";
 import ResponseBlock from "./ResponseBlock.jsx";
 
@@ -15,7 +15,13 @@ const initialHealthDebugState = {
   error: null,
 };
 
-const contentHeads = {
+const healthDebugContent = {
+  debugCollapsible: {
+    title: "Raw health debug responses",
+    subtitle: "Inspect backend health endpoint payloads and unexpected text responses.",
+    iconName: "monitor_heart",
+    defaultOpen: true,
+  },
   loading: {
     title: "Loading health reports",
     description: "Checking backend health endpoints...",
@@ -102,41 +108,53 @@ function HealthDebugJsonBlob() {
 
   if (health.status === "loading") {
     return (
-      <Section {...contentHeads.section}>
-        <Card title={contentHeads.loading.title}>
-          <p>{contentHeads.loading.description}</p>
-        </Card>
+      <Section {...healthDebugContent.section}>
+        <Collapsible {...healthDebugContent.debugCollapsible}>
+          <Card title={healthDebugContent.loading.title}>
+            <p>{healthDebugContent.loading.description}</p>
+          </Card>
+        </Collapsible>
       </Section>
     );
   }
 
   if (health.status === "error") {
     return (
-      <Section {...contentHeads.section}>
-        <Card {...contentHeads.error}>
-          <p>{health.error}</p>
-        </Card>
+      <Section {...healthDebugContent.section}>
+        <Collapsible {...healthDebugContent.debugCollapsible}>
+          <Card {...healthDebugContent.error}>
+            <p>{health.error}</p>
+          </Card>
+        </Collapsible>
       </Section>
     );
   }
 
   return (
-    <Section {...contentHeads.section}>
-      <Card title={contentHeads.summary.title}>
-        <ResponseBlock result={health.report.summary} label={contentHeads.summary.label} />
-      </Card>
+    <Section {...healthDebugContent.section}>
+      <Collapsible {...healthDebugContent.debugCollapsible}>
+        <Card title={healthDebugContent.summary.title}>
+          <ResponseBlock result={health.report.summary} label={healthDebugContent.summary.label} />
+        </Card>
 
-      <Card title={contentHeads.runtime.title}>
-        <ResponseBlock result={health.report.runtime} label={contentHeads.runtime.label} />
-      </Card>
+        <Card title={healthDebugContent.runtime.title}>
+          <ResponseBlock result={health.report.runtime} label={healthDebugContent.runtime.label} />
+        </Card>
 
-      <Card title={contentHeads.persistence.title}>
-        <ResponseBlock result={health.report.persistence} label={contentHeads.persistence.label} />
-      </Card>
+        <Card title={healthDebugContent.persistence.title}>
+          <ResponseBlock
+            result={health.report.persistence}
+            label={healthDebugContent.persistence.label}
+          />
+        </Card>
 
-      <Card title={contentHeads.devNotes.title}>
-        <ResponseBlock result={health.report.devNotes} label={contentHeads.devNotes.label} />
-      </Card>
+        <Card title={healthDebugContent.devNotes.title}>
+          <ResponseBlock
+            result={health.report.devNotes}
+            label={healthDebugContent.devNotes.label}
+          />
+        </Card>
+      </Collapsible>
     </Section>
   );
 }

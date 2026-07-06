@@ -1,4 +1,5 @@
 import "./TextBlock.css";
+import "./ScrollBar.css";
 
 /**
  * Displays plain text in a bounded, readable debug block.

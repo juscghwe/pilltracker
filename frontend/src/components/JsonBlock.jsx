@@ -1,4 +1,5 @@
 import "./JsonBlock.css";
+import "./ScrollBar.css";
 
 /**
  * Displays a JSON-compatible value in a bounded, readable debug block.
