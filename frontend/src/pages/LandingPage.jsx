@@ -1,5 +1,5 @@
 import { Page, Section, Card } from "../components/index.js";
-import LandingPageHealthOverview from "../views/landing-page/LandingPageHealthOverview.jsx";
+import HealthOverview from "../views/health/HealthOverview.jsx";
 import LandingPageStatusCardDemo from "../views/landing-page/LandingPageStatusCardDemo.jsx";
 
 function LandingPage() {
@@ -24,7 +24,7 @@ function LandingPage() {
           </Card>
         </div>
       </Section>
-      <LandingPageHealthOverview />
+      <HealthOverview />
       <LandingPageStatusCardDemo />
     </Page>
   );

@@ -12,6 +12,52 @@
  * @property {null} error Request error message.
  */
 
+/** @typedef {"healthy" | "unhealthy"} BackendHealthStatus */
+/** @typedef {"healthy" | "unhealthy" | "disabled"} DevNotesHealthStatus */
+
+/**
+ * Compact runtime health summary returned by `/api/health`.
+ *
+ * @typedef {object} RuntimeHealthSummaryCheck
+ * @property {BackendHealthStatus} status Runtime health status.
+ * @property {number} uptimeSeconds Node.js process uptime in seconds.
+ */
+
+/**
+ * Compact persistence health summary returned by `/api/health`.
+ *
+ * @typedef {object} PersistenceHealthSummaryCheck
+ * @property {BackendHealthStatus} status Persistence health status.
+ * @property {{ isConfigured: boolean }} path Persistence path summary.
+ */
+
+/**
+ * Compact dev-notes health summary returned by `/api/health`.
+ *
+ * @typedef {object} DevNotesHealthSummaryCheck
+ * @property {DevNotesHealthStatus} status Dev-notes health status.
+ * @property {boolean} enabled Whether dev-notes is enabled.
+ */
+
+/**
+ * Compact health summary checks returned by `/api/health`.
+ *
+ * @typedef {object} HealthSummaryChecks
+ * @property {RuntimeHealthSummaryCheck} runtime Runtime health summary.
+ * @property {PersistenceHealthSummaryCheck} persistence Persistence health summary.
+ * @property {DevNotesHealthSummaryCheck} devNotes Dev-notes health summary.
+ */
+
+/**
+ * Compact backend health summary returned by `/api/health`.
+ *
+ * @typedef {object} BackendHealthSummary
+ * @property {BackendHealthStatus} status Overall backend readiness.
+ * @property {string} service Service identifier.
+ * @property {string} environment Runtime environment.
+ * @property {HealthSummaryChecks} checks Subsystem health checks.
+ */
+
 /**
  * Health debug endpoint result when the endpoint request failed before a response was usable.
  *

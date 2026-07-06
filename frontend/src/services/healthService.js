@@ -1,4 +1,5 @@
 import {
+  fetchHealthSummary,
   fetchHealthSummaryDebug,
   fetchRuntimeHealthDebug,
   fetchPersistenceHealthDebug,
@@ -8,6 +9,7 @@ import {
 /** @typedef {import("../domain/health.js").ApiDebugResult} ApiDebugResult */
 /** @typedef {import("../domain/health.js").HealthDebugEndpointResult} HealthDebugEndpointResult */
 /** @typedef {import("../domain/health.js").HealthDebugReport} HealthDebugReport */
+/** @typedef {import("../domain/health.js").BackendHealthSummary} BackendHealthSummary */
 
 /**
  * Converts an unknown thrown value into a readable error message.
@@ -39,6 +41,17 @@ async function loadHealthEndpoint(fetchEndpoint) {
       error: getErrorMessage(error),
     };
   }
+}
+
+/**
+ * Loads the compact backend health summary.
+ *
+ * @returns {Promise<BackendHealthSummary>} Loaded backend health summary.
+ */
+export async function loadHealthSummary() {
+  const result = await fetchHealthSummary();
+
+  return /** @type {BackendHealthSummary} */ (result.body);
 }
 
 /**
