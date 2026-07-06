@@ -1,0 +1,25 @@
+.json-block {
+  max-width: 100%;
+  margin: 0;
+}
+
+.json-block figcaption {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.json-block pre {
+  max-height: 20rem;
+  max-width: 100%;
+  overflow: auto;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.json-block code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
