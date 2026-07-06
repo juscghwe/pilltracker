@@ -1,12 +1,5 @@
-/**
- * JSON API response wrapper used by frontend API connector helpers.
- *
- * @typedef {object} JsonHttpResult
- * @property {boolean} ok Whether the response status is in the 200-299 range.
- * @property {number} status HTTP response status code.
- * @property {string} path Requested API path.
- * @property {unknown} body Parsed JSON response body.
- */
+/** @typedef {import("../domain/health.js").JsonHttpResult} JsonHttpResult */
+/** @typedef {import("../domain/health.js").ApiDebugResult} ApiDebugResult */
 
 /**
  * Fetches an API route and returns its parsed JSON response with HTTP metadata.
@@ -70,4 +63,103 @@ export function fetchPersistenceHealth() {
  */
 export function fetchDevNotesHealth() {
   return fetchJson("/api/health/dev-notes?details=full");
+}
+
+/**
+ * Converts an unknown thrown value into a readable error message.
+ *
+ * @param {unknown} error Thrown error value.
+ * @returns {string} Readable error message.
+ */
+function getErrorMessage(error) {
+  return error instanceof Error ? error.message : String(error);
+}
+
+/**
+ * Fetches an API route for diagnostic display without hiding non-JSON responses.
+ *
+ * JSON responses are parsed when possible. Non-JSON responses are returned as raw text so debug
+ * views can display HTML error pages, proxy fallbacks, or unexpected server output.
+ *
+ * @param {string} path API path to request.
+ * @returns {Promise<import("../domain/health.js").ApiDebugResult>} Raw diagnostic API response
+ *   wrapper.
+ */
+async function fetchApiDebugResult(path) {
+  const response = await fetch(path);
+  const contentType = response.headers.get("content-type") ?? "";
+  const rawBody = await response.text();
+
+  if (!contentType.includes("application/json")) {
+    return {
+      ok: response.ok,
+      status: response.status,
+      path,
+      contentType,
+      bodyKind: "text",
+      body: rawBody,
+      rawBody,
+      parseError: null,
+    };
+  }
+
+  try {
+    return {
+      ok: response.ok,
+      status: response.status,
+      path,
+      contentType,
+      bodyKind: "json",
+      body: rawBody === "" ? null : JSON.parse(rawBody),
+      rawBody,
+      parseError: null,
+    };
+  } catch (error) {
+    return {
+      ok: response.ok,
+      status: response.status,
+      path,
+      contentType,
+      bodyKind: "text",
+      body: rawBody,
+      rawBody,
+      parseError: getErrorMessage(error),
+    };
+  }
+}
+
+/**
+ * Fetches the compact backend health summary for diagnostic display.
+ *
+ * @returns {Promise<ApiDebugResult>} Compact backend health debug response.
+ */
+export function fetchHealthSummaryDebug() {
+  return fetchApiDebugResult("/api/health");
+}
+
+/**
+ * Fetches runtime health details for diagnostic display.
+ *
+ * @returns {Promise<ApiDebugResult>} Runtime health debug response.
+ */
+export function fetchRuntimeHealthDebug() {
+  return fetchApiDebugResult("/api/health/runtime");
+}
+
+/**
+ * Fetches full persistence health details for diagnostic display.
+ *
+ * @returns {Promise<ApiDebugResult>} Persistence health debug response.
+ */
+export function fetchPersistenceHealthDebug() {
+  return fetchApiDebugResult("/api/health/persistence?details=full");
+}
+
+/**
+ * Fetches full dev-notes health details for diagnostic display.
+ *
+ * @returns {Promise<ApiDebugResult>} Dev-notes health debug response.
+ */
+export function fetchDevNotesHealthDebug() {
+  return fetchApiDebugResult("/api/health/dev-notes?details=full");
 }
