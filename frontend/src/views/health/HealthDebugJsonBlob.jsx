@@ -12,6 +12,8 @@ const initialHealthDebugState = {
   status: "loading",
   summary: null,
   runtime: null,
+  persistence: null,
+  devnotes: null,
   error: null,
 };
 
@@ -50,6 +52,8 @@ function HealthDebugJsonBlob() {
             status: "ready",
             summary: report.summary,
             runtime: report.runtime,
+            persistence: report.persistence,
+            devnotes: report.devnotes,
             error: null,
           });
         }
@@ -59,6 +63,8 @@ function HealthDebugJsonBlob() {
             status: "error",
             summary: null,
             runtime: null,
+            persistence: null,
+            devnotes: null,
             error: getErrorMessage(error),
           });
         }
@@ -100,6 +106,14 @@ function HealthDebugJsonBlob() {
 
       <Card title="Runtime health">
         <JsonBlock value={health.runtime} label="GET /api/health/runtime" />
+      </Card>
+
+      <Card title="Persistence health">
+        <JsonBlock value={health.persistence} label="GET /api/health/persistence" />
+      </Card>
+
+      <Card title="Dev-Notes health">
+        <JsonBlock value={health.devnotes} label="GET /api/health/dev-notes" />
       </Card>
     </Section>
   );

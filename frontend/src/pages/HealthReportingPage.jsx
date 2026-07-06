@@ -1,4 +1,5 @@
 import { Page, Section, Card } from "../components/index.js";
+import HealthDebugJsonBlob from "../views/health/HealthDebugJsonBlob.jsx";
 
 function HealthReportingPage() {
   return (
@@ -22,6 +23,7 @@ function HealthReportingPage() {
           </Card>
         </div>
       </Section>
+      <HealthDebugJsonBlob />
     </Page>
   );
 }

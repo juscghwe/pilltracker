@@ -5,6 +5,8 @@
  * @property {"loading"} status Current health debug loading state.
  * @property {null} summary Compact health summary response.
  * @property {null} runtime Runtime health response.
+ * @property {null} persistence Persistence health response.
+ * @property {null} devnotes Devnotes health response.
  * @property {null} error Request error message.
  */
 
@@ -13,6 +15,8 @@
  * @property {"ready"} status Current health debug ready state.
  * @property {JsonHttpResult} summary Compact health summary response.
  * @property {JsonHttpResult} runtime Runtime health response.
+ * @property {JsonHttpResult} persistence Persistence health response.
+ * @property {JsonHttpResult} devnotes Devnotes health response.
  * @property {null} error Request error message.
  */
 
@@ -21,6 +25,8 @@
  * @property {"error"} status Current health debug error state.
  * @property {null} summary Compact health summary response.
  * @property {null} runtime Runtime health response.
+ * @property {null} persistence Persistence health response.
+ * @property {null} devnotes Devnotes health response.
  * @property {string} error Request error message.
  */
 
@@ -32,6 +38,8 @@
  * @typedef {object} HealthDebugReport
  * @property {JsonHttpResult} summary Compact health summary response.
  * @property {JsonHttpResult} runtime Runtime health response.
+ * @property {JsonHttpResult} persistence Persistence health response.
+ * @property {JsonHttpResult} devnotes Devnotes health response.
  */
 
 export {};
