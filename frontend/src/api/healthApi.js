@@ -6,7 +6,7 @@ const apiEndpoints = Object.freeze({
   healthSummary: "/api/health",
   runtimeHealth: "/api/health/runtime",
   persistenceHealthFull: "/api/health/persistence?details=full",
-  devnotesHealthFull: "/api/health/dev-notes?details=full",
+  devNotesHealthFull: "/api/health/dev-notes?details=full",
 });
 
 /**
@@ -147,7 +147,7 @@ export function fetchPersistenceHealth() {
  * @returns {Promise<JsonHttpResult>} Dev-notes health response.
  */
 export function fetchDevNotesHealth() {
-  return fetchJson(apiEndpoints.devnotesHealthFull);
+  return fetchJson(apiEndpoints.devNotesHealthFull);
 }
 
 /**
@@ -183,5 +183,5 @@ export function fetchPersistenceHealthDebug() {
  * @returns {Promise<ApiDebugResult>} Dev-notes health debug response.
  */
 export function fetchDevNotesHealthDebug() {
-  return fetchApiDebugResult(apiEndpoints.devnotesHealthFull);
+  return fetchApiDebugResult(apiEndpoints.devNotesHealthFull);
 }
