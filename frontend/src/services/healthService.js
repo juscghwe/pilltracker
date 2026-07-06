@@ -1,18 +1,13 @@
 import {
-  fetchDevNotesHealth,
-  fetchHealthSummary,
-  fetchPersistenceHealth,
-  fetchRuntimeHealth,
   fetchHealthSummaryDebug,
   fetchRuntimeHealthDebug,
   fetchPersistenceHealthDebug,
   fetchDevNotesHealthDebug,
 } from "../api/healthApi.js";
 
-/** @typedef {import("../domain/health.js").HealthDebugReport} HealthDebugReport */
 /** @typedef {import("../domain/health.js").ApiDebugResult} ApiDebugResult */
 /** @typedef {import("../domain/health.js").HealthDebugEndpointResult} HealthDebugEndpointResult */
-/** @typedef {import("../domain/health.js").ApiHealthDebugReport} ApiHealthDebugReport */
+/** @typedef {import("../domain/health.js").HealthDebugReport} HealthDebugReport */
 
 /**
  * Converts an unknown thrown value into a readable error message.
@@ -49,26 +44,12 @@ async function loadHealthEndpoint(fetchEndpoint) {
 /**
  * Loads the health endpoint responses needed by the debug health view.
  *
- * This service intentionally returns raw JSON response wrappers because the health page is
- * currently used to validate the frontend/API pipeline before final health view models are locked
- * down.
+ * Endpoint failures are captured per endpoint so one broken health route does not hide the rest of
+ * the report.
  *
- * @returns {Promise<ApiHealthDebugReport>} Loaded health debug report.
+ * @returns {Promise<HealthDebugReport>} Loaded health debug report.
  */
 export async function loadHealthDebugReport() {
-  /*const [summary, runtime, persistence, devnotes] = await Promise.all([
-    fetchHealthSummary(),
-    fetchRuntimeHealth(),
-    fetchPersistenceHealth(),
-    fetchDevNotesHealth(),
-  ]);
-
-  return {
-    summary,
-    runtime,
-    persistence,
-    devnotes,
-  };*/
   const [summary, runtime, persistence, devNotes] = await Promise.all([
     loadHealthEndpoint(fetchHealthSummaryDebug),
     loadHealthEndpoint(fetchRuntimeHealthDebug),

@@ -1,69 +1,13 @@
 /** @typedef {import("../domain/health.js").JsonHttpResult} JsonHttpResult */
 /** @typedef {import("../domain/health.js").ApiDebugResult} ApiDebugResult */
 
-/**
- * Fetches an API route and returns its parsed JSON response with HTTP metadata.
- *
- * Non-2xx JSON responses are returned with `ok: false` so callers can decide how to display backend
- * error payloads. Non-JSON responses throw because they violate the frontend API connector
- * contract.
- *
- * @param {string} path API path to request.
- * @returns {Promise<JsonHttpResult>} Parsed JSON response wrapper.
- * @throws {Error} When the response is not JSON or JSON parsing fails.
- */
-async function fetchJson(path) {
-  const response = await fetch(path);
-  const contentType = response.headers.get("content-type") ?? "";
-
-  if (!contentType.includes("application/json")) {
-    throw new Error(`Expected JSON from ${path}, got status ${response.status}.`);
-  }
-
-  const body = await response.json();
-
-  return {
-    ok: response.ok,
-    status: response.status,
-    path,
-    body,
-  };
-}
-/**
- * Fetches the compact backend health summary.
- *
- * @returns {Promise<JsonHttpResult>} Compact backend health response.
- */
-export function fetchHealthSummary() {
-  return fetchJson("/api/health");
-}
-
-/**
- * Fetches runtime health details.
- *
- * @returns {Promise<JsonHttpResult>} Runtime health response.
- */
-export function fetchRuntimeHealth() {
-  return fetchJson("/api/health/runtime");
-}
-
-/**
- * Fetches full persistence health details.
- *
- * @returns {Promise<JsonHttpResult>} Persistence health response.
- */
-export function fetchPersistenceHealth() {
-  return fetchJson("/api/health/persistence?details=full");
-}
-
-/**
- * Fetches full dev-notes health details.
- *
- * @returns {Promise<JsonHttpResult>} Dev-notes health response.
- */
-export function fetchDevNotesHealth() {
-  return fetchJson("/api/health/dev-notes?details=full");
-}
+/** Constant endpoint definition */
+const apiEndpoints = Object.freeze({
+  healthSummary: "/api/health",
+  runtimeHealth: "/api/health/runtime",
+  persistenceHealthFull: "/api/health/persistence?details=full",
+  devnotesHealthFull: "/api/health/dev-notes?details=full",
+});
 
 /**
  * Converts an unknown thrown value into a readable error message.
@@ -76,21 +20,63 @@ function getErrorMessage(error) {
 }
 
 /**
+ * Checks whether a response content type should be treated as JSON.
+ *
+ * @param {string} contentType Response content type header value.
+ * @returns {boolean} True when the response advertises a JSON body.
+ */
+function isJsonContentType(contentType) {
+  return contentType.toLowerCase().includes("application/json");
+}
+
+/**
+ * Fetches an API route and returns its parsed JSON response with HTTP metadata.
+ *
+ * Non-2xx JSON responses are returned with `ok: false` so callers can decide how to display backend
+ * error payloads. Non-JSON responses throw because they violate the normal frontend API connector
+ * contract.
+ *
+ * @param {string} path API path to request.
+ * @returns {Promise<JsonHttpResult>} Parsed JSON response wrapper.
+ * @throws {Error} When the response is not JSON or JSON parsing fails.
+ */
+async function fetchJson(path) {
+  const response = await fetch(path);
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (!isJsonContentType(contentType)) {
+    throw new Error(`Expected JSON from ${path}, got status ${response.status}.`);
+  }
+
+  const body = await response.json();
+
+  return {
+    ok: response.ok,
+    status: response.status,
+    path,
+    body,
+  };
+}
+
+/**
  * Fetches an API route for diagnostic display without hiding non-JSON responses.
  *
  * JSON responses are parsed when possible. Non-JSON responses are returned as raw text so debug
- * views can display HTML error pages, proxy fallbacks, or unexpected server output.
+ * views can display HTML error pages, proxy fallbacks, or unexpected server output as escaped
+ * text.
+ *
+ * This helper only throws for request-level failures such as network errors. HTTP error responses
+ * are returned as diagnostic data.
  *
  * @param {string} path API path to request.
- * @returns {Promise<import("../domain/health.js").ApiDebugResult>} Raw diagnostic API response
- *   wrapper.
+ * @returns {Promise<ApiDebugResult>} Raw diagnostic API response wrapper.
  */
 async function fetchApiDebugResult(path) {
   const response = await fetch(path);
   const contentType = response.headers.get("content-type") ?? "";
   const rawBody = await response.text();
 
-  if (!contentType.includes("application/json")) {
+  if (!isJsonContentType(contentType)) {
     return {
       ok: response.ok,
       status: response.status,
@@ -129,12 +115,48 @@ async function fetchApiDebugResult(path) {
 }
 
 /**
+ * Fetches the compact backend health summary.
+ *
+ * @returns {Promise<JsonHttpResult>} Compact backend health response.
+ */
+export function fetchHealthSummary() {
+  return fetchJson(apiEndpoints.healthSummary);
+}
+
+/**
+ * Fetches runtime health details.
+ *
+ * @returns {Promise<JsonHttpResult>} Runtime health response.
+ */
+export function fetchRuntimeHealth() {
+  return fetchJson(apiEndpoints.runtimeHealth);
+}
+
+/**
+ * Fetches full persistence health details.
+ *
+ * @returns {Promise<JsonHttpResult>} Persistence health response.
+ */
+export function fetchPersistenceHealth() {
+  return fetchJson(apiEndpoints.persistenceHealthFull);
+}
+
+/**
+ * Fetches full dev-notes health details.
+ *
+ * @returns {Promise<JsonHttpResult>} Dev-notes health response.
+ */
+export function fetchDevNotesHealth() {
+  return fetchJson(apiEndpoints.devnotesHealthFull);
+}
+
+/**
  * Fetches the compact backend health summary for diagnostic display.
  *
  * @returns {Promise<ApiDebugResult>} Compact backend health debug response.
  */
 export function fetchHealthSummaryDebug() {
-  return fetchApiDebugResult("/api/health");
+  return fetchApiDebugResult(apiEndpoints.healthSummary);
 }
 
 /**
@@ -143,7 +165,7 @@ export function fetchHealthSummaryDebug() {
  * @returns {Promise<ApiDebugResult>} Runtime health debug response.
  */
 export function fetchRuntimeHealthDebug() {
-  return fetchApiDebugResult("/api/health/runtime");
+  return fetchApiDebugResult(apiEndpoints.runtimeHealth);
 }
 
 /**
@@ -152,7 +174,7 @@ export function fetchRuntimeHealthDebug() {
  * @returns {Promise<ApiDebugResult>} Persistence health debug response.
  */
 export function fetchPersistenceHealthDebug() {
-  return fetchApiDebugResult("/api/health/persistence?details=full");
+  return fetchApiDebugResult(apiEndpoints.persistenceHealthFull);
 }
 
 /**
@@ -161,5 +183,5 @@ export function fetchPersistenceHealthDebug() {
  * @returns {Promise<ApiDebugResult>} Dev-notes health debug response.
  */
 export function fetchDevNotesHealthDebug() {
-  return fetchApiDebugResult("/api/health/dev-notes?details=full");
+  return fetchApiDebugResult(apiEndpoints.devnotesHealthFull);
 }

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 
-import { Section, Card, JsonBlock } from "../../components/index.js";
+import { Section, Card } from "../../components/index.js";
 import { loadHealthDebugReport } from "../../services/healthService.js";
+import ResponseBlock from "./ResponseBlock.jsx";
 
 /**
  * Initial health debug view state.
@@ -10,11 +11,38 @@ import { loadHealthDebugReport } from "../../services/healthService.js";
  */
 const initialHealthDebugState = {
   status: "loading",
-  summary: null,
-  runtime: null,
-  persistence: null,
-  devnotes: null,
+  report: null,
   error: null,
+};
+
+const contentHeads = {
+  loading: {
+    title: "Loading health reports",
+    description: "Checking backend health endpoints...",
+  },
+  error: {
+    title: "Health report failed",
+  },
+  section: {
+    title: "Health Overview",
+    description: "Full health reports for debugging purposes.",
+  },
+  summary: {
+    title: "Compact health summary",
+    label: "GET /api/health",
+  },
+  runtime: {
+    title: "Runtime health",
+    label: "GET /api/health/runtime",
+  },
+  persistence: {
+    title: "Persistence health",
+    label: "GET /api/health/persistence?details=full",
+  },
+  devNotes: {
+    title: "Dev-Notes health",
+    label: "GET /api/health/dev-notes?details=full",
+  },
 };
 
 /**
@@ -30,7 +58,7 @@ function getErrorMessage(error) {
 /**
  * Displays raw health endpoint responses for early frontend/API pipeline validation.
  *
- * @returns {import("react").JSX.Element} Rendered health debug JSON section.
+ * @returns {import("react").JSX.Element} Rendered health debug section.
  */
 function HealthDebugJsonBlob() {
   const [health, setHealth] = useState(initialHealthDebugState);
@@ -50,10 +78,7 @@ function HealthDebugJsonBlob() {
         if (!ignoreResult) {
           setHealth({
             status: "ready",
-            summary: report.summary,
-            runtime: report.runtime,
-            persistence: report.persistence,
-            devnotes: report.devnotes,
+            report,
             error: null,
           });
         }
@@ -61,10 +86,7 @@ function HealthDebugJsonBlob() {
         if (!ignoreResult) {
           setHealth({
             status: "error",
-            summary: null,
-            runtime: null,
-            persistence: null,
-            devnotes: null,
+            report: null,
             error: getErrorMessage(error),
           });
         }
@@ -80,9 +102,9 @@ function HealthDebugJsonBlob() {
 
   if (health.status === "loading") {
     return (
-      <Section title="Health Overview" description="Full health reports for debugging purposes.">
-        <Card title="Loading health reports">
-          <p>Checking backend health endpoints...</p>
+      <Section {...contentHeads.section}>
+        <Card title={contentHeads.loading.title}>
+          <p>{contentHeads.loading.description}</p>
         </Card>
       </Section>
     );
@@ -90,8 +112,8 @@ function HealthDebugJsonBlob() {
 
   if (health.status === "error") {
     return (
-      <Section title="Health Overview" description="Full health reports for debugging purposes.">
-        <Card title="Health request failed">
+      <Section {...contentHeads.section}>
+        <Card {...contentHeads.error}>
           <p>{health.error}</p>
         </Card>
       </Section>
@@ -99,21 +121,21 @@ function HealthDebugJsonBlob() {
   }
 
   return (
-    <Section title="Health Overview" description="Full health reports for debugging purposes.">
-      <Card title="Compact health summary">
-        <JsonBlock value={health.summary} label="GET /api/health" />
+    <Section {...contentHeads.section}>
+      <Card title={contentHeads.summary.title}>
+        <ResponseBlock result={health.report.summary} label={contentHeads.summary.label} />
       </Card>
 
-      <Card title="Runtime health">
-        <JsonBlock value={health.runtime} label="GET /api/health/runtime" />
+      <Card title={contentHeads.runtime.title}>
+        <ResponseBlock result={health.report.runtime} label={contentHeads.runtime.label} />
       </Card>
 
-      <Card title="Persistence health">
-        <JsonBlock value={health.persistence} label="GET /api/health/persistence" />
+      <Card title={contentHeads.persistence.title}>
+        <ResponseBlock result={health.report.persistence} label={contentHeads.persistence.label} />
       </Card>
 
-      <Card title="Dev-Notes health">
-        <JsonBlock value={health.devnotes} label="GET /api/health/dev-notes" />
+      <Card title={contentHeads.devNotes.title}>
+        <ResponseBlock result={health.report.devNotes} label={contentHeads.devNotes.label} />
       </Card>
     </Section>
   );
