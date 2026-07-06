@@ -3,44 +3,9 @@ import { useEffect, useState } from "react";
 import { ButtonLink, Icon, Section, StatusCard } from "../../components/index.js";
 import { loadHealthSummary } from "../../services/healthService.js";
 
-/**
- * @typedef {import("../../domain/health.js").BackendHealthSummary} BackendHealthSummary
- *
- * @typedef {import("../../domain/status.js").StatusKind} StatusKind
- */
-
-/**
- * Health overview state while the summary request is loading.
- *
- * @typedef {object} LoadingHealthOverviewState
- * @property {"loading"} status Current health overview loading state.
- * @property {null} summary Backend health summary.
- * @property {null} error Request error message.
- */
-
-/**
- * Health overview state after the summary request completed.
- *
- * @typedef {object} ReadyHealthOverviewState
- * @property {"ready"} status Current health overview ready state.
- * @property {BackendHealthSummary} summary Backend health summary.
- * @property {null} error Request error message.
- */
-
-/**
- * Health overview state when the summary request failed.
- *
- * @typedef {object} ErrorHealthOverviewState
- * @property {"error"} status Current health overview error state.
- * @property {null} summary Backend health summary.
- * @property {string} error Request error message.
- */
-
-/**
- * Health overview view state.
- *
- * @typedef {LoadingHealthOverviewState | ReadyHealthOverviewState | ErrorHealthOverviewState} HealthOverviewState
- */
+/** @typedef {import("../../domain/health.js").BackendHealthSummary} BackendHealthSummary */
+/** @typedef {import("../../domain/status.js").StatusKind} StatusKind */
+/** @typedef {import("../../domain/health.js").HealthOverviewState} HealthOverviewState */
 
 /**
  * Initial health overview state.
