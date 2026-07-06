@@ -1,5 +1,7 @@
 import { Page, Section, Card } from "../components/index.js";
 import HealthDebugJsonBlob from "../views/health/HealthDebugJsonBlob.jsx";
+import HealthOverview from "../views/health/HealthOverview.jsx";
+import HealthOverviewCardDemo from "../views/health/HealthOverviewCardDemo.jsx";
 
 function HealthReportingPage() {
   return (
@@ -23,6 +25,8 @@ function HealthReportingPage() {
           </Card>
         </div>
       </Section>
+      <HealthOverview />
+      <HealthOverviewCardDemo />
       <HealthDebugJsonBlob />
     </Page>
   );

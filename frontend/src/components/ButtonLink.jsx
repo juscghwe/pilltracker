@@ -6,7 +6,7 @@ import "./Button.css";
  * @property {string} to Internal app route.
  * @property {import("react").ReactNode} children Link content.
  * @property {boolean} [filled] Whether the link uses a filled background.
- * @property {import("../domain/button.js").ButtonTone} [tone] Visual tone.
+ * @property {import("./types.js").ButtonTone} [tone] Visual tone.
  */
 
 /**
