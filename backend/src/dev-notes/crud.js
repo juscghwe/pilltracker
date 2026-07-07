@@ -1,5 +1,11 @@
 import { resolveStorageTarget } from "./connection.js";
-import { readRequiredDevNoteId, readRequiredDevNoteText } from "./validation.js";
+import {
+  readRequiredDevNoteId,
+  readSearchDevNotesByTextInput,
+  readCreateDevNoteInput,
+  readReplaceDevNoteInput,
+  readUpdateDevNoteInput,
+} from "./validation.js";
 
 export function optionsStorageOnly() {
   return { Allow: "GET, POST, OPTIONS" };
@@ -86,12 +92,12 @@ export function listDevNotes(input) {
 }
 
 /**
- * Lists dev-note by ID from the requested storage target. (GET)
+ * Gets a dev-note by ID from the requested storage target. (GET)
  *
- * @param {object} input List input.
+ * @param {object} input Lookup input.
  * @param {string} input.storageKind Requested storage kind.
  * @param {number | string} input.id Dev-note id.
- * @returns {import("./types.js").DevNotesGetResult} List result.
+ * @returns {import("./types.js").DevNotesGetResult} Lookup result.
  * @see Dev-notes README, section "storage facade".
  */
 export function getDevNoteById(input) {
@@ -101,8 +107,6 @@ export function getDevNoteById(input) {
     return idResult;
   }
 
-  const id = idResult.value;
-
   const resolvedStorage = resolveStorageTarget(input.storageKind);
 
   if (!resolvedStorage.ok) {
@@ -110,26 +114,28 @@ export function getDevNoteById(input) {
   }
 
   const note = resolvedStorage.storageTarget.adapter.getDevNoteById({
-    id: id,
+    id: idResult.value,
   });
 
   return singleNoteResult(note);
 }
 
 /**
- * Lists dev-notes by text from the requested storage target. (GET)
+ * Searches dev-notes by text from the requested storage target. (GET)
  *
- * @param {object} input List input.
+ * Search still uses `text` because it is a query fragment, not a stored dev-note field.
+ *
+ * @param {object} input Search input.
  * @param {string} input.storageKind Requested storage kind.
- * @param {string} input.text Dev-note text.
- * @returns {import("./types.js").DevNotesSearchResult} List result.
+ * @param {string} input.text Search text.
+ * @returns {import("./types.js").DevNotesSearchResult} Search result.
  * @see Dev-notes README, section "storage facade".
  */
 export function searchDevNotesByText(input) {
-  const textResult = readRequiredDevNoteText(input);
+  const inputResult = readSearchDevNotesByTextInput(input);
 
-  if (!textResult.ok) {
-    return textResult;
+  if (!inputResult.ok) {
+    return inputResult;
   }
 
   const resolvedStorage = resolveStorageTarget(input.storageKind);
@@ -138,9 +144,7 @@ export function searchDevNotesByText(input) {
     return resolvedStorage;
   }
 
-  const notes = resolvedStorage.storageTarget.adapter.searchDevNotesByText({
-    text: textResult.value,
-  });
+  const notes = resolvedStorage.storageTarget.adapter.searchDevNotesByText(inputResult.value);
 
   return listResult(notes);
 }
@@ -148,17 +152,15 @@ export function searchDevNotesByText(input) {
 /**
  * Creates a dev-note in the requested storage target. (POST)
  *
- * @param {object} input Create input.
- * @param {string} input.storageKind Requested storage kind.
- * @param {string} input.text Dev-note text.
+ * @param {Record<string, unknown> & { storageKind: string }} input Create input.
  * @returns {import("./types.js").DevNotesCreateResult} Create result.
  * @see Dev-notes README, section "storage facade".
  */
 export function createDevNote(input) {
-  const textResult = readRequiredDevNoteText(input);
+  const inputResult = readCreateDevNoteInput(input);
 
-  if (!textResult.ok) {
-    return textResult;
+  if (!inputResult.ok) {
+    return inputResult;
   }
 
   const resolvedStorage = resolveStorageTarget(input.storageKind);
@@ -167,9 +169,7 @@ export function createDevNote(input) {
     return resolvedStorage;
   }
 
-  const note = resolvedStorage.storageTarget.adapter.createDevNote({
-    text: textResult.value,
-  });
+  const note = resolvedStorage.storageTarget.adapter.createDevNote(inputResult.value);
 
   if (!note) {
     return operationFailedResult("Dev-note could not be created.");
@@ -181,24 +181,18 @@ export function createDevNote(input) {
 /**
  * Replaces a dev-note in the requested storage target. (PUT)
  *
- * @param {object} input Replace input.
- * @param {string} input.storageKind Requested storage kind.
- * @param {number | string} input.id Dev-note id.
- * @param {string} input.text Dev-note text.
+ * PUT currently replaces the editable dev-note fields.
+ *
+ * @param {Record<string, unknown> & { storageKind: string; id: number | string }} input Replace
+ *   input.
  * @returns {import("./types.js").DevNotesReplaceResult} Replacement result.
  * @see Dev-notes README, section "storage facade".
  */
 export function replaceDevNote(input) {
-  const idResult = readRequiredDevNoteId(input);
+  const inputResult = readReplaceDevNoteInput(input);
 
-  if (!idResult.ok) {
-    return idResult;
-  }
-
-  const textResult = readRequiredDevNoteText(input);
-
-  if (!textResult.ok) {
-    return textResult;
+  if (!inputResult.ok) {
+    return inputResult;
   }
 
   const resolvedStorage = resolveStorageTarget(input.storageKind);
@@ -207,10 +201,7 @@ export function replaceDevNote(input) {
     return resolvedStorage;
   }
 
-  const note = resolvedStorage.storageTarget.adapter.replaceDevNote({
-    id: idResult.value,
-    text: textResult.value,
-  });
+  const note = resolvedStorage.storageTarget.adapter.replaceDevNote(inputResult.value);
 
   return singleNoteResult(note, "replaced");
 }
@@ -218,24 +209,18 @@ export function replaceDevNote(input) {
 /**
  * Updates a dev-note in the requested storage target. (PATCH)
  *
- * @param {object} input Update input.
- * @param {string} input.storageKind Requested storage kind.
- * @param {number | string} input.id Dev-note id.
- * @param {string} input.text Dev-note text.
+ * PATCH accepts any subset of `name`, `comment`, and `lastConfirmedInteraction`.
+ *
+ * @param {Record<string, unknown> & { storageKind: string; id: number | string }} input Update
+ *   input.
  * @returns {import("./types.js").DevNotesUpdateResult} Updated result.
  * @see Dev-notes README, section "storage facade".
  */
 export function updateDevNote(input) {
-  const idResult = readRequiredDevNoteId(input);
+  const inputResult = readUpdateDevNoteInput(input);
 
-  if (!idResult.ok) {
-    return idResult;
-  }
-
-  const textResult = readRequiredDevNoteText(input);
-
-  if (!textResult.ok) {
-    return textResult;
+  if (!inputResult.ok) {
+    return inputResult;
   }
 
   const resolvedStorage = resolveStorageTarget(input.storageKind);
@@ -244,10 +229,7 @@ export function updateDevNote(input) {
     return resolvedStorage;
   }
 
-  const note = resolvedStorage.storageTarget.adapter.updateDevNote({
-    id: idResult.value,
-    text: textResult.value,
-  });
+  const note = resolvedStorage.storageTarget.adapter.updateDevNote(inputResult.value);
 
   return singleNoteResult(note, "updated");
 }

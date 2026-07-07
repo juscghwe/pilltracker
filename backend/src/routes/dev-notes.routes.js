@@ -1,7 +1,8 @@
 /**
  * Dev-notes route result response.
  *
- * @typedef {import("../dev-notes/types.js").DevNotesSingleResult
+ * @typedef {import("../dev-notes/types.js").DevNotesBaseResult
+ *   | import("../dev-notes/types.js").DevNotesSingleResult
  *   | import("../dev-notes/types.js").DevNotesListResult
  *   | import("../dev-notes/types.js").DevNotesInvalidRequestResult} DevNotesRouteResult
  */
@@ -20,6 +21,23 @@ import {
 } from "../dev-notes/index.js";
 
 const devNotesRouter = Router();
+
+/**
+ * Reads a JSON object body from an Express request.
+ *
+ * Arrays, null, and non-object bodies are treated as an empty object so validation can return
+ * structured invalid-request responses instead of route-level crashes.
+ *
+ * @param {import("express").Request} req Express request.
+ * @returns {Record<string, unknown>} Request body object.
+ */
+function readObjectBody(req) {
+  if (typeof req.body !== "object" || req.body === null || Array.isArray(req.body)) {
+    return {};
+  }
+
+  return /** @type {Record<string, unknown>} */ (req.body);
+}
 
 /**
  * Sends a dev-notes route result with the matching HTTP status code.
@@ -73,8 +91,7 @@ devNotesRouter.options("/:storage/:id", (_req, res) => {
 });
 
 /**
- * Lists all dev notes from the selected storage target. OR Searches dev notes by text from the
- * selected storage target.
+ * Lists all dev-notes from the selected storage target, or searches dev-notes by text query.
  *
  * @example
  *   `GET /api/dev-notes/:storage`;
@@ -88,48 +105,67 @@ devNotesRouter.get("/:storage", (req, res) => {
   let message;
 
   if (typeof textQuery === "string") {
-    // GET /:storage?text=search
-    message = searchDevNotesByText({ storageKind: storageKind, text: textQuery });
+    message = searchDevNotesByText({
+      storageKind,
+      text: textQuery,
+    });
   } else {
-    // GET /:storage
-    message = listDevNotes({ storageKind });
+    message = listDevNotes({
+      storageKind,
+    });
   }
 
   return returnCodes(res, message);
 });
 
 /**
- * Reads one dev note from the selected storage target.
+ * Reads one dev-note from the selected storage target.
  *
  * @example
  *   `GET /api/dev-notes/:storage/:id`;
  */
 devNotesRouter.get("/:storage/:id", (req, res) => {
   const storageKind = req.params.storage ?? null;
-  const idQuery = req.params.id;
+  const idQuery = req.params.id ?? null;
 
-  const message = getDevNoteById({ storageKind: storageKind, id: idQuery });
+  const message = getDevNoteById({
+    storageKind,
+    id: idQuery,
+  });
 
   return returnCodes(res, message);
 });
 
 /**
- * Creates one dev note in the selected storage target.
+ * Creates one dev-note in the selected storage target.
+ *
+ * Body shape:
+ *
+ * - Name: required string
+ * - Comment: optional string
  *
  * @example
  *   `POST /api/dev-notes/:storage`;
  */
 devNotesRouter.post("/:storage", (req, res) => {
   const storageKind = req.params.storage ?? null;
-  const textQuery = req.body.text ?? null;
+  const body = readObjectBody(req);
 
-  const message = createDevNote({ storageKind: storageKind, text: textQuery });
+  const message = createDevNote({
+    ...body,
+    storageKind,
+  });
 
   return returnCodes(res, message);
 });
 
 /**
- * Replaces one dev note in the selected storage target.
+ * Replaces one dev-note in the selected storage target.
+ *
+ * Body shape:
+ *
+ * - Name: required string
+ * - Comment: optional string
  *
  * @example
  *   `PUT /api/dev-notes/:storage/:id`;
@@ -137,15 +173,27 @@ devNotesRouter.post("/:storage", (req, res) => {
 devNotesRouter.put("/:storage/:id", (req, res) => {
   const storageKind = req.params.storage ?? null;
   const idQuery = req.params.id ?? null;
-  const textQuery = req.body.text ?? null;
+  const body = readObjectBody(req);
 
-  const message = replaceDevNote({ storageKind: storageKind, id: idQuery, text: textQuery });
+  const message = replaceDevNote({
+    ...body,
+    storageKind,
+    id: idQuery,
+  });
 
   return returnCodes(res, message);
 });
 
 /**
- * Updates one dev note in the selected storage target.
+ * Updates one dev-note in the selected storage target.
+ *
+ * Body shape:
+ *
+ * - Name: optional string
+ * - Comment: optional string
+ * - LastConfirmedInteraction: optional string
+ *
+ * At least one update field must be present.
  *
  * @example
  *   `PATCH /api/dev-notes/:storage/:id`;
@@ -153,15 +201,19 @@ devNotesRouter.put("/:storage/:id", (req, res) => {
 devNotesRouter.patch("/:storage/:id", (req, res) => {
   const storageKind = req.params.storage ?? null;
   const idQuery = req.params.id ?? null;
-  const textQuery = req.body.text ?? null;
+  const body = readObjectBody(req);
 
-  const message = updateDevNote({ storageKind: storageKind, id: idQuery, text: textQuery });
+  const message = updateDevNote({
+    ...body,
+    storageKind,
+    id: idQuery,
+  });
 
   return returnCodes(res, message);
 });
 
 /**
- * Deletes one dev note from the selected storage target.
+ * Deletes one dev-note from the selected storage target.
  *
  * @example
  *   `DELETE /api/dev-notes/:storage/:id`;
@@ -170,7 +222,10 @@ devNotesRouter.delete("/:storage/:id", (req, res) => {
   const storageKind = req.params.storage ?? null;
   const idQuery = req.params.id ?? null;
 
-  const message = deleteDevNote({ storageKind: storageKind, id: idQuery });
+  const message = deleteDevNote({
+    storageKind,
+    id: idQuery,
+  });
 
   return returnCodes(res, message);
 });
