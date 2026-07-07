@@ -5,7 +5,7 @@
  * @property {number} id Dev-note id.
  * @property {string} name Dev-note name.
  * @property {string} [comment] Dev-note comment.
- * @property {string} [last_confirmed_interaction] ISO timestamp for last interaction.
+ * @property {string} [lastConfirmedInteraction] ISO timestamp for last interaction.
  * @property {string} createdAt ISO creation timestamp.
  * @property {string} updatedAt ISO update timestamp.
  */
@@ -21,7 +21,7 @@ export function rowToDevNote(row) {
     id: row.id,
     name: row.name,
     comment: row.comment ?? "",
-    last_confirmed_interaction: row.last_confirmed_interaction ?? "",
+    lastConfirmedInteraction: row.lastConfirmedInteraction ?? "",
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   });

@@ -386,7 +386,7 @@ export function deleteDevNote(input) {
         id,
         name_temp AS name,
         comment_temp AS comment,
-        last_confirmed_interaction AS lastConfirmedInteraction
+        last_confirmed_interaction AS lastConfirmedInteraction,
         created_at AS createdAt,
         updated_at AS updatedAt
     `,

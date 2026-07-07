@@ -35,12 +35,24 @@ function assert(condition, message) {
  * @returns {Promise<JsonObject>} Parsed JSON body.
  */
 async function fetchJson(path, options = {}, expectedStatus = 200) {
-  const response = await fetch(`${baseUrl}${path}`, options);
-  const body = await response.json();
+  const url = `${baseUrl}${path}`;
+  const response = await fetch(url, options);
+  const rawBody = await response.text();
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (!contentType.includes("application/json")) {
+    throw new Error(
+      `Expected JSON from ${url}, got content-type "${contentType}" and HTTP ${
+        response.status
+      }.\nBody preview:\n${rawBody.slice(0, 500)}`,
+    );
+  }
+
+  const body = /** @type {JsonObject} */ (JSON.parse(rawBody));
 
   if (response.status !== expectedStatus) {
     throw new Error(
-      `Expected HTTP ${expectedStatus} for ${path}, got HTTP ${response.status}: ${JSON.stringify(
+      `Expected HTTP ${expectedStatus} for ${url}, got HTTP ${response.status}: ${JSON.stringify(
         body,
       )}`,
     );
