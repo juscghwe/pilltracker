@@ -3,7 +3,9 @@
  *
  * @typedef {object} DevNote
  * @property {number} id Dev-note id.
- * @property {string} text Dev-note text.
+ * @property {string} name Dev-note name.
+ * @property {string} [comment] Dev-note comment.
+ * @property {string} [last_confirmed_interaction] ISO timestamp for last interaction.
  * @property {string} createdAt ISO timestamp for creation time.
  * @property {string} updatedAt ISO timestamp for last update time.
  */
@@ -41,7 +43,8 @@
 
 /**
  * @typedef {object} CreateDevNoteInput
- * @property {string} text Dev-note text.
+ * @property {string} name Dev-note name.
+ * @property {string} [comment] Dev-note comment.
  */
 
 /**
@@ -57,13 +60,16 @@
 /**
  * @typedef {object} ReplaceDevNoteInput
  * @property {number | string} id Dev-note id.
- * @property {string} text Replacement dev-note text.
+ * @property {string} name Replaced Dev-note name.
+ * @property {string} [comment] Replaced Dev-note comment.
  */
 
 /**
  * @typedef {object} UpdateDevNoteInput
  * @property {number | string} id Dev-note id.
- * @property {string} text Updated dev-note text.
+ * @property {string} [name] Updated Dev-note name.
+ * @property {string} [comment] Updated Dev-note comment.
+ * @property {string} [lastConfirmedInteraction] Updated Dev-notes last confirmed interaction.
  */
 
 /**

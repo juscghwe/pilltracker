@@ -1,6 +1,8 @@
 CREATE TABLE IF NOT EXISTS dev_notes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  text TEXT NOT NULL,
+  name TEXT NOT NULL,
+  comment TEXT,
+  last_confirmed_interaction TEXT,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );

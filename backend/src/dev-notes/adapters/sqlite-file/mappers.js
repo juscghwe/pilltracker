@@ -3,7 +3,9 @@
  *
  * @typedef {object} DevNoteRow
  * @property {number} id Dev-note id.
- * @property {string} text Dev-note text.
+ * @property {string} name Dev-note name.
+ * @property {string} [comment] Dev-note comment.
+ * @property {string} [last_confirmed_interaction] ISO timestamp for last interaction.
  * @property {string} createdAt ISO creation timestamp.
  * @property {string} updatedAt ISO update timestamp.
  */
@@ -17,7 +19,9 @@
 export function rowToDevNote(row) {
   return Object.freeze({
     id: row.id,
-    text: row.text,
+    name: row.name,
+    comment: row.comment ?? "",
+    last_confirmed_interaction: row.last_confirmed_interaction ?? "",
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   });
