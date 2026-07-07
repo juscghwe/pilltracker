@@ -23,7 +23,9 @@ export function listDevNotes() {
         `
         SELECT
           id,
-          text_temp AS text,
+          name_temp AS name,
+          comment_temp AS comment,
+          last_confirmed_interaction AS lastConfirmedInteraction,
           created_at AS createdAt,
           updated_at AS updatedAt
         FROM dev_notes_temp
@@ -65,7 +67,9 @@ export function getDevNoteById(input) {
         `
         SELECT
           id,
-          text_temp AS text,
+          name_temp AS name,
+          comment_temp AS comment,
+          last_confirmed_interaction AS lastConfirmedInteraction,
           created_at AS createdAt,
           updated_at AS updatedAt
         FROM dev_notes_temp
@@ -112,11 +116,13 @@ export function searchDevNotesByText(input) {
         `
         SELECT
           id,
-          text_temp AS text,
+          name_temp AS name,
+          comment_temp AS comment,
+          last_confirmed_interaction AS lastConfirmedInteraction,
           created_at AS createdAt,
           updated_at AS updatedAt
         FROM dev_notes_temp
-        WHERE text_temp COLLATE NOCASE LIKE @textPattern ESCAPE char(92)
+        WHERE name_temp COLLATE NOCASE LIKE @textPattern ESCAPE char(92)
         ORDER BY id ASC
       `,
       )
@@ -145,9 +151,10 @@ export function searchDevNotesByText(input) {
 export function createDevNote(input) {
   const now = new Date().toISOString();
   const database = getConnection();
-  const text = input.text.trim();
+  const name = input.name.trim();
+  const comment = input.comment?.trim() ?? "";
 
-  if (text === "") {
+  if (name === "") {
     return null;
   }
 
@@ -156,24 +163,29 @@ export function createDevNote(input) {
       .prepare(
         `
       INSERT INTO dev_notes_temp (
-          text_temp,
+          name_temp,
+          comment_temp,
           created_at,
           updated_at
         )
         VALUES (
-          @text_temp,
+          @name,
+          @comment,
           @createdAt,
           @updatedAt
         )
         RETURNING
           id,
-          text_temp AS text,
+          name_temp AS name,
+          comment_temp AS comment,
+          last_confirmed_interaction AS lastConfirmedInteraction,
           created_at AS createdAt,
           updated_at AS updatedAt
     `,
       )
       .get({
-        text_temp: text,
+        name: name,
+        comment: comment,
         createdAt: now,
         updatedAt: now,
       })
@@ -205,13 +217,14 @@ export function replaceDevNote(input) {
   const now = new Date().toISOString();
   const database = getConnection();
   const id = Number(input.id);
-  const text = input.text.trim();
+  const name = input.name.trim();
+  const comment = input.comment?.trim();
 
   if (!Number.isInteger(id) || id < 1) {
     return null;
   }
 
-  if (text === "") {
+  if (name === "") {
     return null;
   }
 
@@ -222,19 +235,24 @@ export function replaceDevNote(input) {
         `
       UPDATE dev_notes_temp
       SET
-        text_temp = @text,
+        name_temp = @name,
+        comment_temp = @comment,
+        last_confirmed_interaction = "",
         updated_at = @updatedAt
       WHERE id = @id
       RETURNING
         id,
-        text_temp AS text,
+        name_temp AS name,
+        comment_temp AS comment,
+        last_confirmed_interaction AS lastConfirmedInteraction,
         created_at AS createdAt,
         updated_at AS updatedAt
     `,
       )
       .get({
         id: id,
-        text: text,
+        name: name,
+        comment: comment,
         updatedAt: now,
       })
   );
@@ -264,37 +282,69 @@ export function updateDevNote(input) {
   const now = new Date().toISOString();
   const database = getConnection();
   const id = Number(input.id);
-  const text = input.text.trim();
 
   if (!Number.isInteger(id) || id < 1) {
     return null;
   }
 
-  if (text === "") {
+  const updates = [];
+  const params = /** @type {Record<string, string | number | null>} */ ({
+    id,
+    updatedAt: now,
+  });
+
+  if (Object.hasOwn(input, "name")) {
+    if (typeof input.name !== "string") {
+      return null;
+    }
+
+    const name = input.name.trim();
+
+    if (!name) {
+      return null;
+    }
+
+    updates.push("name_temp = @name");
+    params.name = name;
+  }
+
+  if (Object.hasOwn(input, "comment")) {
+    const comment = input.comment?.trim();
+
+    updates.push("comment_temp = @comment");
+    params.comment = comment || null;
+  }
+
+  if (Object.hasOwn(input, "lastConfirmedInteraction")) {
+    const lastConfirmedInteraction = input.lastConfirmedInteraction?.trim();
+
+    updates.push("last_confirmed_interaction = @lastConfirmedInteraction");
+    params.lastConfirmedInteraction = lastConfirmedInteraction || null;
+  }
+
+  if (updates.length === 0) {
     return null;
   }
+
+  updates.push("updated_at = @updatedAt");
 
   const row = /** @type {import("../sqlite-file/mappers.js").DevNoteRow | undefined} */ (
     database
       .prepare(
         `
       UPDATE dev_notes_temp
-      SET
-        text_temp = @text,
-        updated_at = @updatedAt
+      SET ${updates.join(", ")}
       WHERE id = @id
       RETURNING
         id,
-        text_temp AS text,
+        name_temp AS name,
+        comment_temp AS comment,
+        last_confirmed_interaction AS lastConfirmedInteraction,
         created_at AS createdAt,
         updated_at AS updatedAt
     `,
       )
-      .get({
-        id: id,
-        text: text,
-        updatedAt: now,
-      })
+      .get(params)
   );
 
   if (!row) {
@@ -334,7 +384,9 @@ export function deleteDevNote(input) {
       WHERE id = @id
       RETURNING
         id,
-        text_temp AS text,
+        name_temp AS name,
+        comment_temp AS comment,
+        last_confirmed_interaction AS lastConfirmedInteraction
         created_at AS createdAt,
         updated_at AS updatedAt
     `,

@@ -294,7 +294,11 @@ export function updateDevNote(input) {
   });
 
   if (Object.hasOwn(input, "name")) {
-    const name = input.name?.trim();
+    if (typeof input.name !== "string") {
+      return null;
+    }
+
+    const name = input.name.trim();
 
     if (!name) {
       return null;

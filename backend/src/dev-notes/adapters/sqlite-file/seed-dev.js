@@ -44,12 +44,14 @@ export function seedDevNotes(connection, { count = 10, mode = "when-empty" } = {
   const insertNote = connection.prepare(
     `
       INSERT INTO dev_notes (
-        text,
+        name,
+        comment,
         created_at,
         updated_at
       )
       VALUES (
-        @text,
+        @name,
+        @comment,
         @createdAt,
         @updatedAt
       )
@@ -62,7 +64,8 @@ export function seedDevNotes(connection, { count = 10, mode = "when-empty" } = {
 
     for (let index = firstIndex; index <= count; index += 1) {
       insertNote.run({
-        text: `Demo note ${index}`,
+        name: `Demo note ${index}`,
+        comment: "Generated through seed.",
         createdAt: now,
         updatedAt: now,
       });
