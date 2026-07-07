@@ -72,11 +72,15 @@ This roadmap is intentionally iterative and may change as implementation reveals
 
 Concrete implementation documentation can be found in the corresponding branches till they get merged into `main`.
 
-## Contributing
+## Contributions
 
-The project is still early and primarily used as a learning and architecture project for now.
+This project is currently in early solo-development mode.
 
-Feedback, ideas, architectural discussions, and issue comments are welcome. The codebase is not yet stable enough for production use.
+The project is still early and is primarily used as a learning and architecture project. Feedback, ideas, architectural discussions and issue comments are welcome. The codebase is not yet stable enough for production use.
+
+External PRs are most useful when they are tied to an existing issue, improve project structure, fix a real bug or add meaningful documentation.
+
+Very small typo-only PRs may be closed unmerged to keep review overhead low, especially when they appear to be automated or low-effort drive-by contributions. Tiny documentation fixes are often good first steps for people getting into open source and I do not want this repository to turn those onboarding opportunities into contribution farming.
 
 ## License
 
