@@ -8,6 +8,8 @@ app_data
 data/
 .data/
 
+.vite/
+frontend/.vite/
 frontend/dist/
 
 package-lock.json

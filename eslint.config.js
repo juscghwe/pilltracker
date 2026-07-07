@@ -1,19 +1,19 @@
 import js from "@eslint/js";
 import globals from "globals";
+import { defineConfig, includeIgnoreFile } from "eslint/config";
 import { jsdoc } from "eslint-plugin-jsdoc";
+import { fileURLToPath } from "node:url";
 
-/** ESLint flat config for backend, frontend, scripts, and repository-level JavaScript files. */
-const eslintConfig = [
+const gitignorePath = fileURLToPath(new URL(".gitignore", import.meta.url));
+
+const eslintConfig = defineConfig([
+  includeIgnoreFile(gitignorePath, {
+    gitignoreResolution: true,
+    name: "Imported .gitignore patterns",
+  }),
+
   {
-    ignores: [
-      "node_modules/",
-      "coverage/",
-      "dist/",
-      "build/",
-      "frontend/dist/**",
-      "package-lock.json",
-      ".devcontainer/devcontainer-lock.json",
-    ],
+    ignores: ["package-lock.json", ".devcontainer/devcontainer-lock.json"],
   },
 
   js.configs.recommended,
@@ -91,6 +91,6 @@ const eslintConfig = [
       "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
     },
   },
-];
+]);
 
 export default eslintConfig;
