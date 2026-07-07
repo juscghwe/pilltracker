@@ -28,24 +28,25 @@ The test validates selected response fields instead of only checking HTTP status
 
 #### Running tests
 
-Run the backend smoke test with:
+Run the backend smoke test with `npm run test:backend:smoke` or
+`npm run test:backend:smoke:compose`.
+
+Run the normal repository check with `npm run check`. `npm run check` currently validates formatting
+and linting. It does not currently run the backend smoke test automatically.
+
+#### Required backend state
+
+Run against an already-running backend:
 
 ```bash
 npm run test:backend:smoke
 ```
 
-Run the normal repository check with:
+Start the Compose app if needed, then run the smoke test:
 
 ```bash
-npm run check
+npm run test:backend:smoke:compose
 ```
-
-`npm run check` currently validates formatting and linting. It does not currently run the backend
-smoke test automatically.
-
-#### Required backend state
-
-The smoke test expects a backend server to already be running.
 
 Default API base URL:
 

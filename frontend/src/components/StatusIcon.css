@@ -1,0 +1,26 @@
+.status-icon {
+  vertical-align: middle;
+}
+
+.status-icon-healthy {
+  color: var(--status-healthy);
+}
+
+.status-icon-warning {
+  color: var(--status-warning);
+}
+
+.status-icon-error {
+  color: var(--status-error);
+}
+
+.status-icon-checking {
+  color: var(--status-checking);
+  animation: status-icon-spin 1.2s linear infinite;
+}
+
+@keyframes status-icon-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

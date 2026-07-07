@@ -1,0 +1,95 @@
+.app-button {
+  --button-tone: #f4f4f5;
+  --button-surface: rgb(255 255 255 / 0.06);
+  --button-surface-hover: rgb(255 255 255 / 0.1);
+  --button-filled-text: #18181b;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+
+  min-height: 2.25rem;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 999px;
+  padding: 0.5rem 0.875rem;
+
+  font: inherit;
+  appearance: none;
+  line-height: 1;
+  text-decoration: none;
+
+  cursor: pointer;
+  user-select: none;
+}
+
+.app-button:hover {
+  text-decoration: none;
+}
+
+.app-button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--button-tone) 70%, white);
+  outline-offset: 2px;
+}
+
+.app-button:disabled,
+.app-button-disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* Variants */
+
+.app-button-outlined {
+  color: var(--button-tone);
+  background: var(--button-surface);
+  border-color: color-mix(in srgb, var(--button-tone) 45%, transparent);
+}
+
+.app-button-outlined:hover:not(:disabled) {
+  background: var(--button-surface-hover);
+  border-color: color-mix(in srgb, var(--button-tone) 70%, transparent);
+}
+
+.app-button-filled {
+  color: var(--button-filled-text);
+  background: var(--button-tone);
+  border-color: var(--button-tone);
+}
+
+.app-button-filled:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+/* Tones */
+
+.app-button-default {
+  --button-tone: #f4f4f5;
+}
+
+.app-button-healthy {
+  --button-tone: var(--status-healthy);
+}
+
+.app-button-warning {
+  --button-tone: var(--status-warning);
+}
+
+.app-button-error {
+  --button-tone: var(--status-error);
+}
+
+.app-button-checking {
+  --button-tone: var(--status-checking);
+}
+
+/* Content helpers */
+
+.app-button .material-symbol {
+  font-size: 1.2em;
+}
+
+.app-button-label {
+  display: inline-flex;
+  align-items: center;
+}

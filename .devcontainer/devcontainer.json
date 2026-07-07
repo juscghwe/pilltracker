@@ -22,5 +22,10 @@
     }
   },
   "runArgs": ["--network=host"],
-  "postCreateCommand": "bash .devcontainer/post-create.sh"
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "portsAttributes": {
+    "5173": {
+      "label": "Vite"
+    }
+  }
 }

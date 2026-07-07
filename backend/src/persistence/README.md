@@ -24,7 +24,7 @@ import { persistenceAdapter } from "./persistence/index.js";
 
 <summary>Current implementation with `better-sqlite3`</summary>
 
-> [!Warning]
+> [!WARNING]
 >
 > These methods are not provided by the `persistenceAdapter` itself but the concrete adapter loaded
 > by the `persistenceAdapter`. Thereby they can be subject to change.

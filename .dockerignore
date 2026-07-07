@@ -1,3 +1,6 @@
+- LICENSE
+- THIRD-PARTY-NOTICES.md
+
 # Git
 .git/
 .gitignore
@@ -10,7 +13,6 @@ node_modules/
 # Docs and repo metadata
 docs/
 README.md
-LICENSE
 
 # Local environment files
 .env
@@ -18,16 +20,29 @@ LICENSE
 !.env.example
 .devcontainer/
 
+# SQLite databases and runtime sidecar files
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+
 # Logs
 logs/
 *.log
 
-# Local runtime data
+# Local runtime data / backups / machine-specific config
 data/
+.data/
+backups/
+config/local/
+app_data/
 
 # Build output
 dist/
 build/
+frontend/dist/
+coverage/
 
 # IDE files
 .DS_Store

@@ -5,17 +5,33 @@ node_modules/
 # allow example files
 !.env.example
 
-# Logs
-logs/
-*.log
+# SQLite databases and runtime sidecar files
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
 
 # Runtime data
 data/
+.data/
+
+# backups / machine-specific config
+backups/
+config/local/
+
+# Logs
+logs/
+*.log
 
 # Build output
 dist/
 build/
 frontend/dist/
+
+# Vite cache
+.vite/
+frontend/.vite/
 
 # IDE files
 .DS_Store
@@ -24,4 +40,4 @@ Thumbs.db
 .idea/
 !.vscode/
 !.vscode/settings.example.json
-!.vscode/task.example.json
+!.vscode/tasks.example.json

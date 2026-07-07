@@ -2,12 +2,32 @@ node_modules
 coverage
 dist
 build
+build/
+frontend/dist/
 app_data
-*.sqlite
+data/
+.data/
 
+.vite/
+frontend/.vite/
 frontend/dist/
 
 package-lock.json
 .devcontainer/devcontainer-lock.json
 
 .github/pull_request_template.md
+
+.env
+.env.*
+backups/
+config/local/
+app_data/
+
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+
+logs/
+*.log

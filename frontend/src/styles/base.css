@@ -1,0 +1,23 @@
+:root {
+  font-family: system-ui, Roboto, sans-serif;
+  color: #f4f4f5;
+  background: #18181b;
+
+  --status-healthy: #22c55e;
+  --status-warning: #f59e0b;
+  --status-error: #ef4444;
+  --status-checking: #60a5fa;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}

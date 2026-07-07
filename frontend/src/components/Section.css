@@ -1,0 +1,13 @@
+.section {
+  display: grid;
+  gap: 1rem;
+}
+
+.section-header h3 {
+  margin: 0;
+}
+
+.section-header p {
+  margin: 0.25rem 0 0;
+  color: #a1a1aa;
+}

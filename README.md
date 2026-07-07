@@ -8,7 +8,9 @@ services or third-party storage for sensitive health-related data.
 
 ## Project Status
 
-> [!WARNING] Early development
+> [!WARNING]
+>
+> Early development
 >
 > PillTracker is not production-ready and has no functional release yet.
 
