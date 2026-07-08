@@ -285,9 +285,6 @@ backend/src/dev-notes/
     dev-notes-health-summary.js
 ```
 
-## Example ownership section
-
-````md
 ## File and Folder Responsibilities
 
 ### `index.js`
@@ -387,6 +384,7 @@ Input shape:
 ```js
 Record<string, unknown>
 ```
+
 ````
 
 Output shape:
@@ -518,3 +516,4 @@ one place owns fields, column names, writability, nullability, output fallback
 - schema contract test
 - CRUD API smoke
 - health smoke
+````
