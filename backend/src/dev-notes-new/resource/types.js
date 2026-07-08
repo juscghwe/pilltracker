@@ -36,7 +36,7 @@
  * @property {ResourceFieldType} type Logical field type.
  * @property {string} sqliteType SQLite column type used for schema generation/validation.
  * @property {boolean} nullable Whether the stored value may be null.
- * @property {boolean} writable Whether external callers may write this field.
+ * @property {boolean} clientWritable Whether external callers may write this field.
  * @property {boolean} [generated] Whether the backend/storage generates this field.
  * @property {boolean} [primaryKey] Whether this field is the primary key.
  * @property {boolean} [autoIncrement] Whether this field auto-increments.
@@ -88,7 +88,9 @@
  * @property {boolean} [requireAtLeastOneField] Whether at least one accepted field must be present.
  * @property {readonly string[]} [requiredFields] Resource fields required for this operation.
  * @property {readonly string[]} [acceptedFields] Resource fields accepted for this operation.
- * @property {readonly string[]} [writableFields] Resource fields writable for this operation.
+ * @property {readonly string[]} [writableFields] Resource fields writable for this operation. *
+ * @property {readonly string[]} [systemFields] Resource fields written automatically by the
+ *   backend/storage during this operation.
  * @property {Readonly<Record<string, ResourceInputFieldDefinition>>} [inputFields] Operation-only
  *   input fields, keyed by public input field name.
  */
