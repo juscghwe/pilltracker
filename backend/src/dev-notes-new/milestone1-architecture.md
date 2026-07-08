@@ -238,6 +238,244 @@ flowchart TD
 
 </details>
 
+## Proposed Module Layout
+
+The dev-notes module should be rebuilt around clear ownership boundaries. Files should not be split
+only because they are "big"; they should be split because they own different architectural concerns.
+
+```text
+backend/src/dev-notes/
+  milestone1-target.md
+
+  index.js
+  routes.js
+
+  resource/
+    contract.js
+    operations.js
+    types.js
+
+  validation/
+    command-validation.js
+    field-validation.js
+
+  service/
+    dev-notes-service.js
+    result-builders.js
+
+  repository/
+    repository-port.js
+
+  adapters/
+    sqlite/
+      sqlite-repository.js
+      sqlite-schema.js
+      sqlite-mapping.js
+      sqlite-statements.js
+      sqlite-health.js
+
+      temp/
+        connection.js
+
+      persistent/
+        connection.js
+
+  health/
+    dev-notes-health.js
+    dev-notes-health-summary.js
+```
+
+## Example ownership section
+
+````md
+## File and Folder Responsibilities
+
+### `index.js`
+
+Public module export surface.
+
+Owns:
+
+- Re-exporting the supported dev-notes entrypoints.
+- Keeping import paths stable for the rest of the backend.
+
+Must not own:
+
+- HTTP route logic.
+- SQL logic.
+- Validation rules.
+- Storage selection behavior.
+
+### `routes.js`
+
+HTTP adapter for dev-notes.
+
+Owns:
+
+- Express route registration.
+- Reading route params, query params and request body.
+- Calling service/facade functions.
+- Translating service result statuses into HTTP responses.
+
+Must not own:
+
+- Field validation rules.
+- SQL/storage behavior.
+- Schema knowledge.
+- Business/resource semantics beyond route method mapping.
+
+### `resource/contract.js`
+
+Single source of truth for the dev-note resource shape.
+
+Owns:
+
+- Public field names.
+- Storage column names.
+- Field types.
+- Nullability.
+- Writability.
+- Generated fields.
+- Output fallback behavior.
+
+Must not own:
+
+- HTTP behavior.
+- SQL execution.
+- Operation result statuses.
+- Storage connection setup.
+
+### `resource/operations.js`
+
+Defines operation policies for dev-notes.
+
+Owns:
+
+- Which operation requires an id.
+- Which operation accepts body fields.
+- Which fields are writable for create/replace/update.
+- Which fields are required for create/replace.
+- Whether update requires at least one field.
+
+Must not own:
+
+- Concrete validation implementation.
+- SQL queries.
+- HTTP status codes.
+
+### `validation/`
+
+Turns unknown raw input into normalized commands.
+
+Owns:
+
+- Rejecting unknown fields.
+- Rejecting non-writable fields.
+- Rejecting missing required fields.
+- Normalizing empty strings/nulls according to the resource contract.
+- Producing structured `invalid-request` results.
+
+Must not own:
+
+- Storage selection.
+- SQL behavior.
+- Response resource mapping.
+- HTTP status codes.
+
+Input shape:
+
+```js
+Record<string, unknown>
+```
+````
+
+Output shape:
+
+```js
+{
+  id: number | null,
+  values: Record<string, unknown>,
+  providedFields: string[]
+}
+```
+
+### `service/`
+
+Use-case orchestration layer.
+
+Owns:
+
+- Calling validation.
+- Resolving storage target.
+- Calling repository methods.
+- Returning consistent operation results.
+
+Must not own:
+
+- Raw HTTP concerns.
+- SQL strings.
+- SQLite connection setup.
+- Field-by-field schema duplication.
+
+### `repository/`
+
+Defines the storage capability contract.
+
+Owns:
+
+- The methods a storage implementation must provide:
+  - list
+  - getById
+  - search
+  - create
+  - replace
+  - update
+  - delete
+  - getHealth
+
+Must not own:
+
+- Concrete SQLite behavior.
+- HTTP behavior.
+- Validation of raw request bodies.
+
+### `adapters/sqlite/`
+
+SQLite implementation of the repository port.
+
+Owns:
+
+- SQL execution.
+- SQLite row mapping.
+- SQLite schema creation.
+- SQLite schema validation.
+- SQLite health checks.
+- Safe dynamic SQL generation from the resource contract.
+
+Must not own:
+
+- Express route behavior.
+- Raw HTTP body validation.
+- Operation result status wording.
+- Frontend/API-specific decisions outside row-to-resource mapping.
+
+### `health/`
+
+Dev-notes health reporting.
+
+Owns:
+
+- Read-only health checks.
+- Storage enabled/disabled state.
+- Connection/schema readiness.
+- Compact vs detailed health output.
+
+Must not own:
+
+- CRUD behavior checks.
+- Creating/updating/deleting rows for health.
+- Frontend behavior.
+
 ## Data shapes
 
 - raw HTTP input
