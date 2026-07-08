@@ -385,8 +385,6 @@ Input shape:
 Record<string, unknown>
 ```
 
-````
-
 Output shape:
 
 ```js
@@ -516,4 +514,7 @@ one place owns fields, column names, writability, nullability, output fallback
 - schema contract test
 - CRUD API smoke
 - health smoke
-````
+
+```
+
+```
