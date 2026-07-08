@@ -514,7 +514,3 @@ one place owns fields, column names, writability, nullability, output fallback
 - schema contract test
 - CRUD API smoke
 - health smoke
-
-```
-
-```
