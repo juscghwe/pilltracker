@@ -56,8 +56,10 @@ export function createInvalidCommandResult(message, problems) {
   return Object.freeze({
     ok: false,
     status: "invalid-request",
-    message: message,
-    details: Object.freeze({ problems: Object.freeze({ ...problems }) }),
+    message,
+    details: Object.freeze({
+      problems: Object.freeze([...problems]),
+    }),
   });
 }
 
