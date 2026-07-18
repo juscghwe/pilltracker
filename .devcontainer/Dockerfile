@@ -6,6 +6,14 @@ RUN apt update && apt install -y \
     less \
     man-db \
     sudo \
+    curl \
+    unzip \
+    procps \
+    libxext6 \
+    libxrender1 \
+    libxtst6 \
+    libxi6 \
+    libfreetype6 \
     && rm -rf /var/lib/apt/lists/*
 # sqlite3 CLI is installed for manual database inspection.
 # The backend uses the npm package `better-sqlite3` for application access.
