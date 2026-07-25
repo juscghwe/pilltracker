@@ -1,26 +1,23 @@
 /**
  * Low-level field validation helpers for resource command normalization.
  *
- * This file should stay generic. It should not know about dev-notes specifically, routes,
- * repositories, SQLite or HTTP status codes.
+ * This file is transport-, service-, repository-, and SQLite-agnostic. Validation errors use public
+ * input names. Internal resource keys stay with the caller that looked up the field definition.
  */
 
-/**
- * @typedef {{
- *       ok: true;
- *       value: import("../resource/types.js").ResourceCommandValue;
- *     }
- *   | {
- *       ok: false;
- *       problems: readonly import("../resource/types.js").ResourceValidationProblem[];
- *     }} FieldNormalizationResult
- */
+/** @typedef {{ok: true; value: import("../resource/types.js").ResourceCommandValue}} FieldNormalizationSuccess */
+/** @typedef {{ok: false; problems: readonly import("../resource/types.js").ResourceValidationProblem[]}} FieldNormalizationFailure */
+/** @typedef {FieldNormalizationSuccess | FieldNormalizationFailure} FieldNormalizationResult */
+
+/** @typedef {Pick<import("../resource/types.js").ResourceFieldDefinition, "publicName" | "type" | "nullable" | "allowEmpty" | "emptyAsNull"> | import("../resource/types.js").ResourceInputFieldDefinition} NormalizableFieldDefinition */
+
+const integerStringPattern = /^-?\d+$/;
 
 /**
  * Creates one structured validation problem.
  *
- * @param {string} field Field name or `"body"`, `"query"` or `"id"` for structural issues.
- * @param {string} reason Stable validation problem reason.
+ * @param {string} field Public field name or structural location.
+ * @param {string} reason Stable problem reason.
  * @param {object} [options] Optional problem details.
  * @param {unknown} [options.expected] Expected value/type/policy.
  * @param {unknown} [options.actual] Actual value/type/policy.
@@ -28,28 +25,24 @@
  */
 export function createValidationProblem(field, reason, options = {}) {
   /** @type {import("../resource/types.js").ResourceValidationProblem} */
-  const validationProblem = {
-    field,
-    reason,
-  };
+  const problem = { field, reason };
 
   if (Object.hasOwn(options, "expected")) {
-    validationProblem.expected = options.expected;
+    problem.expected = options.expected;
   }
 
   if (Object.hasOwn(options, "actual")) {
-    validationProblem.actual = options.actual;
+    problem.actual = options.actual;
   }
 
-  return Object.freeze(validationProblem);
+  return Object.freeze(problem);
 }
 
 /**
  * Creates a standardized invalid resource command result.
  *
  * @param {string} message Human-readable validation failure message.
- * @param {readonly import("../resource/types.js").ResourceValidationProblem[]} problems Validation
- *   problems.
+ * @param {readonly import("../resource/types.js").ResourceValidationProblem[]} problems Problems.
  * @returns {import("../resource/types.js").ResourceCommandInvalidResult} Invalid command result.
  */
 export function createInvalidCommandResult(message, problems) {
@@ -66,10 +59,8 @@ export function createInvalidCommandResult(message, problems) {
 /**
  * Checks whether a value is a plain object-like record.
  *
- * Arrays, null, strings, numbers and booleans should return false.
- *
  * @param {unknown} value Value to check.
- * @returns {value is Record<string, unknown>} Whether the value is a plain object-like record.
+ * @returns {value is Record<string, unknown>} Whether the value is a plain object.
  */
 export function isPlainObject(value) {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
@@ -77,45 +68,38 @@ export function isPlainObject(value) {
   }
 
   const prototype = Object.getPrototypeOf(value);
-
   return prototype === Object.prototype || prototype === null;
 }
 
 /**
- * Reads a raw object value or returns an empty object.
+ * Returns a detached, frozen object copy or an empty object for non-record input.
  *
- * This is useful at command boundaries where missing body/query should not crash validation.
+ * Structural type errors are reported by command validation; this helper only makes later reads
+ * safe.
  *
  * @param {unknown} value Raw value.
- * @returns {Readonly<Record<string, unknown>>} Object value or empty object.
+ * @returns {Readonly<Record<string, unknown>>} Safe object value.
  */
 export function readObjectOrEmpty(value) {
-  if (isPlainObject(value)) {
-    return Object.freeze(value);
-  }
-  return Object.freeze({});
+  return Object.freeze(isPlainObject(value) ? { ...value } : {});
 }
 
 /**
- * Checks whether an object owns a field directly.
- *
  * @param {Readonly<Record<string, unknown>>} input Input object.
- * @param {string} field Field name.
- * @returns {boolean} Whether the input owns the field.
+ * @param {string} field Public field name.
+ * @returns {boolean} Whether the object owns the field.
  */
 export function hasOwnField(input, field) {
   return Object.hasOwn(input, field);
 }
 
 /**
- * Creates a normalized field failure result.
- *
- * @param {string} field Field name.
- * @param {string} reason Stable validation problem reason.
- * @param {object} [options] Optional validation problem details.
+ * @param {string} field Public field name.
+ * @param {string} reason Stable reason.
+ * @param {object} [options] Optional problem details.
  * @param {unknown} [options.expected] Expected value/type/policy.
  * @param {unknown} [options.actual] Actual value/type/policy.
- * @returns {FieldNormalizationResult} Field validation failure result.
+ * @returns {FieldNormalizationFailure} Failed normalization result.
  */
 function invalidFieldValue(field, reason, options = {}) {
   return Object.freeze({
@@ -125,144 +109,111 @@ function invalidFieldValue(field, reason, options = {}) {
 }
 
 /**
- * Creates a normalized field success result.
- *
  * @param {import("../resource/types.js").ResourceCommandValue} value Normalized value.
- * @returns {FieldNormalizationResult} Field validation success result.
+ * @returns {FieldNormalizationSuccess} Successful normalization result.
  */
 function validFieldValue(value) {
-  return Object.freeze({
-    ok: true,
-    value,
-  });
+  return Object.freeze({ ok: true, value });
 }
 
 /**
- * Handles explicit null input for a field.
- *
- * @param {string} fieldName Public field name.
- * @param {import("../resource/types.js").ResourceFieldDefinition} fieldDefinition Field contract.
+ * @param {NormalizableFieldDefinition} definition Field definition.
  * @param {string} expected Expected type description.
  * @returns {FieldNormalizationResult} Normalized null result.
  */
-function normalizeNullFieldValue(fieldName, fieldDefinition, expected) {
-  if (fieldDefinition.nullable) {
+function normalizeNullFieldValue(definition, expected) {
+  if (definition.nullable) {
     return validFieldValue(null);
   }
 
-  return invalidFieldValue(fieldName, "null-not-allowed", {
+  return invalidFieldValue(definition.publicName, "null-not-allowed", {
     expected,
     actual: null,
   });
 }
 
 /**
- * Normalizes a string resource field value.
- *
- * @param {string} fieldName Public field name.
- * @param {import("../resource/types.js").ResourceFieldDefinition} fieldDefinition Field contract.
- * @param {unknown} rawValue Raw input value.
- * @returns {FieldNormalizationResult} Normalized string value or validation problems.
+ * @param {NormalizableFieldDefinition} definition Field definition.
+ * @param {unknown} rawValue Raw value.
+ * @returns {FieldNormalizationResult} Normalized string result.
  */
-function normalizeStringResourceFieldValue(fieldName, fieldDefinition, rawValue) {
+function normalizeStringFieldValue(definition, rawValue) {
   if (rawValue === null) {
-    return normalizeNullFieldValue(fieldName, fieldDefinition, "string");
+    return normalizeNullFieldValue(definition, "string");
   }
 
   if (typeof rawValue !== "string") {
-    return invalidFieldValue(fieldName, "invalid-type", {
+    return invalidFieldValue(definition.publicName, "invalid-type", {
       expected: "string",
       actual: typeof rawValue,
     });
   }
 
-  const trimmedValue = rawValue.trim();
+  const value = rawValue.trim();
 
-  if (trimmedValue !== "") {
-    return validFieldValue(trimmedValue);
+  if (value !== "") {
+    return validFieldValue(value);
   }
 
-  if (!fieldDefinition.allowEmpty) {
-    return invalidFieldValue(fieldName, "empty-not-allowed", {
+  if (!definition.allowEmpty) {
+    return invalidFieldValue(definition.publicName, "empty-not-allowed", {
       expected: "non-empty string",
       actual: rawValue,
     });
   }
 
-  if (fieldDefinition.emptyAsNull) {
-    return validFieldValue(null);
-  }
-
-  return validFieldValue("");
+  return validFieldValue(definition.emptyAsNull ? null : "");
 }
 
 /**
- * Normalizes an integer resource field value.
- *
- * @param {string} fieldName Public field name.
- * @param {import("../resource/types.js").ResourceFieldDefinition} fieldDefinition Field contract.
- * @param {unknown} rawValue Raw input value.
- * @returns {FieldNormalizationResult} Normalized integer value or validation problems.
+ * @param {NormalizableFieldDefinition} definition Field definition.
+ * @param {unknown} rawValue Raw value.
+ * @returns {FieldNormalizationResult} Normalized integer result.
  */
-function normalizeIntegerResourceFieldValue(fieldName, fieldDefinition, rawValue) {
+function normalizeIntegerFieldValue(definition, rawValue) {
   if (rawValue === null) {
-    return normalizeNullFieldValue(fieldName, fieldDefinition, "integer");
+    return normalizeNullFieldValue(definition, "integer");
   }
 
   if (typeof rawValue === "number") {
-    return normalizeIntegerNumber(fieldName, rawValue);
+    if (!Number.isInteger(rawValue)) {
+      return invalidFieldValue(definition.publicName, "not-integer", {
+        expected: "integer",
+        actual: rawValue,
+      });
+    }
+
+    return validFieldValue(rawValue);
   }
 
-  if (typeof rawValue === "string") {
-    return normalizeIntegerString(fieldName, rawValue);
+  if (typeof rawValue !== "string") {
+    return invalidFieldValue(definition.publicName, "invalid-type", {
+      expected: "integer as number or decimal string",
+      actual: typeof rawValue,
+    });
   }
 
-  return invalidFieldValue(fieldName, "invalid-type", {
-    expected: "integer as number or string",
-    actual: typeof rawValue,
-  });
-}
+  const value = rawValue.trim();
 
-/**
- * Normalizes a numeric integer value.
- *
- * @param {string} fieldName Public field name.
- * @param {number} rawValue Raw number value.
- * @returns {FieldNormalizationResult} Normalized integer value or validation problems.
- */
-function normalizeIntegerNumber(fieldName, rawValue) {
-  if (!Number.isInteger(rawValue)) {
-    return invalidFieldValue(fieldName, "not-integer", {
+  if (value === "") {
+    return invalidFieldValue(definition.publicName, "empty-not-allowed", {
       expected: "integer",
       actual: rawValue,
     });
   }
 
-  return validFieldValue(rawValue);
-}
-
-/**
- * Normalizes a string integer value.
- *
- * @param {string} fieldName Public field name.
- * @param {string} rawValue Raw string value.
- * @returns {FieldNormalizationResult} Normalized integer value or validation problems.
- */
-function normalizeIntegerString(fieldName, rawValue) {
-  const trimmedValue = rawValue.trim();
-
-  if (trimmedValue === "") {
-    return invalidFieldValue(fieldName, "empty-not-allowed", {
+  if (!integerStringPattern.test(value)) {
+    return invalidFieldValue(definition.publicName, "not-integer", {
       expected: "integer",
       actual: rawValue,
     });
   }
 
-  const numericValue = Number(trimmedValue);
+  const numericValue = Number(value);
 
-  if (!Number.isInteger(numericValue)) {
-    return invalidFieldValue(fieldName, "not-integer", {
-      expected: "integer",
+  if (!Number.isSafeInteger(numericValue)) {
+    return invalidFieldValue(definition.publicName, "not-safe-integer", {
+      expected: "safe integer",
       actual: rawValue,
     });
   }
@@ -271,147 +222,30 @@ function normalizeIntegerString(fieldName, rawValue) {
 }
 
 /**
- * Normalizes and validates a resource id.
+ * Normalizes a raw value using a resource field definition.
  *
- * Accepted raw values:
+ * The definition already owns the public name. The caller retains the internal contract key used
+ * to locate the definition.
  *
- * - Positive integer number
- * - String containing a positive integer
- *
- * Rejected raw values:
- *
- * - Missing/null/undefined
- * - Empty string
- * - Non-integer number
- * - Zero or negative number
- * - Object/array/boolean
- *
- * @param {unknown} rawId Raw id value.
- * @returns {{
- *       ok: true;
- *       value: number;
- *     }
- *   | {
- *       ok: false;
- *       problems: readonly import("../resource/types.js").ResourceValidationProblem[];
- *     }}
- *   Normalized id result or validation problems.
- */
-export function readRequiredResourceId(rawId) {
-  /**
-   * @param {string} reason
-   * @param {string} [actual]
-   * @returns {readonly import("../resource/types.js").ResourceValidationProblem[]}
-   */
-  function invalidId(reason, actual) {
-    return Object.freeze([
-      createValidationProblem("id", reason, {
-        expected: "positive integer id",
-        actual: actual ? actual : String(rawId),
-      }),
-    ]);
-  }
-
-  if (rawId === undefined) {
-    return invalidFieldValue("id", "missing", {
-      expected: "positive integer id",
-      actual: "undefined",
-    });
-  }
-
-  if (rawId === null) {
-    return Object.freeze({
-      ok: false,
-      problems: invalidId("null"),
-    });
-  }
-
-  if (typeof rawId === "string") {
-    const trimmedId = rawId.trim();
-
-    if (trimmedId === "") {
-      return Object.freeze({
-        ok: false,
-        problems: invalidId("empty"),
-      });
-    }
-
-    const numericId = Number(trimmedId);
-
-    if (!Number.isInteger(numericId)) {
-      return Object.freeze({
-        ok: false,
-        problems: invalidId("non-integer"),
-      });
-    }
-
-    if (numericId <= 0) {
-      return Object.freeze({
-        ok: false,
-        problems: invalidId("not-positive"),
-      });
-    }
-
-    return Object.freeze({
-      ok: true,
-      value: numericId,
-    });
-  }
-
-  if (typeof rawId === "number") {
-    if (!Number.isInteger(rawId)) {
-      return Object.freeze({
-        ok: false,
-        problems: invalidId("non-integer"),
-      });
-    }
-
-    if (rawId <= 0) {
-      return Object.freeze({
-        ok: false,
-        problems: invalidId("not-positive"),
-      });
-    }
-
-    return Object.freeze({
-      ok: true,
-      value: rawId,
-    });
-  }
-
-  return Object.freeze({
-    ok: false,
-    problems: invalidId("invalid-type", typeof rawId),
-  });
-}
-
-/**
- * Normalizes a raw value according to one resource field definition.
- *
- * This is for actual resource fields such as `name`, `comment` or `lastConfirmedInteraction`.
- *
- * @param {string} fieldName Public field name.
  * @param {import("../resource/types.js").ResourceFieldDefinition} fieldDefinition Field contract.
  * @param {unknown} rawValue Raw input value.
- * @returns {FieldNormalizationResult} Normalized field value or validation problems.
+ * @returns {FieldNormalizationResult} Normalized value or validation problems.
  */
-export function normalizeResourceFieldValue(fieldName, fieldDefinition, rawValue) {
+export function normalizeResourceFieldValue(fieldDefinition, rawValue) {
   if (rawValue === undefined) {
-    return invalidFieldValue(fieldName, "missing", {
+    return invalidFieldValue(fieldDefinition.publicName, "missing", {
       expected: fieldDefinition.type,
-      actual: rawValue,
+      actual: "undefined",
     });
   }
 
   switch (fieldDefinition.type) {
     case "string":
-      return normalizeStringResourceFieldValue(fieldName, fieldDefinition, rawValue);
-
+      return normalizeStringFieldValue(fieldDefinition, rawValue);
     case "integer":
-      return normalizeIntegerResourceFieldValue(fieldName, fieldDefinition, rawValue);
-
+      return normalizeIntegerFieldValue(fieldDefinition, rawValue);
     default:
-      return invalidFieldValue(`fieldDefinition.type of ${fieldName}`, "unsupported-field-type", {
+      return invalidFieldValue(fieldDefinition.publicName, "unsupported-field-type", {
         expected: "string | integer",
         actual: fieldDefinition.type,
       });
@@ -419,70 +253,112 @@ export function normalizeResourceFieldValue(fieldName, fieldDefinition, rawValue
 }
 
 /**
- * Normalizes a raw value according to one operation-only input field definition.
+ * Normalizes an operation-only input field such as search query `text`.
  *
- * This is for inputs that are not resource fields, such as search query `text`.
- *
- * @param {string} fieldName Public input field name.
  * @param {import("../resource/types.js").ResourceInputFieldDefinition} inputFieldDefinition Input
  *   field contract.
  * @param {unknown} rawValue Raw input value.
- * @returns {{
- *       ok: true;
- *       value: import("../resource/types.js").ResourceCommandValue;
- *     }
- *   | {
- *       ok: false;
- *       problems: readonly import("../resource/types.js").ResourceValidationProblem[];
- *     }}
- *   Normalized input value or validation problems.
+ * @returns {FieldNormalizationResult} Normalized value or validation problems.
  */
-export function normalizeInputFieldValue(fieldName, inputFieldDefinition, rawValue) {
-  void fieldName;
-  void inputFieldDefinition;
-  void rawValue;
+export function normalizeInputFieldValue(inputFieldDefinition, rawValue) {
+  if (rawValue === undefined) {
+    return invalidFieldValue(inputFieldDefinition.publicName, "missing", {
+      expected: inputFieldDefinition.type,
+      actual: "undefined",
+    });
+  }
 
-  // Same general idea as normalizeResourceFieldValue, but using ResourceInputFieldDefinition.
-  // This is mainly for query/search inputs.
-  throw new Error("Not implemented yet.");
+  switch (inputFieldDefinition.type) {
+    case "string":
+      return normalizeStringFieldValue(inputFieldDefinition, rawValue);
+    case "integer":
+      return normalizeIntegerFieldValue(inputFieldDefinition, rawValue);
+    default:
+      return invalidFieldValue(inputFieldDefinition.publicName, "unsupported-field-type", {
+        expected: "string | integer",
+        actual: inputFieldDefinition.type,
+      });
+  }
 }
 
 /**
- * Finds fields that were provided but are not accepted for the current operation.
+ * Normalizes and validates a required positive resource id.
+ *
+ * @param {unknown} rawId Raw id value.
+ * @returns {{ok: true; value: number} | {ok: false; problems: readonly import("../resource/types.js").ResourceValidationProblem[]}} Result.
+ */
+export function readRequiredResourceId(rawId) {
+  /** @type {import("../resource/types.js").ResourceInputFieldDefinition} */
+  const idDefinition = {
+    publicName: "id",
+    type: "integer",
+    required: true,
+    nullable: false,
+    allowEmpty: false,
+  };
+
+  const result = normalizeInputFieldValue(idDefinition, rawId);
+
+  if (!result.ok) {
+    return result;
+  }
+
+  if (typeof result.value !== "number") {
+    return invalidFieldValue("id", "invalid-normalized-type", {
+      expected: "number",
+      actual: typeof result.value,
+    });
+  }
+
+  if (result.value < 1) {
+    return invalidFieldValue("id", "not-positive", {
+      expected: "positive integer id",
+      actual: result.value,
+    });
+  }
+
+  return Object.freeze({ ok: true, value: result.value });
+}
+
+/**
+ * Finds fields that are not accepted at the current input location.
  *
  * @param {Readonly<Record<string, unknown>>} input Raw body/query object.
- * @param {readonly string[]} acceptedFields Fields accepted by the operation.
- * @param {string} location Human-readable location, usually `"body"` or `"query"`.
- * @returns {readonly import("../resource/types.js").ResourceValidationProblem[]} Validation
- *   problems for unexpected fields.
+ * @param {readonly string[]} acceptedFields Accepted public names.
+ * @param {string} location Usually `body` or `query`.
+ * @returns {readonly import("../resource/types.js").ResourceValidationProblem[]} Problems.
  */
 export function findUnexpectedFields(input, acceptedFields, location) {
-  void input;
-  void acceptedFields;
-  void location;
-
-  // Compare Object.keys(input) against acceptedFields.
-  // Return one problem per unexpected key.
-  // Reason can be "unexpected-field".
-  throw new Error("Not implemented yet.");
+  const accepted = new Set(acceptedFields);
+  return Object.freeze(
+    Object.keys(input)
+      .filter((field) => !accepted.has(field))
+      .map((field) =>
+        createValidationProblem(field, "unexpected-field", {
+          expected: `${location} field in accepted set`,
+          actual: field,
+        }),
+      ),
+  );
 }
 
 /**
- * Finds required fields that are missing from an input object.
+ * Finds required public fields missing from an input object.
  *
  * @param {Readonly<Record<string, unknown>>} input Raw body/query object.
- * @param {readonly string[]} requiredFields Required fields.
- * @param {string} location Human-readable location, usually `"body"` or `"query"`.
- * @returns {readonly import("../resource/types.js").ResourceValidationProblem[]} Validation
- *   problems for missing fields.
+ * @param {readonly string[]} requiredFields Required public names.
+ * @param {string} location Usually `body` or `query`.
+ * @returns {readonly import("../resource/types.js").ResourceValidationProblem[]} Problems.
  */
 export function findMissingRequiredFields(input, requiredFields, location) {
-  void input;
-  void requiredFields;
-  void location;
-
-  // Compare requiredFields against fields owned by input.
-  // Return one problem per missing key.
-  // Reason can be "missing".
-  throw new Error("Not implemented yet.");
+  return Object.freeze(
+    requiredFields
+      .filter((field) => !hasOwnField(input, field))
+      .map((field) =>
+        createValidationProblem(field, "missing", {
+          expected: `required ${location} field`,
+          actual: "missing",
+        }),
+      ),
+  );
 }

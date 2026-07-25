@@ -1,15 +1,15 @@
 /**
- * Dev-notes resource contract.
+ * Single source of truth for dev-note field identity and shape.
  *
- * This object is the single source of truth for the public field names, SQLite column names,
- * primitive types, nullability, writability, generated fields and output fallback behavior.
+ * Object keys are internal contract keys. `publicName` is the JavaScript/API property and
+ * `columnName` is the trusted SQLite identifier. They currently match for several fields, but they
+ * are not the same architectural namespace.
  *
  * @satisfies {import("./types.js").ResourceDefinition}
  */
 export const devNotesResource = Object.freeze({
   resourceName: "devNote",
   tableName: "dev_notes",
-
   fields: Object.freeze({
     id: Object.freeze({
       publicName: "id",
@@ -22,7 +22,6 @@ export const devNotesResource = Object.freeze({
       primaryKey: true,
       autoIncrement: true,
     }),
-
     name: Object.freeze({
       publicName: "name",
       columnName: "name",
@@ -33,7 +32,6 @@ export const devNotesResource = Object.freeze({
       allowEmpty: false,
       searchable: true,
     }),
-
     comment: Object.freeze({
       publicName: "comment",
       columnName: "comment",
@@ -46,7 +44,6 @@ export const devNotesResource = Object.freeze({
       outputFallback: "",
       searchable: true,
     }),
-
     lastConfirmedInteraction: Object.freeze({
       publicName: "lastConfirmedInteraction",
       columnName: "last_confirmed_interaction",
@@ -58,7 +55,6 @@ export const devNotesResource = Object.freeze({
       emptyAsNull: true,
       outputFallback: "",
     }),
-
     createdAt: Object.freeze({
       publicName: "createdAt",
       columnName: "created_at",
@@ -68,7 +64,6 @@ export const devNotesResource = Object.freeze({
       clientWritable: false,
       generated: true,
     }),
-
     updatedAt: Object.freeze({
       publicName: "updatedAt",
       columnName: "updated_at",

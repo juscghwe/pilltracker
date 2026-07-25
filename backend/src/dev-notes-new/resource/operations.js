@@ -1,15 +1,10 @@
 /**
  * Dev-notes operation policies.
  *
- * These policies describe which raw inputs are meaningful for each operation. They do not execute
- * validation and they do not contain SQL behavior.
+ * Resource field arrays contain internal contract keys. Validation resolves each key through the
+ * resource contract and then reads/writes the corresponding public name.
  *
- * @satisfies {Readonly<
- *   Record<
- *     import("./types.js").ResourceOperationName,
- *     import("./types.js").ResourceOperationPolicy
- *   >
- * >}
+ * @satisfies {Readonly<Record<import("./types.js").ResourceOperationName, import("./types.js").ResourceOperationPolicy>>}
  */
 export const devNotesOperations = Object.freeze({
   list: Object.freeze({
@@ -18,20 +13,17 @@ export const devNotesOperations = Object.freeze({
     acceptsBody: false,
     acceptsQuery: false,
   }),
-
   getById: Object.freeze({
     operation: "getById",
     requiresId: true,
     acceptsBody: false,
     acceptsQuery: false,
   }),
-
   search: Object.freeze({
     operation: "search",
     requiresId: false,
     acceptsBody: false,
     acceptsQuery: true,
-    requireAtLeastOneField: true,
     inputFields: Object.freeze({
       text: Object.freeze({
         publicName: "text",
@@ -42,7 +34,6 @@ export const devNotesOperations = Object.freeze({
       }),
     }),
   }),
-
   create: Object.freeze({
     operation: "create",
     requiresId: false,
@@ -53,7 +44,6 @@ export const devNotesOperations = Object.freeze({
     writableFields: Object.freeze(["name", "comment"]),
     systemFields: Object.freeze(["createdAt", "updatedAt"]),
   }),
-
   replace: Object.freeze({
     operation: "replace",
     requiresId: true,
@@ -62,9 +52,8 @@ export const devNotesOperations = Object.freeze({
     requiredFields: Object.freeze(["name"]),
     acceptedFields: Object.freeze(["name", "comment"]),
     writableFields: Object.freeze(["name", "comment"]),
-    systemFields: Object.freeze(["updatedAt"]),
+    systemFields: Object.freeze(["lastConfirmedInteraction", "updatedAt"]),
   }),
-
   update: Object.freeze({
     operation: "update",
     requiresId: true,
@@ -75,7 +64,6 @@ export const devNotesOperations = Object.freeze({
     writableFields: Object.freeze(["name", "comment", "lastConfirmedInteraction"]),
     systemFields: Object.freeze(["updatedAt"]),
   }),
-
   delete: Object.freeze({
     operation: "delete",
     requiresId: true,
