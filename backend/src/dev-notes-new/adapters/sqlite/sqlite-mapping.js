@@ -4,20 +4,6 @@ import { quoteSqliteIdentifier } from "./sqlite-schema.js";
 
 /**
  * @param {import("../../resource/types.js").ResourceDefinition} resource Resource contract.
- * @returns {readonly (readonly [string, import("../../resource/types.js").ResourceFieldDefinition])[]} Entries.
- */
-export function getResourceFieldEntries(resource) {
-  return Object.freeze(
-    Object.entries(resource.fields).map(([fieldKey, definition]) =>
-      /** @type {readonly [string, import("../../resource/types.js").ResourceFieldDefinition]} */ (
-        Object.freeze([fieldKey, definition])
-      ),
-    ),
-  );
-}
-
-/**
- * @param {import("../../resource/types.js").ResourceDefinition} resource Resource contract.
  * @param {string} publicName Public field name.
  * @returns {import("../../resource/types.js").ResourceFieldDefinition} Field definition.
  */
@@ -40,7 +26,9 @@ export function getFieldDefinitionByPublicName(resource, publicName) {
  * @returns {import("../../resource/types.js").ResourceFieldDefinition} Primary-key definition.
  */
 export function getPrimaryKeyField(resource) {
-  const primaryFields = Object.values(resource.fields).filter((definition) => definition.primaryKey);
+  const primaryFields = Object.values(resource.fields).filter(
+    (definition) => definition.primaryKey,
+  );
 
   if (primaryFields.length !== 1) {
     throw new TypeError(

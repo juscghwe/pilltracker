@@ -23,14 +23,25 @@ import {
  * @returns {import("../resource/types.js").ResourceCommandValidResult} Successful result.
  */
 export function createValidCommandResult(command) {
+  /** @type {Readonly<Record<string, import("../resource/types.js").ResourceCommandValue>>} */
+  const values = Object.freeze({ ...command.values });
+
+  /** @type {readonly string[]} */
+  const providedFields = Object.freeze([...command.providedFields]);
+
+  /** @type {Readonly<import("../resource/types.js").ResourceCommand>} */
   const frozenCommand = Object.freeze({
     operation: command.operation,
     id: command.id,
-    values: Object.freeze({ ...command.values }),
-    providedFields: Object.freeze([...command.providedFields]),
+    values,
+    providedFields,
   });
 
-  return Object.freeze({ ok: true, value: frozenCommand });
+  /** @type {import("../resource/types.js").ResourceCommandValidResult} */
+  return Object.freeze({
+    ok: true,
+    value: frozenCommand,
+  });
 }
 
 /**
@@ -53,7 +64,8 @@ function readResourceFieldDefinition(resource, fieldKey) {
 /**
  * @param {import("../resource/types.js").ResourceDefinition} resource Resource contract.
  * @param {import("../resource/types.js").ResourceOperationPolicy} operation Operation policy.
- * @returns {readonly import("../resource/types.js").ResourceFieldDefinition[]} Accepted definitions.
+ * @returns {readonly import("../resource/types.js").ResourceFieldDefinition[]} Accepted
+ *   definitions.
  */
 function readAcceptedResourceDefinitions(resource, operation) {
   const acceptedKeys = operation.acceptedFields ?? [];
@@ -90,7 +102,9 @@ function readPublicNames(resource, fieldKeys) {
  *
  * @param {import("../resource/types.js").ResourceOperationPolicy} operation Operation policy.
  * @param {import("../resource/types.js").RawResourceCommandInput} rawInput Raw command input.
- * @returns {{ok: true; value: number | null} | {ok: false; problems: readonly import("../resource/types.js").ResourceValidationProblem[]}} Result.
+ * @returns {{ ok: true; value: number | null }
+ *   | { ok: false; problems: readonly import("../resource/types.js").ResourceValidationProblem[] }}
+ *   Result.
  */
 export function readCommandId(operation, rawInput) {
   if (!operation.requiresId) {
@@ -107,7 +121,13 @@ export function readCommandId(operation, rawInput) {
  * @param {import("../resource/types.js").ResourceDefinition} input.resource Resource contract.
  * @param {import("../resource/types.js").ResourceOperationPolicy} input.operation Operation policy.
  * @param {Readonly<Record<string, unknown>>} input.body Raw body object.
- * @returns {{ok: true; values: Readonly<Record<string, import("../resource/types.js").ResourceCommandValue>>; providedFields: readonly string[]} | {ok: false; problems: readonly import("../resource/types.js").ResourceValidationProblem[]}} Result.
+ * @returns {{
+ *       ok: true;
+ *       values: Readonly<Record<string, import("../resource/types.js").ResourceCommandValue>>;
+ *       providedFields: readonly string[];
+ *     }
+ *   | { ok: false; problems: readonly import("../resource/types.js").ResourceValidationProblem[] }}
+ *   Result.
  */
 export function readCommandBodyValues({ resource, operation, body }) {
   const definitions = operation.acceptsBody
@@ -161,14 +181,22 @@ export function readCommandBodyValues({ resource, operation, body }) {
  * @param {object} input Function input.
  * @param {import("../resource/types.js").ResourceOperationPolicy} input.operation Operation policy.
  * @param {Readonly<Record<string, unknown>>} input.query Raw query object.
- * @returns {{ok: true; values: Readonly<Record<string, import("../resource/types.js").ResourceCommandValue>>; providedFields: readonly string[]} | {ok: false; problems: readonly import("../resource/types.js").ResourceValidationProblem[]}} Result.
+ * @returns {{
+ *       ok: true;
+ *       values: Readonly<Record<string, import("../resource/types.js").ResourceCommandValue>>;
+ *       providedFields: readonly string[];
+ *     }
+ *   | { ok: false; problems: readonly import("../resource/types.js").ResourceValidationProblem[] }}
+ *   Result.
  */
 export function readCommandQueryValues({ operation, query }) {
   const inputFields = operation.acceptsQuery ? (operation.inputFields ?? {}) : {};
   const definitions = Object.freeze(Object.values(inputFields));
   const acceptedPublicNames = Object.freeze(definitions.map((definition) => definition.publicName));
   const requiredPublicNames = Object.freeze(
-    definitions.filter((definition) => definition.required).map((definition) => definition.publicName),
+    definitions
+      .filter((definition) => definition.required)
+      .map((definition) => definition.publicName),
   );
 
   /** @type {import("../resource/types.js").ResourceValidationProblem[]} */
@@ -232,8 +260,10 @@ export function validateAtLeastOneField(operation, providedFields) {
  * @param {object} input Function input.
  * @param {import("../resource/types.js").ResourceOperationPolicy} input.operation Operation policy.
  * @param {number | null} input.id Normalized id.
- * @param {Readonly<Record<string, import("../resource/types.js").ResourceCommandValue>>} input.bodyValues Body values.
- * @param {Readonly<Record<string, import("../resource/types.js").ResourceCommandValue>>} input.queryValues Query values.
+ * @param {Readonly<Record<string, import("../resource/types.js").ResourceCommandValue>>} input.bodyValues
+ *   Body values.
+ * @param {Readonly<Record<string, import("../resource/types.js").ResourceCommandValue>>} input.queryValues
+ *   Query values.
  * @param {readonly string[]} input.bodyFields Provided body fields.
  * @param {readonly string[]} input.queryFields Provided query fields.
  * @returns {import("../resource/types.js").ResourceCommand} Normalized command.

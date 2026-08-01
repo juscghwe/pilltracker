@@ -15,6 +15,7 @@ export function createListResult(notes) {
 /**
  * @param {Readonly<import("../resource/types.js").DevNote> | null} note Note or null.
  * @param {import("../resource/types.js").DevNotesSuccessStatus} [status="ok"] Success status.
+ *   Default is `"ok"`
  * @returns {Readonly<import("../resource/types.js").DevNotesSingleResult>} Single-note result.
  */
 export function createSingleResult(note, status = "ok") {
@@ -26,7 +27,7 @@ export function createSingleResult(note, status = "ok") {
 }
 
 /**
- * @param {string} [message="Dev-note not found."] Message.
+ * @param {string} [message="Dev-note not found."] Message. Default is `"Dev-note not found."`
  * @returns {Readonly<import("../resource/types.js").DevNotesBaseResult>} Not-found result.
  */
 export function createNotFoundResult(message = "Dev-note not found.") {

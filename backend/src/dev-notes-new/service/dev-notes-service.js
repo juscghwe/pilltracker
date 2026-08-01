@@ -19,8 +19,20 @@ import {
  * @typedef {object} CreateDevNotesServiceInput
  * @property {boolean} enabled Whether the dev-notes feature is enabled.
  * @property {import("../resource/types.js").ResourceDefinition} resource Resource contract.
- * @property {Readonly<Record<import("../resource/types.js").ResourceOperationName, import("../resource/types.js").ResourceOperationPolicy>>} operations Operation policies.
- * @property {Readonly<Record<import("../resource/types.js").DevNotesStorageKind, import("../resource/types.js").DevNotesStorageTarget>>} storageTargets Storage registry.
+ * @property {Readonly<
+ *   Record<
+ *     import("../resource/types.js").ResourceOperationName,
+ *     import("../resource/types.js").ResourceOperationPolicy
+ *   >
+ * >} operations
+ *   Operation policies.
+ * @property {Readonly<
+ *   Record<
+ *     import("../resource/types.js").DevNotesStorageKind,
+ *     import("../resource/types.js").DevNotesStorageTarget
+ *   >
+ * >} storageTargets
+ *   Storage registry.
  */
 
 /**
@@ -52,17 +64,56 @@ function readValidatedId(command) {
  *
  * @param {CreateDevNotesServiceInput} input Composition input.
  * @returns {Readonly<{
- *   resolveStorageTarget: (rawStorageKind: unknown) => Readonly<{ok: true; storageKind: import("../resource/types.js").DevNotesStorageKind; storageTarget: import("../resource/types.js").DevNotesStorageTarget}> | Readonly<import("../resource/types.js").DevNotesBaseResult>;
- *   listDevNotes: (input: {storageKind: unknown; query?: unknown; body?: unknown}) => import("../resource/types.js").DevNotesServiceResult;
- *   getDevNoteById: (input: {storageKind: unknown; id: unknown; query?: unknown; body?: unknown}) => import("../resource/types.js").DevNotesServiceResult;
- *   searchDevNotesByText: (input: {storageKind: unknown; query: unknown; body?: unknown}) => import("../resource/types.js").DevNotesServiceResult;
- *   createDevNote: (input: {storageKind: unknown; body: unknown; query?: unknown}) => import("../resource/types.js").DevNotesServiceResult;
- *   replaceDevNote: (input: {storageKind: unknown; id: unknown; body: unknown; query?: unknown}) => import("../resource/types.js").DevNotesServiceResult;
- *   updateDevNote: (input: {storageKind: unknown; id: unknown; body: unknown; query?: unknown}) => import("../resource/types.js").DevNotesServiceResult;
- *   deleteDevNote: (input: {storageKind: unknown; id: unknown; query?: unknown; body?: unknown}) => import("../resource/types.js").DevNotesServiceResult;
- *   optionsStorageOnly: () => Readonly<{Allow: string}>;
- *   optionsStorageAndId: () => Readonly<{Allow: string}>;
- * }>} Dev-notes service.
+ *   resolveStorageTarget: (rawStorageKind: unknown) =>
+ *     | Readonly<{
+ *         ok: true;
+ *         storageKind: import("../resource/types.js").DevNotesStorageKind;
+ *         storageTarget: import("../resource/types.js").DevNotesStorageTarget;
+ *       }>
+ *     | Readonly<import("../resource/types.js").DevNotesBaseResult>;
+ *   listDevNotes: (input: {
+ *     storageKind: unknown;
+ *     query?: unknown;
+ *     body?: unknown;
+ *   }) => import("../resource/types.js").DevNotesServiceResult;
+ *   getDevNoteById: (input: {
+ *     storageKind: unknown;
+ *     id: unknown;
+ *     query?: unknown;
+ *     body?: unknown;
+ *   }) => import("../resource/types.js").DevNotesServiceResult;
+ *   searchDevNotesByText: (input: {
+ *     storageKind: unknown;
+ *     query: unknown;
+ *     body?: unknown;
+ *   }) => import("../resource/types.js").DevNotesServiceResult;
+ *   createDevNote: (input: {
+ *     storageKind: unknown;
+ *     body: unknown;
+ *     query?: unknown;
+ *   }) => import("../resource/types.js").DevNotesServiceResult;
+ *   replaceDevNote: (input: {
+ *     storageKind: unknown;
+ *     id: unknown;
+ *     body: unknown;
+ *     query?: unknown;
+ *   }) => import("../resource/types.js").DevNotesServiceResult;
+ *   updateDevNote: (input: {
+ *     storageKind: unknown;
+ *     id: unknown;
+ *     body: unknown;
+ *     query?: unknown;
+ *   }) => import("../resource/types.js").DevNotesServiceResult;
+ *   deleteDevNote: (input: {
+ *     storageKind: unknown;
+ *     id: unknown;
+ *     query?: unknown;
+ *     body?: unknown;
+ *   }) => import("../resource/types.js").DevNotesServiceResult;
+ *   optionsStorageOnly: () => Readonly<{ Allow: string }>;
+ *   optionsStorageAndId: () => Readonly<{ Allow: string }>;
+ * }>}
+ *   Dev-notes service.
  */
 export function createDevNotesService(input) {
   for (const [storageKind, storageTarget] of Object.entries(input.storageTargets)) {
@@ -71,7 +122,13 @@ export function createDevNotesService(input) {
 
   /**
    * @param {unknown} rawStorageKind Raw storage kind.
-   * @returns {Readonly<{ok: true; storageKind: import("../resource/types.js").DevNotesStorageKind; storageTarget: import("../resource/types.js").DevNotesStorageTarget}> | Readonly<import("../resource/types.js").DevNotesBaseResult>} Resolution.
+   * @returns {Readonly<{
+   *       ok: true;
+   *       storageKind: import("../resource/types.js").DevNotesStorageKind;
+   *       storageTarget: import("../resource/types.js").DevNotesStorageTarget;
+   *     }>
+   *   | Readonly<import("../resource/types.js").DevNotesBaseResult>}
+   *   Resolution.
    */
   function resolveStorageTarget(rawStorageKind) {
     if (!input.enabled) {
@@ -98,7 +155,10 @@ export function createDevNotesService(input) {
 
   /**
    * @param {unknown} storageKind Raw storage kind.
-   * @param {(repository: import("../resource/types.js").DevNotesRepository) => import("../resource/types.js").DevNotesServiceResult} operation Repository action.
+   * @param {(
+   *   repository: import("../resource/types.js").DevNotesRepository,
+   * ) => import("../resource/types.js").DevNotesServiceResult} operation
+   *   Repository action.
    * @returns {import("../resource/types.js").DevNotesServiceResult} Result.
    */
   function runStorageOperation(storageKind, operation) {
@@ -115,7 +175,7 @@ export function createDevNotesService(input) {
     }
   }
 
-  /** @param {{storageKind: unknown; query?: unknown; body?: unknown}} operationInput */
+  /** @param {{ storageKind: unknown; query?: unknown; body?: unknown }} operationInput */
   function listDevNotes(operationInput) {
     const validation = readResourceCommand({
       resource: input.resource,
@@ -132,7 +192,7 @@ export function createDevNotesService(input) {
     });
   }
 
-  /** @param {{storageKind: unknown; id: unknown; query?: unknown; body?: unknown}} operationInput */
+  /** @param {{ storageKind: unknown; id: unknown; query?: unknown; body?: unknown }} operationInput */
   function getDevNoteById(operationInput) {
     const validation = readResourceCommand({
       resource: input.resource,
@@ -150,7 +210,7 @@ export function createDevNotesService(input) {
     });
   }
 
-  /** @param {{storageKind: unknown; query: unknown; body?: unknown}} operationInput */
+  /** @param {{ storageKind: unknown; query: unknown; body?: unknown }} operationInput */
   function searchDevNotesByText(operationInput) {
     const validation = readResourceCommand({
       resource: input.resource,
@@ -173,7 +233,7 @@ export function createDevNotesService(input) {
     });
   }
 
-  /** @param {{storageKind: unknown; body: unknown; query?: unknown}} operationInput */
+  /** @param {{ storageKind: unknown; body: unknown; query?: unknown }} operationInput */
   function createDevNote(operationInput) {
     const validation = readResourceCommand({
       resource: input.resource,
@@ -193,7 +253,7 @@ export function createDevNotesService(input) {
     });
   }
 
-  /** @param {{storageKind: unknown; id: unknown; body: unknown; query?: unknown}} operationInput */
+  /** @param {{ storageKind: unknown; id: unknown; body: unknown; query?: unknown }} operationInput */
   function replaceDevNote(operationInput) {
     const validation = readResourceCommand({
       resource: input.resource,
@@ -211,7 +271,7 @@ export function createDevNotesService(input) {
     });
   }
 
-  /** @param {{storageKind: unknown; id: unknown; body: unknown; query?: unknown}} operationInput */
+  /** @param {{ storageKind: unknown; id: unknown; body: unknown; query?: unknown }} operationInput */
   function updateDevNote(operationInput) {
     const validation = readResourceCommand({
       resource: input.resource,
@@ -232,7 +292,7 @@ export function createDevNotesService(input) {
     });
   }
 
-  /** @param {{storageKind: unknown; id: unknown; query?: unknown; body?: unknown}} operationInput */
+  /** @param {{ storageKind: unknown; id: unknown; query?: unknown; body?: unknown }} operationInput */
   function deleteDevNote(operationInput) {
     const validation = readResourceCommand({
       resource: input.resource,

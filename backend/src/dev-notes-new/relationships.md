@@ -8,28 +8,27 @@ other.
 
 ```mermaid
 flowchart TB
-  Route[HTTP Routes]
-  Command[Command Validation]
-  Field[Field Validation]
-  Service[Dev-notes Service]
-  Port[Repository Port]
-  Sqlite[SQLite Repository]
-  Connections[SQLite Connections]
-  Contract[Resource Contract]
-  Operations[Operation Policies]
-  Health[Read-only Health]
-
-  Route -->|raw params, query, body| Service
-  Service -->|selects policy and requests normalization| Command
-  Command -->|normalizes primitive values| Field
-  Command -->|reads accepted operations| Operations
-  Command -->|reads field definitions| Contract
-  Service -->|normalized ResourceCommand| Port
-  Sqlite -. implements .-> Port
-  Sqlite -->|maps public names to trusted columns| Contract
-  Sqlite --> Connections
-  Health -->|reads repository health| Port
-  Connections -->|creates and validates schema| Contract
+    Route[HTTP Routes]
+    Command[Command Validation]
+    Field[Field Validation]
+    Service[Dev-notes Service]
+    Port[Repository Port]
+    Sqlite[SQLite Repository]
+    Connections[SQLite Connections]
+    Contract[Resource Contract]
+    Operations[Operation Policies]
+    Health[Read-only Health]
+    Route -->|raw params, query, body| Service
+    Service -->|selects policy and requests normalization| Command
+    Command -->|normalizes primitive values| Field
+    Command -->|reads accepted operations| Operations
+    Command -->|reads field definitions| Contract
+    Service -->|normalized ResourceCommand| Port
+    Sqlite -. implements .-> Port
+    Sqlite -->|maps public names to trusted columns| Contract
+    Sqlite --> Connections
+    Health -->|reads repository health| Port
+    Connections -->|creates and validates schema| Contract
 ```
 
 The generated import graph may contain more helper nodes, but it should remain a detailed expansion
@@ -39,18 +38,18 @@ of this shape. Backward dependencies or shortcuts across layers require an expli
 
 Each resource field has three identities with different owners and consumers.
 
-| Identity | Example | Purpose |
-| --- | --- | --- |
-| Contract key | `lastConfirmedInteraction` | Internal structural lookup in `resource.fields` and operation policies |
-| `publicName` | `lastConfirmedInteraction` | JavaScript/API property used in raw input, commands, repository values and responses |
-| `columnName` | `last_confirmed_interaction` | Trusted SQLite identifier used only after lookup through the contract |
+| Identity     | Example                      | Purpose                                                                              |
+| ------------ | ---------------------------- | ------------------------------------------------------------------------------------ |
+| Contract key | `lastConfirmedInteraction`   | Internal structural lookup in `resource.fields` and operation policies               |
+| `publicName` | `lastConfirmedInteraction`   | JavaScript/API property used in raw input, commands, repository values and responses |
+| `columnName` | `last_confirmed_interaction` | Trusted SQLite identifier used only after lookup through the contract                |
 
 The values currently happen to match for several contract keys and public names. Code must not rely
 on that coincidence.
 
-Operation-policy field arrays contain **contract keys**. Validation looks up each definition and then
-reads or reports the definition's **public name**. Repository commands contain public-name values;
-SQLite helpers translate those values to trusted column names through the contract.
+Operation-policy field arrays contain **contract keys**. Validation looks up each definition and
+then reads or reports the definition's **public name**. Repository commands contain public-name
+values; SQLite helpers translate those values to trusted column names through the contract.
 
 ## Boundary ownership
 
@@ -82,8 +81,7 @@ For `PATCH /dev-notes/temp/12` with:
 3. Command validation reads the policy contract key `lastConfirmedInteraction`.
 4. The field definition supplies public name `lastConfirmedInteraction`, type `string`, nullability
    and empty-string policy.
-5. Validation returns a command with id `12`, public-name values and public-name
-   `providedFields`.
+5. Validation returns a command with id `12`, public-name values and public-name `providedFields`.
 6. The service calls `repository.update(12, values, providedFields)` through the port.
 7. The SQLite repository resolves the public name through the resource contract and generates an
    assignment for trusted column `last_confirmed_interaction`.

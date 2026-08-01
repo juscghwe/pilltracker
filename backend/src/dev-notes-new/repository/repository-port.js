@@ -20,7 +20,8 @@ export const devNotesRepositoryMethods = Object.freeze([
  * Fails fast when composition wiring does not satisfy the repository port.
  *
  * @param {unknown} repository Candidate repository.
- * @param {string} [label="dev-notes repository"] Diagnostic label.
+ * @param {string} [label="dev-notes repository"] Diagnostic label. Default is `"dev-notes
+ *   repository"`. Default is `"dev-notes repository"`
  * @returns {asserts repository is import("../resource/types.js").DevNotesRepository}
  */
 export function assertDevNotesRepository(repository, label = "dev-notes repository") {
@@ -29,7 +30,7 @@ export function assertDevNotesRepository(repository, label = "dev-notes reposito
   }
 
   for (const method of devNotesRepositoryMethods) {
-    if (typeof /** @type {Record<string, unknown>} */ (repository)[method] !== "function") {
+    if (typeof (/** @type {Record<string, unknown>} */ (repository)[method]) !== "function") {
       throw new TypeError(`${label} must implement ${method}().`);
     }
   }

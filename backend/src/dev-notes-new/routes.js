@@ -4,15 +4,47 @@ import { Router } from "express";
 
 /**
  * @typedef {object} DevNotesRouteService
- * @property {(input: {storageKind: unknown; query?: unknown; body?: unknown}) => import("./resource/types.js").DevNotesServiceResult} listDevNotes
- * @property {(input: {storageKind: unknown; id: unknown; query?: unknown; body?: unknown}) => import("./resource/types.js").DevNotesServiceResult} getDevNoteById
- * @property {(input: {storageKind: unknown; query: unknown; body?: unknown}) => import("./resource/types.js").DevNotesServiceResult} searchDevNotesByText
- * @property {(input: {storageKind: unknown; body: unknown; query?: unknown}) => import("./resource/types.js").DevNotesServiceResult} createDevNote
- * @property {(input: {storageKind: unknown; id: unknown; body: unknown; query?: unknown}) => import("./resource/types.js").DevNotesServiceResult} replaceDevNote
- * @property {(input: {storageKind: unknown; id: unknown; body: unknown; query?: unknown}) => import("./resource/types.js").DevNotesServiceResult} updateDevNote
- * @property {(input: {storageKind: unknown; id: unknown; query?: unknown; body?: unknown}) => import("./resource/types.js").DevNotesServiceResult} deleteDevNote
- * @property {() => Readonly<{Allow: string}>} optionsStorageOnly
- * @property {() => Readonly<{Allow: string}>} optionsStorageAndId
+ * @property {(input: {
+ *   storageKind: unknown;
+ *   query?: unknown;
+ *   body?: unknown;
+ * }) => import("./resource/types.js").DevNotesServiceResult} listDevNotes
+ * @property {(input: {
+ *   storageKind: unknown;
+ *   id: unknown;
+ *   query?: unknown;
+ *   body?: unknown;
+ * }) => import("./resource/types.js").DevNotesServiceResult} getDevNoteById
+ * @property {(input: {
+ *   storageKind: unknown;
+ *   query: unknown;
+ *   body?: unknown;
+ * }) => import("./resource/types.js").DevNotesServiceResult} searchDevNotesByText
+ * @property {(input: {
+ *   storageKind: unknown;
+ *   body: unknown;
+ *   query?: unknown;
+ * }) => import("./resource/types.js").DevNotesServiceResult} createDevNote
+ * @property {(input: {
+ *   storageKind: unknown;
+ *   id: unknown;
+ *   body: unknown;
+ *   query?: unknown;
+ * }) => import("./resource/types.js").DevNotesServiceResult} replaceDevNote
+ * @property {(input: {
+ *   storageKind: unknown;
+ *   id: unknown;
+ *   body: unknown;
+ *   query?: unknown;
+ * }) => import("./resource/types.js").DevNotesServiceResult} updateDevNote
+ * @property {(input: {
+ *   storageKind: unknown;
+ *   id: unknown;
+ *   query?: unknown;
+ *   body?: unknown;
+ * }) => import("./resource/types.js").DevNotesServiceResult} deleteDevNote
+ * @property {() => Readonly<{ Allow: string }>} optionsStorageOnly
+ * @property {() => Readonly<{ Allow: string }>} optionsStorageAndId
  */
 
 /**

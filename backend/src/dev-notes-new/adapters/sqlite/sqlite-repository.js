@@ -34,7 +34,8 @@ function readField(resource, fieldKey) {
 }
 
 /**
- * @param {Readonly<Record<string, import("../../resource/types.js").ResourceCommandValue>>} values Values.
+ * @param {Readonly<Record<string, import("../../resource/types.js").ResourceCommandValue>>} values
+ *   Values.
  * @param {string} publicName Public name.
  * @returns {import("../../resource/types.js").ResourceCommandValue | undefined} Value.
  */

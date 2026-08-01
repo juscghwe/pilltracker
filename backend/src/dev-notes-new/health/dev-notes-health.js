@@ -5,15 +5,24 @@ import { summarizeDevNotesHealth } from "./dev-notes-health-summary.js";
 /**
  * @typedef {object} CreateDevNotesHealthInput
  * @property {boolean} enabled Whether the dev-notes feature is enabled.
- * @property {Readonly<Record<import("../resource/types.js").DevNotesStorageKind, import("../resource/types.js").DevNotesStorageTarget>>} storageTargets Storage registry.
+ * @property {Readonly<
+ *   Record<
+ *     import("../resource/types.js").DevNotesStorageKind,
+ *     import("../resource/types.js").DevNotesStorageTarget
+ *   >
+ * >} storageTargets
+ *   Storage registry.
  */
 
 /**
  * @param {CreateDevNotesHealthInput} input Composition input.
  * @returns {Readonly<{
  *   getDevNotesHealth: () => Readonly<import("../resource/types.js").DevNotesHealthResult>;
- *   getDevNotesHealthPartial: () => Readonly<import("../resource/types.js").DevNotesPartialHealthResult>;
- * }>} Health service.
+ *   getDevNotesHealthPartial: () => Readonly<
+ *     import("../resource/types.js").DevNotesPartialHealthResult
+ *   >;
+ * }>}
+ *   Health service.
  */
 export function createDevNotesHealth(input) {
   /**
@@ -30,7 +39,7 @@ export function createDevNotesHealth(input) {
     const status =
       typeof repositoryHealth === "object" &&
       repositoryHealth !== null &&
-      /** @type {{status?: unknown}} */ (repositoryHealth).status === "healthy"
+      /** @type {{ status?: unknown }} */ (repositoryHealth).status === "healthy"
         ? "healthy"
         : "unhealthy";
 
@@ -51,13 +60,15 @@ export function createDevNotesHealth(input) {
       });
     }
 
-    const entries = /** @type {[import("../resource/types.js").DevNotesStorageKind, import("../resource/types.js").DevNotesStorageTarget][]} */ (
-      Object.entries(input.storageTargets)
-    );
+    const entries =
+      /**
+       * @type {[
+       *   import("../resource/types.js").DevNotesStorageKind,
+       *   import("../resource/types.js").DevNotesStorageTarget,
+       * ][]}
+       */ (Object.entries(input.storageTargets));
     const storage = Object.freeze(
-      entries.map(([storageKind, storageTarget]) =>
-        getStorageHealth(storageKind, storageTarget),
-      ),
+      entries.map(([storageKind, storageTarget]) => getStorageHealth(storageKind, storageTarget)),
     );
     const enabledStorage = storage.filter((entry) => entry.enabled);
     const status =

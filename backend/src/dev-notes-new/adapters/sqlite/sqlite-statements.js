@@ -41,7 +41,9 @@ export function buildGetByIdStatement(resource) {
  */
 export function buildSearchStatement(resource) {
   const primaryKey = getPrimaryKeyField(resource);
-  const searchableFields = Object.values(resource.fields).filter((definition) => definition.searchable);
+  const searchableFields = Object.values(resource.fields).filter(
+    (definition) => definition.searchable,
+  );
 
   if (searchableFields.length === 0) {
     throw new TypeError(`${resource.resourceName} has no searchable fields.`);

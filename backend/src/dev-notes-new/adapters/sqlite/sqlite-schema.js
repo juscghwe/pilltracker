@@ -109,7 +109,7 @@ export function readSqliteTableInfo(connection, tableName) {
  * @returns {string | null} Stored CREATE TABLE SQL.
  */
 function readStoredCreateTableSql(connection, tableName) {
-  const row = /** @type {{sql?: unknown} | undefined} */ (
+  const row = /** @type {{ sql?: unknown } | undefined} */ (
     connection
       .prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = @tableName")
       .get({ tableName })
@@ -127,9 +127,15 @@ function readStoredCreateTableSql(connection, tableName) {
  *   ok: boolean;
  *   tableName: string;
  *   expectedColumns: readonly import("../../resource/types.js").SqliteSchemaColumn[];
- *   actualColumns: readonly Readonly<{name: string; type: string; notNull: boolean; primaryKey: boolean}>[];
+ *   actualColumns: readonly Readonly<{
+ *     name: string;
+ *     type: string;
+ *     notNull: boolean;
+ *     primaryKey: boolean;
+ *   }>[];
  *   problems: readonly string[];
- * }>} Schema validation result.
+ * }>}
+ *   Schema validation result.
  */
 export function validateSqliteSchema(connection, resource) {
   const expected = buildSqliteTableSchema(resource);
@@ -160,7 +166,9 @@ export function validateSqliteSchema(connection, resource) {
     const actualColumn = actualColumns[index];
 
     if (!expectedColumn) {
-      problems.push(`Unexpected SQLite column at index ${index}: ${actualColumn?.name ?? "unknown"}.`);
+      problems.push(
+        `Unexpected SQLite column at index ${index}: ${actualColumn?.name ?? "unknown"}.`,
+      );
       continue;
     }
 

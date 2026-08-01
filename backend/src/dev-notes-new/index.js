@@ -1,9 +1,9 @@
 /**
  * Public composition root for the rebuilt dev-notes M1 proof of concept.
  *
- * This file wires concrete storage implementations to the repository port and exposes stable
- * module entrypoints. It does not mount routes into the application; that integration remains an
- * explicit later replacement of the old module.
+ * This file wires concrete storage implementations to the repository port and exposes stable module
+ * entrypoints. It does not mount routes into the application; that integration remains an explicit
+ * later replacement of the old module.
  */
 
 import { appConfig, validSqliteJournalModes } from "../config/appConfig.js";
@@ -13,10 +13,7 @@ import {
   getPersistentConnection,
   persistentConnectionMetadata,
 } from "./adapters/sqlite/persistent/connection.js";
-import {
-  getTempConnection,
-  tempConnectionMetadata,
-} from "./adapters/sqlite/temp/connection.js";
+import { getTempConnection, tempConnectionMetadata } from "./adapters/sqlite/temp/connection.js";
 import { createDevNotesHealth } from "./health/dev-notes-health.js";
 import { devNotesResource } from "./resource/contract.js";
 import { devNotesOperations } from "./resource/operations.js";
@@ -52,7 +49,14 @@ export const persistentDevNotesRepository = createSqliteRepository({
   getHealth: getPersistentHealth,
 });
 
-/** @type {Readonly<Record<import("./resource/types.js").DevNotesStorageKind, import("./resource/types.js").DevNotesStorageTarget>>} */
+/**
+ * @type {Readonly<
+ *   Record<
+ *     import("./resource/types.js").DevNotesStorageKind,
+ *     import("./resource/types.js").DevNotesStorageTarget
+ *   >
+ * >}
+ */
 export const devNotesStorageTargets = Object.freeze({
   [devNotesStorageKinds.temp]: Object.freeze({
     config: appConfig.devNotes.storage.temp,

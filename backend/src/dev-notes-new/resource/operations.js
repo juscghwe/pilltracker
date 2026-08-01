@@ -4,7 +4,12 @@
  * Resource field arrays contain internal contract keys. Validation resolves each key through the
  * resource contract and then reads/writes the corresponding public name.
  *
- * @satisfies {Readonly<Record<import("./types.js").ResourceOperationName, import("./types.js").ResourceOperationPolicy>>}
+ * @satisfies {Readonly<
+ *   Record<
+ *     import("./types.js").ResourceOperationName,
+ *     import("./types.js").ResourceOperationPolicy
+ *   >
+ * >}
  */
 export const devNotesOperations = Object.freeze({
   list: Object.freeze({

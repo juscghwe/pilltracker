@@ -9,7 +9,7 @@
  *
  * A field has three deliberately separate identities:
  *
- * - the key in `ResourceDefinition.fields` is the internal contract key;
+ * - The key in `ResourceDefinition.fields` is the internal contract key;
  * - `publicName` is the JavaScript/API property name;
  * - `columnName` is the trusted SQLite identifier.
  *
@@ -60,8 +60,8 @@
  * @property {readonly string[]} [acceptedFields] Accepted resource contract field keys.
  * @property {readonly string[]} [writableFields] Writable resource contract field keys.
  * @property {readonly string[]} [systemFields] Backend-written resource contract field keys.
- * @property {Readonly<Record<string, ResourceInputFieldDefinition>>} [inputFields]
- *   Operation-only inputs keyed by internal input key.
+ * @property {Readonly<Record<string, ResourceInputFieldDefinition>>} [inputFields] Operation-only
+ *   inputs keyed by internal input key.
  */
 
 /**
@@ -86,7 +86,8 @@
 
 /**
  * @typedef {object} ResourceValidationProblem
- * @property {string} field Public field name or structural location such as `body`, `query`, or `id`.
+ * @property {string} field Public field name or structural location such as `body`, `query`, or
+ *   `id`.
  * @property {string} reason Stable problem reason.
  * @property {unknown} [expected] Expected value/type/policy.
  * @property {unknown} [actual] Actual value/type/policy.
@@ -103,7 +104,7 @@
  * @property {false} ok Validation failed.
  * @property {"invalid-request"} status Stable invalid-request status.
  * @property {string} message Human-readable failure message.
- * @property {Readonly<{problems: readonly ResourceValidationProblem[]}>} details Problems.
+ * @property {Readonly<{ problems: readonly ResourceValidationProblem[] }>} details Problems.
  */
 
 /** @typedef {ResourceCommandValidResult | ResourceCommandInvalidResult} ResourceCommandValidationResult */
@@ -139,7 +140,14 @@
 
 /** @typedef {"temp" | "persistent"} DevNotesStorageKind */
 /** @typedef {"ok" | "created" | "replaced" | "updated" | "deleted"} DevNotesSuccessStatus */
-/** @typedef {DevNotesSuccessStatus | "not-found" | "invalid-request" | "operation-failed" | "unknown-storage" | "storage-disabled"} DevNotesResultStatus */
+/**
+ * @typedef {DevNotesSuccessStatus
+ *   | "not-found"
+ *   | "invalid-request"
+ *   | "operation-failed"
+ *   | "unknown-storage"
+ *   | "storage-disabled"} DevNotesResultStatus
+ */
 /** @typedef {"healthy" | "unhealthy" | "disabled"} DevNotesHealthStatus */
 
 /**
@@ -149,8 +157,8 @@
  * @property {string} [message] Human-readable failure message.
  */
 
-/** @typedef {DevNotesBaseResult & {note?: Readonly<DevNote>}} DevNotesSingleResult */
-/** @typedef {DevNotesBaseResult & {notes?: readonly Readonly<DevNote>[]}} DevNotesListResult */
+/** @typedef {DevNotesBaseResult & { note?: Readonly<DevNote> }} DevNotesSingleResult */
+/** @typedef {DevNotesBaseResult & { notes?: readonly Readonly<DevNote>[] }} DevNotesListResult */
 /** @typedef {DevNotesBaseResult | DevNotesSingleResult | DevNotesListResult | ResourceCommandInvalidResult} DevNotesServiceResult */
 
 /**
@@ -160,9 +168,19 @@
  * @property {() => readonly Readonly<DevNote>[]} list Lists all notes.
  * @property {(id: number) => Readonly<DevNote> | null} getById Gets one note.
  * @property {(text: string) => readonly Readonly<DevNote>[]} search Searches notes.
- * @property {(values: Readonly<Record<string, ResourceCommandValue>>) => Readonly<DevNote> | null} create Creates a note.
- * @property {(id: number, values: Readonly<Record<string, ResourceCommandValue>>) => Readonly<DevNote> | null} replace Replaces a note.
- * @property {(id: number, values: Readonly<Record<string, ResourceCommandValue>>, providedFields: readonly string[]) => Readonly<DevNote> | null} update Updates a note.
+ * @property {(values: Readonly<Record<string, ResourceCommandValue>>) => Readonly<DevNote> | null} create
+ *   Creates a note.
+ * @property {(
+ *   id: number,
+ *   values: Readonly<Record<string, ResourceCommandValue>>,
+ * ) => Readonly<DevNote> | null} replace
+ *   Replaces a note.
+ * @property {(
+ *   id: number,
+ *   values: Readonly<Record<string, ResourceCommandValue>>,
+ *   providedFields: readonly string[],
+ * ) => Readonly<DevNote> | null} update
+ *   Updates a note.
  * @property {(id: number) => Readonly<DevNote> | null} delete Deletes a note.
  * @property {() => Readonly<object>} getHealth Gets read-only repository health.
  */

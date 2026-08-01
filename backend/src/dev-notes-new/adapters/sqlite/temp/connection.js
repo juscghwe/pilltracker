@@ -32,7 +32,11 @@ export const tempConnectionMetadata = Object.freeze({
 });
 
 /**
- * @returns {{databasePath: string; requestedJournalMode: import("../../../../config/types.js").SqliteJournalMode}} Validated config.
+ * @returns {{
+ *   databasePath: string;
+ *   requestedJournalMode: import("../../../../config/types.js").SqliteJournalMode;
+ * }}
+ *   Validated config.
  */
 function readConnectionConfig() {
   const databasePath = configuredStorage.databasePath;
@@ -64,7 +68,8 @@ function readConnectionConfig() {
 
 /**
  * @param {import("better-sqlite3").Database} database SQLite connection.
- * @param {import("../../../../config/types.js").SqliteJournalMode} requestedJournalMode Requested mode.
+ * @param {import("../../../../config/types.js").SqliteJournalMode} requestedJournalMode Requested
+ *   mode.
  * @returns {void}
  */
 function assertJournalMode(database, requestedJournalMode) {
@@ -79,9 +84,7 @@ function assertJournalMode(database, requestedJournalMode) {
   }
 }
 
-/**
- * @returns {import("better-sqlite3").Database} Active connection.
- */
+/** @returns {import("better-sqlite3").Database} Active connection. */
 export function getTempConnection() {
   const config = readConnectionConfig();
 

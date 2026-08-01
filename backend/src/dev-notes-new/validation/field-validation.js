@@ -5,11 +5,22 @@
  * input names. Internal resource keys stay with the caller that looked up the field definition.
  */
 
-/** @typedef {{ok: true; value: import("../resource/types.js").ResourceCommandValue}} FieldNormalizationSuccess */
-/** @typedef {{ok: false; problems: readonly import("../resource/types.js").ResourceValidationProblem[]}} FieldNormalizationFailure */
+/** @typedef {{ ok: true; value: import("../resource/types.js").ResourceCommandValue }} FieldNormalizationSuccess */
+/**
+ * @typedef {{
+ *   ok: false;
+ *   problems: readonly import("../resource/types.js").ResourceValidationProblem[];
+ * }} FieldNormalizationFailure
+ */
 /** @typedef {FieldNormalizationSuccess | FieldNormalizationFailure} FieldNormalizationResult */
 
-/** @typedef {Pick<import("../resource/types.js").ResourceFieldDefinition, "publicName" | "type" | "nullable" | "allowEmpty" | "emptyAsNull"> | import("../resource/types.js").ResourceInputFieldDefinition} NormalizableFieldDefinition */
+/**
+ * @typedef {Pick<
+ *       import("../resource/types.js").ResourceFieldDefinition,
+ *       "publicName" | "type" | "nullable" | "allowEmpty" | "emptyAsNull"
+ *     >
+ *   | import("../resource/types.js").ResourceInputFieldDefinition} NormalizableFieldDefinition
+ */
 
 const integerStringPattern = /^-?\d+$/;
 
@@ -224,8 +235,8 @@ function normalizeIntegerFieldValue(definition, rawValue) {
 /**
  * Normalizes a raw value using a resource field definition.
  *
- * The definition already owns the public name. The caller retains the internal contract key used
- * to locate the definition.
+ * The definition already owns the public name. The caller retains the internal contract key used to
+ * locate the definition.
  *
  * @param {import("../resource/types.js").ResourceFieldDefinition} fieldDefinition Field contract.
  * @param {unknown} rawValue Raw input value.
@@ -285,7 +296,9 @@ export function normalizeInputFieldValue(inputFieldDefinition, rawValue) {
  * Normalizes and validates a required positive resource id.
  *
  * @param {unknown} rawId Raw id value.
- * @returns {{ok: true; value: number} | {ok: false; problems: readonly import("../resource/types.js").ResourceValidationProblem[]}} Result.
+ * @returns {{ ok: true; value: number }
+ *   | { ok: false; problems: readonly import("../resource/types.js").ResourceValidationProblem[] }}
+ *   Result.
  */
 export function readRequiredResourceId(rawId) {
   /** @type {import("../resource/types.js").ResourceInputFieldDefinition} */
