@@ -1,17 +1,10 @@
 /** Feature-level dev-notes health aggregation. Health is read-only apart from normal lazy DB init. */
 
-import { summarizeDevNotesHealth } from "./dev-notes-health-summary.js";
-
 /**
  * @typedef {object} CreateDevNotesHealthInput
  * @property {boolean} enabled Whether the dev-notes feature is enabled.
- * @property {Readonly<
- *   Record<
- *     import("../resource/types.js").DevNotesStorageKind,
- *     import("../resource/types.js").DevNotesStorageTarget
- *   >
- * >} storageTargets
- *   Storage registry.
+ * @property {Readonly<Record<string, import("../resource/types.js").DevNotesStorageTarget>>}
+ *   storageTargets Storage registry.
  */
 
 /**
@@ -22,65 +15,74 @@ import { summarizeDevNotesHealth } from "./dev-notes-health-summary.js";
  *     import("../resource/types.js").DevNotesPartialHealthResult
  *   >;
  * }>}
- *   Health service.
  */
 export function createDevNotesHealth(input) {
-  /**
-   * @param {import("../resource/types.js").DevNotesStorageKind} storageKind Storage kind.
-   * @param {import("../resource/types.js").DevNotesStorageTarget} storageTarget Target.
-   * @returns {Readonly<import("../resource/types.js").DevNotesStorageHealth>} Storage health.
-   */
-  function getStorageHealth(storageKind, storageTarget) {
-    if (!storageTarget.config.enabled) {
-      return Object.freeze({ storageKind, status: "disabled", enabled: false });
-    }
+  function readEntries() {
+    return /** @type {[string, import("../resource/types.js").DevNotesStorageTarget][]} */ (
+      Object.entries(input.storageTargets)
+    );
+  }
 
-    const repositoryHealth = storageTarget.repository.getHealth();
-    const status =
-      typeof repositoryHealth === "object" &&
-      repositoryHealth !== null &&
-      /** @type {{ status?: unknown }} */ (repositoryHealth).status === "healthy"
-        ? "healthy"
-        : "unhealthy";
-
-    return Object.freeze({
-      storageKind,
-      status,
-      enabled: true,
-      repository: repositoryHealth,
-    });
+  function resolveOverallStatus(storage) {
+    const enabledStorage = storage.filter((entry) => entry.enabled);
+    return enabledStorage.length > 0 && enabledStorage.every((entry) => entry.status === "healthy")
+      ? "healthy"
+      : "unhealthy";
   }
 
   function getDevNotesHealth() {
     if (!input.enabled) {
-      return Object.freeze({
-        status: "disabled",
-        enabled: false,
-        storage: Object.freeze([]),
-      });
+      return Object.freeze({ status: "disabled", enabled: false, storage: Object.freeze([]) });
     }
 
-    const entries =
-      /**
-       * @type {[
-       *   import("../resource/types.js").DevNotesStorageKind,
-       *   import("../resource/types.js").DevNotesStorageTarget,
-       * ][]}
-       */ (Object.entries(input.storageTargets));
     const storage = Object.freeze(
-      entries.map(([storageKind, storageTarget]) => getStorageHealth(storageKind, storageTarget)),
-    );
-    const enabledStorage = storage.filter((entry) => entry.enabled);
-    const status =
-      enabledStorage.length > 0 && enabledStorage.every((entry) => entry.status === "healthy")
-        ? "healthy"
-        : "unhealthy";
+      readEntries().map(([storageKind, storageTarget]) => {
+        if (!storageTarget.config.enabled) {
+          return Object.freeze({ storageKind, status: "disabled", enabled: false });
+        }
 
-    return Object.freeze({ status, enabled: true, storage });
+        const repositoryHealth = storageTarget.repository.getHealth();
+        const status =
+          typeof repositoryHealth === "object" &&
+          repositoryHealth !== null &&
+          /** @type {{ status?: unknown }} */ (repositoryHealth).status === "healthy"
+            ? "healthy"
+            : "unhealthy";
+
+        return Object.freeze({
+          storageKind,
+          status,
+          enabled: true,
+          repository: repositoryHealth,
+        });
+      }),
+    );
+
+    return Object.freeze({ status: resolveOverallStatus(storage), enabled: true, storage });
   }
 
   function getDevNotesHealthPartial() {
-    return summarizeDevNotesHealth(getDevNotesHealth());
+    if (!input.enabled) {
+      return Object.freeze({ status: "disabled", enabled: false, storage: Object.freeze([]) });
+    }
+
+    const storage = Object.freeze(
+      readEntries().map(([storageKind, storageTarget]) => {
+        if (!storageTarget.config.enabled) {
+          return Object.freeze({ storageKind, status: "disabled", enabled: false });
+        }
+
+        const repository = /** @type {{ getHealthPartial?: () => Readonly<{ status: unknown }> }} */ (
+          storageTarget.repository
+        );
+        const partialHealth = repository.getHealthPartial?.();
+        const status = partialHealth?.status === "healthy" ? "healthy" : "unhealthy";
+
+        return Object.freeze({ storageKind, status, enabled: true });
+      }),
+    );
+
+    return Object.freeze({ status: resolveOverallStatus(storage), enabled: true, storage });
   }
 
   return Object.freeze({ getDevNotesHealth, getDevNotesHealthPartial });
