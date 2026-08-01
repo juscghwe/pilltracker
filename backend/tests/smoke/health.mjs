@@ -1,14 +1,10 @@
 /**
  * Loose JSON object shape used by smoke-test response validators.
  *
- * Smoke tests intentionally validate only the fields they care about.
- *
  * @typedef {Record<string, any>} SmokeResponseBody
  */
 
 /**
- * Smoke-test endpoint configuration.
- *
  * @typedef {object} SmokeEndpoint
  * @property {string} name Human-readable smoke-test name.
  * @property {string} path API path to request.
@@ -32,10 +28,26 @@ const endpoints = [
       typeof body.nodeVersion === "string",
   },
   {
-    name: "Persistence health",
+    name: "Compact persistence health",
     path: "/api/health/persistence",
     expectedStatus: 200,
-    validateBody: (body) => body.status === "healthy" && body.path.isConfigured === true,
+    validateBody: (body) =>
+      body.status === "healthy" &&
+      body.path.isConfigured === true &&
+      typeof body.adapter?.id === "string" &&
+      typeof body.engine?.version === "string" &&
+      !("journalMode" in body) &&
+      !("error" in body),
+  },
+  {
+    name: "Detailed persistence health",
+    path: "/api/health/persistence?details=full",
+    expectedStatus: 200,
+    validateBody: (body) =>
+      body.status === "healthy" &&
+      body.path.isConfigured === true &&
+      typeof body.adapter?.sourceModule === "string" &&
+      typeof body.journalMode?.active === "string",
   },
   {
     name: "Backend stack health",
@@ -49,7 +61,7 @@ const endpoints = [
       body.checks.devNotes.status === "healthy",
   },
   {
-    name: "Dev-notes subsystem health",
+    name: "Compact dev-notes health",
     path: "/api/health/dev-notes",
     expectedStatus: 200,
     validateBody: (body) =>
@@ -60,27 +72,32 @@ const endpoints = [
         (entry) =>
           typeof entry.storageKind === "string" &&
           typeof entry.status === "string" &&
-          typeof entry.enabled === "boolean",
+          typeof entry.enabled === "boolean" &&
+          !("repository" in entry),
       ),
+  },
+  {
+    name: "Detailed dev-notes health",
+    path: "/api/health/dev-notes?details=full",
+    expectedStatus: 200,
+    validateBody: (body) =>
+      body.status === "healthy" &&
+      Array.isArray(body.storage) &&
+      body.storage
+        .filter((entry) => entry.enabled)
+        .every(
+          (entry) =>
+            entry.repository?.status === "healthy" &&
+            entry.repository?.schema?.ok === true &&
+            Array.isArray(entry.repository?.schema?.actualColumns),
+        ),
   },
 ];
 
-/**
- * Waits for a fixed amount of time.
- *
- * @param {number} ms Delay in milliseconds.
- * @returns {Promise<void>}
- */
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/**
- * Fetches one smoke-test endpoint with retries.
- *
- * @param {SmokeEndpoint} endpoint Endpoint configuration.
- * @returns {Promise<void>}
- */
 async function fetchWithRetry(endpoint) {
   const url = `${baseUrl}${endpoint.path}`;
 
@@ -110,7 +127,6 @@ async function fetchWithRetry(endpoint) {
       }
 
       console.log(`${endpoint.name} not ready yet, retrying (${attempt}/${retries})...`);
-
       await sleep(delayMs);
     }
   }
