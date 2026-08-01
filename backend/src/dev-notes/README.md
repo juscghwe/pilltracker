@@ -117,7 +117,7 @@ Base path: `/api/dev-notes`
 | `PUT`     | `/:storage/:id`         | Body: `{ "name": "...", "comment": "..." }`             |
 | `PATCH`   | `/:storage/:id`         | Any non-empty subset of writable update fields          |
 | `DELETE`  | `/:storage/:id`         | Deletes and returns the existing note                   |
-| `OPTIONS` | collection or item path | Returns the route's `Allow` header                       |
+| `OPTIONS` | collection or item path | Returns the route's `Allow` header                      |
 
 `PUT` replaces the editable content fields and clears `lastConfirmedInteraction`. `PATCH` may update
 `name`, `comment`, and `lastConfirmedInteraction` without changing unprovided fields.
@@ -134,7 +134,7 @@ Base path: `/api/dev-notes`
 | `updated`          | `200`       | Existing resource updated                |
 | `deleted`          | `200`       | Existing resource deleted and returned   |
 | `invalid-request`  | `400`       | Structured command validation failed     |
-| `not-found`        | `404`       | A valid id did not resolve to a resource  |
+| `not-found`        | `404`       | A valid id did not resolve to a resource |
 | `unknown-storage`  | `404`       | Storage kind is not registered           |
 | `storage-disabled` | `404`       | Registered storage target is disabled    |
 | `operation-failed` | `500`       | Repository operation failed unexpectedly |
@@ -160,10 +160,8 @@ The backend exposes these through `/api/health/dev-notes` and the overall `/api/
 From the repository root:
 
 ```bash
-npm run typecheck
-npm run repo:lint
-npm run repo:format:check
-npm run test:backend:smoke:schema:direct
+npm run check
+npm run fix
 npm run test:backend:smoke:compose
 ```
 

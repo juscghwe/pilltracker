@@ -28,9 +28,7 @@ export function getBackendDevNotesHealth(options = {}) {
 /**
  * Returns condensed dev-notes health for backend-wide health summary.
  *
- * @returns {Readonly<
- *   import("../dev-notes/resource/types.js").DevNotesPartialHealthResult
- * >}
+ * @returns {Readonly<import("../dev-notes/resource/types.js").DevNotesPartialHealthResult>}
  *   Partial dev-notes health result.
  */
 export function getBackendDevNotesHealthPartial() {
