@@ -12,6 +12,9 @@
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
   },
   "customizations": {
+    "jetbrains": {
+      "backend": "webStorm"
+    },
     "vscode": {
       "extensions": [
         "dbaeumer.vscode-eslint",

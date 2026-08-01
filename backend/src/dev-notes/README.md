@@ -2,208 +2,173 @@
 
 ## Purpose
 
-`dev-notes` is a disposable CRUD proof slice for backend API, storage, validation and route wiring
-experiments. It will become crucial part for experiments, migration and testing later.
+`dev-notes` is the disposable M1 backend resource used to prove the project's HTTP, validation,
+service, repository, SQLite, health, and frontend integration boundaries.
 
-It must not be used for medication-domain persistence. Its databases are separate from the main app
-persistence layer.
+It is deliberately separate from the medication domain and must not be used for medication
+persistence. Both storage targets use dedicated dev-notes databases.
 
-## Layering
+## Architecture
 
-Route layer (`/backend/src/routes/`):
+The module owns its complete vertical slice:
 
-- extracts raw HTTP values from params, query and body
-- maps facade result statuses to HTTP status codes
-- does not import concrete storage adapters
+```text
+routes.js
+  -> service/
+    -> validation/
+      -> resource contract and operation policies
+    -> repository port
+      <- adapters/sqlite/
+        -> temp or persistent connection
+  -> health/
+```
 
-Facade layer (`/backend/src/dev-notes/`):
+The application mounts the composed router exported by `index.js` at `/api/dev-notes`. Other backend
+modules consume only the public exports from `index.js`; they do not import concrete repositories.
 
-- validates and normalizes input
-- resolves the requested storage target
-- calls the selected storage adapter
-- returns stable `{ ok, status, ... }` results
+See:
 
-Adapter layer (`/backend/src/dev-notes/adapters/{}`):
+- [`relationships.md`](./relationships.md) for the compact dependency map and field-identity rules.
+- [`milestone1-architecture.md`](./milestone1-architecture.md) for the detailed M1 architecture
+  target and ownership model.
 
-- owns concrete SQLite table layout and SQL
-- maps database rows to public `DevNote` objects
-- returns `null` only when no single dev-note can be returned
-- throws for configuration, connection, journal mode and unexpected SQL failures
+## Module layout
+
+```text
+dev-notes/
+  index.js
+  routes.js
+  README.md
+  relationships.md
+  milestone1-architecture.md
+
+  resource/
+    contract.js
+    operations.js
+    types.js
+
+  validation/
+    command-validation.js
+    field-validation.js
+
+  service/
+    dev-notes-service.js
+    result-builders.js
+
+  repository/
+    repository-port.js
+
+  adapters/sqlite/
+    sqlite-repository.js
+    sqlite-schema.js
+    sqlite-mapping.js
+    sqlite-statements.js
+    sqlite-health.js
+    temp/connection.js
+    persistent/connection.js
+
+  health/
+    dev-notes-health.js
+    dev-notes-health-summary.js
+```
+
+## Resource contract
+
+`resource/contract.js` is the single source of truth for public field names, SQLite column names,
+types, nullability, writability, generated fields, and null-output fallbacks.
+
+| Public field               | SQLite column                | Client writable | Notes                                 |
+| -------------------------- | ---------------------------- | --------------- | ------------------------------------- |
+| `id`                       | `id`                         | no              | Generated integer primary key         |
+| `name`                     | `name`                       | yes             | Required, non-empty string            |
+| `comment`                  | `comment`                    | yes             | Nullable in storage, returned as `""` |
+| `lastConfirmedInteraction` | `last_confirmed_interaction` | yes             | Nullable in storage, returned as `""` |
+| `createdAt`                | `created_at`                 | no              | Generated ISO timestamp               |
+| `updatedAt`                | `updated_at`                 | no              | Generated ISO timestamp               |
+
+Contract keys, public names, and SQLite column names are separate identities even when two values
+currently happen to match.
 
 ## Storage targets
 
-Dev-notes supports two storage targets: `temp` and `persistent`.
+The API selects a target through the `:storage` path parameter.
 
-Storage targets are selected through the `:storage` route parameter and resolved by the dev-notes
-facade before any adapter operation is called.
+| Target       | Default backing store | Purpose                                      |
+| ------------ | --------------------- | -------------------------------------------- |
+| `temp`       | SQLite `:memory:`     | Disposable development and smoke-test data   |
+| `persistent` | Configured file path  | File-backed disposable dev-notes persistence |
 
-| Storage target | Adapter         | Backing store                     | Purpose                                                                                                                       |
-| -------------- | --------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `temp`         | `sqlite-memory` | SQLite memory database by default | Disposable dev/testing storage. Data is not expected to survive normal runtime resets unless explicitly configured otherwise. |
-| `persistent`   | `sqlite-file`   | Separate SQLite database file     | Disposable but file-backed dev/testing storage. Must remain separate from medication-domain persistence.                      |
+Both targets implement the same repository port and use the same contract-derived `dev_notes` table
+schema. A known disabled target returns `storage-disabled`; an unknown target returns
+`unknown-storage`.
 
-Both storage targets are optional runtime capabilities. A known but disabled storage target returns
-the public `storage-disabled` facade status. An unknown storage target returns `unknown-storage`.
+Runtime configuration is owned by `backend/src/config/appConfig.js`.
 
-Routes must not import concrete storage adapters directly. They call the dev-notes facade and the
-facade resolves the requested storage target.
+## HTTP API
 
-## HTTP API contract
+Base path: `/api/dev-notes`
 
-Base path when mounted:
+| Method    | Path                    | Input                                                   |
+| --------- | ----------------------- | ------------------------------------------------------- |
+| `GET`     | `/:storage`             | Lists all notes                                         |
+| `GET`     | `/:storage?text=query`  | Searches searchable fields by required non-empty `text` |
+| `GET`     | `/:storage/:id`         | Reads one note by positive integer id                   |
+| `POST`    | `/:storage`             | Body: `{ "name": "...", "comment": "..." }`             |
+| `PUT`     | `/:storage/:id`         | Body: `{ "name": "...", "comment": "..." }`             |
+| `PATCH`   | `/:storage/:id`         | Any non-empty subset of writable update fields          |
+| `DELETE`  | `/:storage/:id`         | Deletes and returns the existing note                   |
+| `OPTIONS` | collection or item path | Returns the route's `Allow` header                      |
 
-`/api/dev-notes`
+`PUT` replaces the editable content fields and clears `lastConfirmedInteraction`. `PATCH` may update
+`name`, `comment`, and `lastConfirmedInteraction` without changing unprovided fields.
 
-| Method    | Path                    | Input                                       | Success                            | Notes                                                          |
-| --------- | ----------------------- | ------------------------------------------- | ---------------------------------- | -------------------------------------------------------------- |
-| `GET`     | `/:storage`             | route param `storage`                       | `200` with `{ ok, status, notes }` | Lists all notes. Empty list is success.                        |
-| `GET`     | `/:storage?text=search` | route param `storage`, query `text`         | `200` with `{ ok, status, notes }` | Filtered collection search. Empty result is success.           |
-| `GET`     | `/:storage/:id`         | route params `storage`, `id`                | `200` with `{ ok, status, note }`  | Returns `404` when id is valid but row does not exist.         |
-| `POST`    | `/:storage`             | JSON body `{ "text": "..." }`               | `201` with `{ ok, status, note }`  | Creates one note.                                              |
-| `PUT`     | `/:storage/:id`         | route params, JSON body `{ "text": "..." }` | `200` with `{ ok, status, note }`  | Replaces existing note. No upsert.                             |
-| `PATCH`   | `/:storage/:id`         | route params, JSON body `{ "text": "..." }` | `200` with `{ ok, status, note }`  | Updates existing note. Currently same mutable fields as `PUT`. |
-| `DELETE`  | `/:storage/:id`         | route params `storage`, `id`                | `200` with `{ ok, status, note }`  | Returns deleted note.                                          |
-| `OPTIONS` | `/:storage`             | none                                        | `204` with `Allow`                 | Route capability metadata.                                     |
-| `OPTIONS` | `/:storage/:id`         | none                                        | `204` with `Allow`                 | Route capability metadata.                                     |
-
-`HEAD` is intentionally not part of the current contract yet.
-
-## Facade contract
-
-Facade functions are exported through `backend/src/dev-notes/index.js`.
-
-| Function                      | Purpose                                         |
-| ----------------------------- | ----------------------------------------------- |
-| `listDevNotes(input)`         | Lists all dev-notes in one storage target.      |
-| `searchDevNotesByText(input)` | Searches dev-notes by text fragment.            |
-| `getDevNoteById(input)`       | Gets one dev-note by id.                        |
-| `createDevNote(input)`        | Creates one dev-note.                           |
-| `replaceDevNote(input)`       | Replaces one existing dev-note.                 |
-| `updateDevNote(input)`        | Updates one existing dev-note.                  |
-| `deleteDevNote(input)`        | Deletes one existing dev-note and returns it.   |
-| `optionsStorageOnly()`        | Returns collection route `Allow` metadata.      |
-| `optionsStorageAndId()`       | Returns single-resource route `Allow` metadata. |
-| `getDevNotesHealth()`         | Returns full dev-notes subsystem health.        |
-| `getDevNotesHealthPartial()`  | Returns condensed dev-notes subsystem health.   |
-
-## Adapter contract
-
-Every dev-notes storage adapter implements `DevNotesStorageAdapter`.
-
-Adapters must expose:
-
-| Method                        | Return                    | Expected behavior                                             | `sqlite-file`      | `sqlite-memory`    |
-| ----------------------------- | ------------------------- | ------------------------------------------------------------- | ------------------ | ------------------ |
-| `getConnection()`             | `better-sqlite3.Database` | Returns active configured SQLite connection.                  | :white_check_mark: | :white_check_mark: |
-| `getHealth()`                 | `Readonly<object>`        | Returns adapter health.                                       | :white_check_mark: | :white_check_mark: |
-| `listDevNotes()`              | `DevNote[]`               | Returns all notes ordered by id. Empty array is success.      | :white_check_mark: | :white_check_mark: |
-| `searchDevNotesByText(input)` | `DevNote[]`               | Returns matching notes ordered by id. Empty array is success. | :white_check_mark: | :white_check_mark: |
-| `getDevNoteById(input)`       | `DevNote \| null`         | Returns one note or `null`.                                   | :white_check_mark: | :white_check_mark: |
-| `createDevNote(input)`        | `DevNote \| null`         | Returns created note or `null` when input cannot create one.  | :white_check_mark: | :white_check_mark: |
-| `replaceDevNote(input)`       | `DevNote \| null`         | Returns replaced note or `null`. No upsert.                   | :white_check_mark: | :white_check_mark: |
-| `updateDevNote(input)`        | `DevNote \| null`         | Returns updated note or `null`.                               | :white_check_mark: | :white_check_mark: |
-| `deleteDevNote(input)`        | `DevNote \| null`         | Returns deleted note or `null`.                               | :white_check_mark: | :white_check_mark: |
-
-Adapters are allowed to return `null` for single-resource operations when no note can be returned.
-Adapters should throw for configuration, connection, journal mode, and unexpected SQL execution
-failures.
-
-The facade translates adapter `null` into public facade statuses such as `not-found` or
-`operation-failed`.
-
-## Concrete storage adapters
-
-### `sqlite-file`
-
-Persistent dev-notes storage.
-
-- table: `dev_notes`
-- text column: `text`
-- intended for file-backed disposable dev-notes data
-- separate from medication-domain persistence
-
-### `sqlite-memory`
-
-Temporary dev-notes storage.
-
-- table: `dev_notes_temp`
-- text column: `text_temp`
-- defaults to SQLite `:memory:` storage
-- may be file-backed if configured for development experiments
+`HEAD` is not part of the current contract.
 
 ## Result statuses
 
-| Facade status      | HTTP status | Meaning                                           |
-| ------------------ | ----------- | ------------------------------------------------- |
-| `ok`               | `200`       | Request succeeded and returns existing data.      |
-| `created`          | `201`       | Resource was created.                             |
-| `replaced`         | `200`       | Existing resource was replaced.                   |
-| `updated`          | `200`       | Existing resource was updated.                    |
-| `deleted`          | `200`       | Existing resource was deleted and returned.       |
-| `invalid-request`  | `400`       | Input was missing, empty, wrong type, or invalid. |
-| `not-found`        | `404`       | Requested resource does not exist.                |
-| `unknown-storage`  | `404`       | Requested storage kind is unknown.                |
-| `storage-disabled` | `404`       | Requested storage target is configured off.       |
-| `operation-failed` | `500`       | Server-side operation failed unexpectedly.        |
+| Status             | HTTP status | Meaning                                  |
+| ------------------ | ----------- | ---------------------------------------- |
+| `ok`               | `200`       | Read/list/search succeeded               |
+| `created`          | `201`       | Resource created                         |
+| `replaced`         | `200`       | Existing resource replaced               |
+| `updated`          | `200`       | Existing resource updated                |
+| `deleted`          | `200`       | Existing resource deleted and returned   |
+| `invalid-request`  | `400`       | Structured command validation failed     |
+| `not-found`        | `404`       | A valid id did not resolve to a resource |
+| `unknown-storage`  | `404`       | Storage kind is not registered           |
+| `storage-disabled` | `404`       | Registered storage target is disabled    |
+| `operation-failed` | `500`       | Repository operation failed unexpectedly |
 
-## Validation rules
+Validation reports stable problems under `details.problems`. Raw request values never reach the
+repository until command validation has normalized them.
 
-The facade validates user-facing input before calling adapters.
+## Health
 
-Validation distinguishes:
+Dev-notes health is dependency-focused and read-only apart from normal lazy connection/schema
+initialization. Each enabled repository reports SQLite connectivity, journal-mode state, engine
+metadata, and exact schema compatibility with the resource contract.
 
-| Reason          | Meaning                                                                     |
-| --------------- | --------------------------------------------------------------------------- |
-| `missing`       | Required field was not provided.                                            |
-| `empty`         | Field exists but is blank after trimming.                                   |
-| `wrong-type`    | Field exists but is not the expected JavaScript type.                       |
-| `invalid-value` | Field has the right basic type but is not acceptable, e.g. non-positive id. |
+Exports:
 
-## Health contract
+- `getDevNotesHealth()` returns detailed storage health.
+- `getDevNotesHealthPartial()` returns the condensed backend-summary shape.
 
-Dev-notes health is layered:
+The backend exposes these through `/api/health/dev-notes` and the overall `/api/health` summary.
 
-1. Adapter health checks concrete storage configuration and SQLite reachability.
-2. Dev-notes health aggregates enabled storage targets.
-3. Backend health consumes dev-notes health through the dev-notes public module.
+## Verification
 
-Backend health must not import concrete dev-notes adapters directly.
+From the repository root:
 
-Current adapter health checks connection, SQLite probe query, SQLite version, journal mode metadata,
-adapter identity, and configured path state.
+```bash
+npm run check
+npm run fix
+npm run test:backend:smoke:compose
+```
 
-Future adapter health should add schema checks:
+The smoke suite covers health, contract-derived SQLite schema, and HTTP CRUD behavior for enabled
+storage targets.
 
-- expected table exists
-- expected columns exist
-- table can be counted without relying on a specific row id
+## Scope
 
-### Health ownership
-
-| Layer            | Module                             | Responsibility                                                                         |
-| ---------------- | ---------------------------------- | -------------------------------------------------------------------------------------- |
-| Adapter health   | `dev-notes/adapters/sqlite-file`   | Reports persistent SQLite file adapter health.                                         |
-| Adapter health   | `dev-notes/adapters/sqlite-memory` | Reports temporary SQLite memory adapter health.                                        |
-| Dev-notes health | `dev-notes/health.js`              | Aggregates enabled dev-notes storage targets.                                          |
-| Backend health   | `health/dev-notes.js`              | Exposes dev-notes health to backend health routes without importing concrete adapters. |
-
-### Health API status
-
-| Contract                    | Function / route             | Status             |
-| --------------------------- | ---------------------------- | ------------------ |
-| Full dev-notes health       | `getDevNotesHealth()`        | :white_check_mark: |
-| Partial dev-notes health    | `getDevNotesHealthPartial()` | :white_check_mark: |
-| Backend health integration  | `GET /health/dev-notes`      | :white_check_mark: |
-| Backend summary integration | `GET /health`                | :white_check_mark: |
-
-## Open items
-
-The current dev-notes contract intentionally leaves the following work open:
-
-| Area                   | Status                                                                                                                                                                          |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| HTTP response contract | Define and verify response status, headers, body shape, and no-body behavior per method. See [MDN_ docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/). |
-| `HEAD` routes          | Not implemented yet.                                                                                                                                                            |
-| Schema health checks   | Planned for concrete SQLite adapter health.                                                                                                                                     |
-| Tests                  | Planned after README, typedefs, and JSDoc are stable.                                                                                                                           |
-| CI                     | Planned after the first dev-notes test slice exists.                                                                                                                            |
+This module remains a proof resource. Its job is to establish reusable boundaries and integration
+patterns for M1, not to become the medication-domain model.

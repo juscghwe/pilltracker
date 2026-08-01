@@ -15,7 +15,8 @@
 
 /**
  * @typedef {object} DevNotesHealthSummaryCheck
- * @property {import("../dev-notes/types.js").DevNotesHealthStatus} status Dev-notes health status.
+ * @property {import("../dev-notes/resource/types.js").DevNotesHealthStatus} status Dev-notes health
+ *   status.
  * @property {boolean} enabled Whether the dev-notes subsystem is enabled.
  */
 
@@ -35,9 +36,9 @@
  */
 
 import { appConfig } from "../config/appConfig.js";
-import { getRuntimeHealth } from "./runtime.js";
-import { getPersistenceHealthPartial } from "./persistence.js";
 import { getBackendDevNotesHealthPartial } from "./dev-notes.js";
+import { getPersistenceHealthPartial } from "./persistence.js";
+import { getRuntimeHealth } from "./runtime.js";
 
 /**
  * Builds the backend-wide health summary.
