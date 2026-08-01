@@ -20,26 +20,20 @@ function getPersistenceAdapter() {
 /**
  * Returns persistence health for API responses.
  *
+ * Compact responses use the adapter's lightweight reporter directly. Detailed responses retain the
+ * complete diagnostic reporter.
+ *
  * @param {PersistenceHealthOptions} [options]
  * @returns {ReducedPersistenceHealth | Readonly<import("../sqlite/health.js").SqliteHealthResult>}
  *   Persistence health result.
  * @see Module README, section "persistence-health"
  */
 export function getPersistenceHealth(options = {}) {
-  const fullHealth = getPersistenceAdapter().getHealth();
-
   if (options.includeDetails) {
-    return fullHealth;
+    return getPersistenceAdapter().getHealth();
   }
 
-  return {
-    status: fullHealth.status,
-    adapter: fullHealth.adapter,
-    engine: "engine" in fullHealth ? fullHealth.engine : undefined,
-    path: {
-      isConfigured: fullHealth.path.isConfigured,
-    },
-  };
+  return getPersistenceAdapter().getHealthPartial();
 }
 
 /**
@@ -53,12 +47,10 @@ export function getPersistenceHealth(options = {}) {
  * }}
  */
 export function getPersistenceHealthPartial() {
-  const fullHealth = getPersistenceAdapter().getHealth();
+  const health = getPersistenceAdapter().getHealthPartial();
 
-  return {
-    status: fullHealth.status,
-    path: {
-      isConfigured: fullHealth.path.isConfigured,
-    },
-  };
+  return Object.freeze({
+    status: health.status,
+    path: health.path,
+  });
 }
