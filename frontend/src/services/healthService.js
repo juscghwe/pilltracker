@@ -1,9 +1,7 @@
 import {
   fetchHealthSummary,
-  fetchHealthSummaryDebug,
-  fetchRuntimeHealthDebug,
-  fetchPersistenceHealthDebug,
-  fetchDevNotesHealthDebug,
+  fetchHealthDebugEndpoint,
+  healthDebugEndpoints,
 } from "../api/healthApi.js";
 
 /** @typedef {import("../domain/health.js").ApiDebugResult} ApiDebugResult */
@@ -63,17 +61,10 @@ export async function loadHealthSummary() {
  * @returns {Promise<HealthDebugReport>} Loaded health debug report.
  */
 export async function loadHealthDebugReport() {
-  const [summary, runtime, persistence, devNotes] = await Promise.all([
-    loadHealthEndpoint(fetchHealthSummaryDebug),
-    loadHealthEndpoint(fetchRuntimeHealthDebug),
-    loadHealthEndpoint(fetchPersistenceHealthDebug),
-    loadHealthEndpoint(fetchDevNotesHealthDebug),
-  ]);
-
-  return {
-    summary,
-    runtime,
-    persistence,
-    devNotes,
-  };
+  return Promise.all(
+    healthDebugEndpoints.map(async (endpoint) => ({
+      ...endpoint,
+      result: await loadHealthEndpoint(() => fetchHealthDebugEndpoint(endpoint)),
+    })),
+  );
 }

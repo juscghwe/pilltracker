@@ -4,12 +4,48 @@
 import { fetchApiDebugResult, fetchJson } from "./apiClient.js";
 
 /** Constant health endpoint definitions. */
-const healthApiEndpoints = Object.freeze({
-  healthSummary: "/api/health",
-  runtimeHealth: "/api/health/runtime",
-  persistenceHealthFull: "/api/health/persistence?details=full",
-  devNotesHealthFull: "/api/health/dev-notes?details=full",
-});
+export const healthDebugEndpoints = Object.freeze([
+  Object.freeze({
+    id: "summary",
+    title: "Compact health summary",
+    path: "/api/health",
+  }),
+  Object.freeze({
+    id: "runtime",
+    title: "Runtime health",
+    path: "/api/health/runtime",
+  }),
+  Object.freeze({
+    id: "persistenceCompact",
+    title: "Compact persistence health",
+    path: "/api/health/persistence",
+  }),
+  Object.freeze({
+    id: "persistenceDetailed",
+    title: "Detailed persistence health",
+    path: "/api/health/persistence?details=full",
+  }),
+  Object.freeze({
+    id: "devNotesCompact",
+    title: "Compact dev-notes health",
+    path: "/api/health/dev-notes",
+  }),
+  Object.freeze({
+    id: "devNotesDetailed",
+    title: "Detailed dev-notes health",
+    path: "/api/health/dev-notes?details=full",
+  }),
+]);
+
+/**
+ * Fetches health endpoints dynamically.
+ *
+ * @param endpoint
+ * @returns {Promise<JsonHttpResult>} Compact backend health response.
+ */
+export function fetchHealthDebugEndpoint(endpoint) {
+  return fetchApiDebugResult(endpoint.path);
+}
 
 /**
  * Fetches the compact backend health summary.
@@ -17,68 +53,5 @@ const healthApiEndpoints = Object.freeze({
  * @returns {Promise<JsonHttpResult>} Compact backend health response.
  */
 export function fetchHealthSummary() {
-  return fetchJson(healthApiEndpoints.healthSummary);
-}
-
-/**
- * Fetches runtime health details.
- *
- * @returns {Promise<JsonHttpResult>} Runtime health response.
- */
-export function fetchRuntimeHealth() {
-  return fetchJson(healthApiEndpoints.runtimeHealth);
-}
-
-/**
- * Fetches full persistence health details.
- *
- * @returns {Promise<JsonHttpResult>} Persistence health response.
- */
-export function fetchPersistenceHealth() {
-  return fetchJson(healthApiEndpoints.persistenceHealthFull);
-}
-
-/**
- * Fetches full dev-notes health details.
- *
- * @returns {Promise<JsonHttpResult>} Dev-notes health response.
- */
-export function fetchDevNotesHealth() {
-  return fetchJson(healthApiEndpoints.devNotesHealthFull);
-}
-
-/**
- * Fetches the compact backend health summary for diagnostic display.
- *
- * @returns {Promise<ApiDebugResult>} Compact backend health debug response.
- */
-export function fetchHealthSummaryDebug() {
-  return fetchApiDebugResult(healthApiEndpoints.healthSummary);
-}
-
-/**
- * Fetches runtime health details for diagnostic display.
- *
- * @returns {Promise<ApiDebugResult>} Runtime health debug response.
- */
-export function fetchRuntimeHealthDebug() {
-  return fetchApiDebugResult(healthApiEndpoints.runtimeHealth);
-}
-
-/**
- * Fetches full persistence health details for diagnostic display.
- *
- * @returns {Promise<ApiDebugResult>} Persistence health debug response.
- */
-export function fetchPersistenceHealthDebug() {
-  return fetchApiDebugResult(healthApiEndpoints.persistenceHealthFull);
-}
-
-/**
- * Fetches full dev-notes health details for diagnostic display.
- *
- * @returns {Promise<ApiDebugResult>} Dev-notes health debug response.
- */
-export function fetchDevNotesHealthDebug() {
-  return fetchApiDebugResult(healthApiEndpoints.devNotesHealthFull);
+  return fetchJson("/api/health");
 }

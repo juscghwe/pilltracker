@@ -133,6 +133,11 @@ function HealthDebugJsonBlob() {
   return (
     <Section {...healthDebugContent.section}>
       <Collapsible {...healthDebugContent.debugCollapsible}>
+        {health.report.map((endpoint) => (
+          <Card key={endpoint.id} title={endpoint.title}>
+            <ResponseBlock result={endpoint.result} label={`GET ${endpoint.path}`} />
+          </Card>
+        ))}
         <Card title={healthDebugContent.summary.title}>
           <ResponseBlock result={health.report.summary} label={healthDebugContent.summary.label} />
         </Card>
