@@ -1,8 +1,7 @@
 # Dev-notes boundary relationships
 
-This document is the compact navigation map for `dev-notes-new`. The architecture target explains
-why the module exists; this file explains how its concrete pieces are allowed to depend on each
-other.
+This document is the compact navigation map for `dev-notes`. The architecture target explains why
+the module exists; this file explains how its concrete pieces are allowed to depend on each other.
 
 ## Intended dependency flow
 
@@ -36,20 +35,15 @@ of this shape. Backward dependencies or shortcuts across layers require an expli
 
 ## Field identities
 
-Each resource field has three identities with different owners and consumers.
-
 | Identity     | Example                      | Purpose                                                                              |
 | ------------ | ---------------------------- | ------------------------------------------------------------------------------------ |
 | Contract key | `lastConfirmedInteraction`   | Internal structural lookup in `resource.fields` and operation policies               |
 | `publicName` | `lastConfirmedInteraction`   | JavaScript/API property used in raw input, commands, repository values and responses |
 | `columnName` | `last_confirmed_interaction` | Trusted SQLite identifier used only after lookup through the contract                |
 
-The values currently happen to match for several contract keys and public names. Code must not rely
-on that coincidence.
-
-Operation-policy field arrays contain **contract keys**. Validation looks up each definition and
-then reads or reports the definition's **public name**. Repository commands contain public-name
-values; SQLite helpers translate those values to trusted column names through the contract.
+Operation-policy field arrays contain contract keys. Validation resolves each definition and uses
+its public name. Repository commands contain public-name values; SQLite helpers translate those
+values to trusted column names through the contract.
 
 ## Boundary ownership
 
@@ -68,7 +62,7 @@ values; SQLite helpers translate those values to trusted column names through th
 
 ## Worked PATCH trace
 
-For `PATCH /dev-notes/temp/12` with:
+For `PATCH /api/dev-notes/temp/12` with:
 
 ```json
 {
@@ -79,16 +73,14 @@ For `PATCH /dev-notes/temp/12` with:
 1. The route passes storage `temp`, id `12`, the raw body and raw query to the service.
 2. The service selects the `update` operation policy.
 3. Command validation reads the policy contract key `lastConfirmedInteraction`.
-4. The field definition supplies public name `lastConfirmedInteraction`, type `string`, nullability
-   and empty-string policy.
-5. Validation returns a command with id `12`, public-name values and public-name `providedFields`.
+4. The field definition supplies its public name, type, nullability and empty-string policy.
+5. Validation returns a command with public-name values and `providedFields`.
 6. The service calls `repository.update(12, values, providedFields)` through the port.
-7. The SQLite repository resolves the public name through the resource contract and generates an
-   assignment for trusted column `last_confirmed_interaction`.
-8. The returned SQLite row is aliased back to public names and null output fallbacks are applied.
-9. The route converts the service result status `updated` to HTTP 200.
+7. The SQLite repository maps the public name to column `last_confirmed_interaction`.
+8. The returned row is aliased back to public names and output fallbacks are applied.
+9. The route converts service status `updated` to HTTP 200.
 
 ## Review rule
 
-When a parameter, import or helper cannot be explained by this map, do not remove or extend it based
-only on local appearance. First decide which boundary owns the information and document the reason.
+When a parameter, import or helper cannot be explained by this map, first decide which boundary owns
+the information and document the reason before extending or removing it.

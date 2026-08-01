@@ -12,8 +12,8 @@ import { getDevNotesHealth, getDevNotesHealthPartial } from "../dev-notes/index.
  *
  * @param {BackendDevNotesHealthOptions} [options] Health options.
  * @returns {Readonly<
- *   | import("../dev-notes/types.js").DevNotesHealthResult
- *   | import("../dev-notes/types.js").DevNotesPartialHealthResult
+ *   | import("../dev-notes/resource/types.js").DevNotesHealthResult
+ *   | import("../dev-notes/resource/types.js").DevNotesPartialHealthResult
  * >}
  *   Dev-notes health result.
  */
@@ -28,8 +28,10 @@ export function getBackendDevNotesHealth(options = {}) {
 /**
  * Returns condensed dev-notes health for backend-wide health summary.
  *
- * @returns {Readonly<import("../dev-notes/types.js").DevNotesPartialHealthResult>} Partial
- *   dev-notes health result.
+ * @returns {Readonly<
+ *   import("../dev-notes/resource/types.js").DevNotesPartialHealthResult
+ * >}
+ *   Partial dev-notes health result.
  */
 export function getBackendDevNotesHealthPartial() {
   return getDevNotesHealthPartial();
