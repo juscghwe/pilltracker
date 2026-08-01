@@ -3,8 +3,8 @@
 /**
  * @typedef {object} CreateDevNotesHealthInput
  * @property {boolean} enabled Whether the dev-notes feature is enabled.
- * @property {Readonly<Record<string, import("../resource/types.js").DevNotesStorageTarget>>}
- *   storageTargets Storage registry.
+ * @property {Readonly<Record<string, import("../resource/types.js").DevNotesStorageTarget>>} storageTargets
+ *   Storage registry.
  */
 
 /**
@@ -72,9 +72,10 @@ export function createDevNotesHealth(input) {
           return Object.freeze({ storageKind, status: "disabled", enabled: false });
         }
 
-        const repository = /** @type {{ getHealthPartial?: () => Readonly<{ status: unknown }> }} */ (
-          storageTarget.repository
-        );
+        const repository =
+          /** @type {{ getHealthPartial?: () => Readonly<{ status: unknown }> }} */ (
+            storageTarget.repository
+          );
         const partialHealth = repository.getHealthPartial?.();
         const status = partialHealth?.status === "healthy" ? "healthy" : "unhealthy";
 

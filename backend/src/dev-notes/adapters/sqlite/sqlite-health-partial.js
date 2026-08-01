@@ -65,9 +65,7 @@ export function createDevNotesSqlitePartialHealthReporter(input) {
   return function getDevNotesSqliteHealthPartial() {
     try {
       return Object.freeze({
-        status: hasExpectedSchema(input.getConnection(), input.resource)
-          ? "healthy"
-          : "unhealthy",
+        status: hasExpectedSchema(input.getConnection(), input.resource) ? "healthy" : "unhealthy",
       });
     } catch {
       return Object.freeze({ status: "unhealthy" });

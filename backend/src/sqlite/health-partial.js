@@ -19,7 +19,8 @@
  *   adapter: Readonly<{ id: string }>;
  *   engine?: Readonly<{ reportedFamily: "sqlite"; version: string }>;
  *   path: Readonly<{ isConfigured: boolean }>;
- * }>} Compact reporter.
+ * }>}
+ *   Compact reporter.
  */
 export function createSqlitePartialHealthReporter(input) {
   const adapter = Object.freeze({ id: input.adapterId });
@@ -28,10 +29,7 @@ export function createSqlitePartialHealthReporter(input) {
   return function getSqliteHealthPartial() {
     try {
       const probe = /** @type {{ ok: number; sqliteVersion: string }} */ (
-        input
-          .getConnection()
-          .prepare("SELECT 1 AS ok, sqlite_version() AS sqliteVersion")
-          .get()
+        input.getConnection().prepare("SELECT 1 AS ok, sqlite_version() AS sqliteVersion").get()
       );
 
       return Object.freeze({
