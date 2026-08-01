@@ -1,13 +1,8 @@
-/**
- * Public composition root for the rebuilt dev-notes M1 proof of concept.
- *
- * This file wires concrete storage implementations to the repository port and exposes stable module
- * entrypoints. It does not mount routes into the application; that integration remains an explicit
- * later replacement of the old module.
- */
+/** Public composition root for the dev-notes M1 proof slice. */
 
 import { appConfig, validSqliteJournalModes } from "../config/appConfig.js";
 import { createDevNotesSqliteHealthReporter } from "./adapters/sqlite/sqlite-health.js";
+import { createDevNotesSqlitePartialHealthReporter } from "./adapters/sqlite/sqlite-health-partial.js";
 import { createSqliteRepository } from "./adapters/sqlite/sqlite-repository.js";
 import {
   getPersistentConnection,
@@ -20,10 +15,7 @@ import { devNotesOperations } from "./resource/operations.js";
 import { createDevNotesRouter } from "./routes.js";
 import { createDevNotesService } from "./service/dev-notes-service.js";
 
-export const devNotesStorageKinds = Object.freeze({
-  temp: "temp",
-  persistent: "persistent",
-});
+export const devNotesStorageKinds = Object.freeze({ temp: "temp", persistent: "persistent" });
 
 const getTempHealth = createDevNotesSqliteHealthReporter({
   ...tempConnectionMetadata,
@@ -37,26 +29,35 @@ const getPersistentHealth = createDevNotesSqliteHealthReporter({
   getConnection: getPersistentConnection,
   resource: devNotesResource,
 });
+const getTempHealthPartial = createDevNotesSqlitePartialHealthReporter({
+  getConnection: getTempConnection,
+  resource: devNotesResource,
+});
+const getPersistentHealthPartial = createDevNotesSqlitePartialHealthReporter({
+  getConnection: getPersistentConnection,
+  resource: devNotesResource,
+});
 
-export const tempDevNotesRepository = createSqliteRepository({
+const tempRepository = createSqliteRepository({
   resource: devNotesResource,
   getConnection: getTempConnection,
   getHealth: getTempHealth,
 });
-export const persistentDevNotesRepository = createSqliteRepository({
+const persistentRepository = createSqliteRepository({
   resource: devNotesResource,
   getConnection: getPersistentConnection,
   getHealth: getPersistentHealth,
 });
 
-/**
- * @type {Readonly<
- *   Record<
- *     import("./resource/types.js").DevNotesStorageKind,
- *     import("./resource/types.js").DevNotesStorageTarget
- *   >
- * >}
- */
+export const tempDevNotesRepository = Object.freeze({
+  ...tempRepository,
+  getHealthPartial: getTempHealthPartial,
+});
+export const persistentDevNotesRepository = Object.freeze({
+  ...persistentRepository,
+  getHealthPartial: getPersistentHealthPartial,
+});
+
 export const devNotesStorageTargets = Object.freeze({
   [devNotesStorageKinds.temp]: Object.freeze({
     config: appConfig.devNotes.storage.temp,
@@ -74,12 +75,10 @@ export const devNotesService = createDevNotesService({
   operations: devNotesOperations,
   storageTargets: devNotesStorageTargets,
 });
-
 export const devNotesHealth = createDevNotesHealth({
   enabled: appConfig.devNotes.enabled,
   storageTargets: devNotesStorageTargets,
 });
-
 export const devNotesRouter = createDevNotesRouter(devNotesService);
 
 export const {
@@ -94,7 +93,6 @@ export const {
   optionsStorageAndId,
   resolveStorageTarget,
 } = devNotesService;
-
 export const { getDevNotesHealth, getDevNotesHealthPartial } = devNotesHealth;
 
 export { devNotesResource, devNotesOperations };
